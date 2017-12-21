@@ -8,17 +8,18 @@ You can see this demo app running in test mode on [stripe-payments-demo.appspot.
 
 ## Overview
 
-<img src="public/images/screenshots/demo-chrome.png" width="610"><img src="public/images/screenshots/demo-iphone.png" width="278">
+<img src="public/images/screenshots/demo-chrome.png" alt="Demo on Google Chrome" width="610"><img src="public/images/screenshots/demo-iphone.png" alt="Demo on Safari iPhone X" width="278">
 
 This demo provides an all-in-one example for integrating with Stripe on the web:
 
+<!-- prettier-ignore -->
 |     | Features
 :---: | :---
 ✨ | **Beautiful UI components for card payments**. This demo uses pre-built Stripe components customized to fit the app design, including the [Card Element](https://stripe.com/docs/elements) which provides real-time validation, formatting, and autofill.
 💳 | **Card payments with Payment Request, Apple Pay, and Pay with Google.** The app offers frictionless card payment experiences with a single integration using the new [Payment Request Button Element](https://stripe.com/docs/elements/payment-request-button).
 🌍 | **Payment methods for Europe and Asia.** A dozen redirect-based payment methods are supported through the [Sources API](https://stripe.com/docs/sources), from iDEAL to WeChat Pay.
 🎩 | **Automatic payment methods suggestion.** Picking a country will automatically show relevant payment methods. For example, selecting  “Germany” will suggest SOFORT, Giropay, and SEPA Debit.
-🔐 | **Dynamic 3D Secure for Visa and Mastercard.** The app automatically handles the correct flow to complete card payments wit [3D Secure](https://stripe.com/docs/sources/three-d-secure), whether it’s required by the card or by the app itself above a certain amount.
+🔐 | **Dynamic 3D Secure for Visa and Mastercard.** The app automatically handles the correct flow to complete card payments with [3D Secure](https://stripe.com/docs/sources/three-d-secure), whether it’s required by the card or by the app itself above a certain amount.
 📲 | **QR code generation for WeChat Pay.** During the payment process for [WeChat Pay](https://stripe.com/payments/payment-methods-guide#wechat-pay), a QR code is generated for the WeChat Pay URL to authorize the payment in the WeChat app.
 🚀 | **Built-in proxy for local HTTPS and webhooks.** Card payments require HTTPS and asynchronous payment methods with redirects rely on webhooks to complete transactions—[ngrok](https://ngrok.com/) is integrated so the app is served locally over HTTPS and an endpoint is publicly exposed for webhooks.
 🔧 | **Webhook signing and idempotency keys**. We verify webhook signatures and pass idempotency keys to charge creations, two recommended practices for asynchronous payment flows.
@@ -28,6 +29,7 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 ## Payments Integration
 
 The core logic of the Stripe integration is mostly contained within two files:
+
 1. [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
 2. [`server/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
 
@@ -54,6 +56,7 @@ The [Sources API](https://stripe.com/docs/sources) provides a single integration
 ## Requirements
 
 You’ll need the following:
+
 * [Node.js](http://nodejs.org) >= 7.x.
 * Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
 * Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
@@ -68,7 +71,7 @@ Copy the configuration file:
 
     cp config.example.js config.js
 
-Update `config.js` with your own  [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details.
+Update `config.js` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details.
 
 Install dependencies using npm:
 
