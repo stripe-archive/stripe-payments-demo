@@ -437,7 +437,7 @@
     sofort: {
       name: 'SOFORT',
       flow: 'redirect',
-      countries: ['DE'],
+      countries: ['DE', 'AT'],
     },
     wechat: {
       name: 'WeChat',
