@@ -139,6 +139,7 @@ fieldset label {
   position: relative;
   display: flex;
   flex-direction: row;
+  height: 42px;
   padding: 10px 0;
   align-items: center;
   justify-content: center;
@@ -799,7 +800,7 @@ button:active {
     display: none;
   }
   #payment-request {
-    min-height: 70px;
+    min-height: 0;
     padding-right: 15px;
     padding-left: 15px;
   }
@@ -808,6 +809,9 @@ button:active {
     padding: 0 15px;
     border-width: 2px 0 0 0;
     border-radius: 0;
+  }
+  .payment-info span {
+    display: none;
   }
   fieldset {
     margin-bottom: 15px;
