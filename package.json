@@ -13,8 +13,7 @@
     "node": ">=7.7.4"
   },
   "scripts": {
-    "start": "node server/server.js",
-    "setup": "node server/setup.js"
+    "start": "node server/server.js"
   },
   "dependencies": {
     "body-parser": "^1.17.1",

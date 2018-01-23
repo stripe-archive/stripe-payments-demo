@@ -77,11 +77,7 @@ Install dependencies using npm:
 
     npm install
 
-Next, we’ll create a few default products and SKUs for your Stripe account. Run the `setup` script once:
-
-    npm run setup
-
-This demo uses the Stripe API as a datastore for products and orders, but you can always choose to use your own datastore instead.
+This demo uses the Stripe API as a datastore for products and orders, but you can always choose to use your own datastore instead. When starting the app for the first time, the initial loading can take a couple of seconds as it will automatically set up the products within Stripe.
 
 Run the app:
 
