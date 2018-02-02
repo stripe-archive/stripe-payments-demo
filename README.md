@@ -67,11 +67,11 @@ Some payment methods require receiving a real-time webhook notification to compl
 
 ## Getting Started
 
-Copy the configuration file:
+Copy the environment variables file:
 
-    cp config.example.js config.js
+    cp .env.example .env
 
-Update `config.js` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details.
+Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`config.js`](config.js).
 
 Install dependencies using npm:
 

@@ -13,7 +13,7 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
-const ngrok = process.env.NODE_ENV !== 'production' ? require('ngrok') : false;
+const ngrok = config.ngrok.enabled ? require('ngrok') : null;
 const app = express();
 
 // Setup useful middleware.
@@ -37,13 +37,13 @@ app.set('view engine', 'html');
 app.use('/', require('./routes'));
 
 // Start the server on the correct port.
-const server = app.listen(process.env.PORT || config.port, () => {
+const server = app.listen(config.port, () => {
   console.log(`🚀  Server listening on port ${server.address().port}`);
 });
 
-// Turn on the ngrok tunnel if enabled in development, which provides HTTPS support
-// (mandatory for all card payments) and the ability to consume webhooks locally.
-if (ngrok && config.ngrok.enabled) {
+// Turn on the ngrok tunnel in development, which provides both the mandatory HTTPS
+// support for all card payments, and the ability to consume webhooks locally.
+if (ngrok) {
   ngrok.connect(
     {
       addr: config.ngrok.port,

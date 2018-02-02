@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "body-parser": "^1.17.1",
+    "dotenv": "^4.0.0",
     "ejs": "^2.5.7",
     "express": "^4.15.2",
     "morgan": "^1.8.1",
