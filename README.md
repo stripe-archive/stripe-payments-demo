@@ -4,7 +4,7 @@ This demo features a sample e-commerce store that uses [Stripe Elements](https:/
 
 If you’re running a compatible browser, this demo also showcases the [Payment Request API](https://stripe.com/docs/payment-request-api), [Apple Pay](https://stripe.com/docs/apple-pay), and [Pay with Google](https://stripe.com/docs/pay-with-google) for a seamless payment experience.
 
-You can see this demo app running in test mode on [stripe-payments-demo.appspot.com](https://stripe-payments-demo.appspot.com).
+**You can see this demo app running in test mode on [stripe-payments-demo.appspot.com](https://stripe-payments-demo.appspot.com).**
 
 ## Overview
 
@@ -94,6 +94,10 @@ The second URL will serve our app via HTTPS. For example:
 Use this second URL in your browser to start the demo.
 
 **Don’t want to use ngrok?** As long as you serve the app over HTTPS and that Stripe can reach the webhook endpoint via a public URL, all the payment flows will work.
+
+**Want to test a hosted version of this app with your own Stripe account?** You can deploy an instance of this app on Heroku and set up your own API keys:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 ## Credits
 

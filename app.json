@@ -1,0 +1,35 @@
+{
+  "name": "Stripe Payments Demo",
+  "description":
+    "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, and the Sources API.",
+  "repository": "https://github.com/stripe/stripe-payments-demo",
+  "logo": "https://stripe-payments-demo.appspot.com/images/logo.png",
+  "keywords": [
+    "stripe",
+    "stripe-elements",
+    "stripe-sources",
+    "node",
+    "javascript",
+    "payments",
+    "payment-methods",
+    "payment-request",
+    "apple-pay"
+  ],
+  "env": {
+    "STRIPE_PUBLISHABLE_KEY": {
+      "description":
+        "Your Stripe publishable key. Find it here in your Dashboard: https://dashboard.stripe.com/account/apikeys",
+      "required": true
+    },
+    "STRIPE_SECRET_KEY": {
+      "description":
+        "Your Stripe secret key. Find it here in your Dashboard: https://dashboard.stripe.com/account/apikeys",
+      "required": true
+    },
+    "STRIPE_WEBHOOK_SECRET": {
+      "description":
+        "Your webhook secret to verify signatures. Find it here in your Dashboard: https://dashboard.stripe.com/account/webhooks",
+      "required": false
+    }
+  }
+}
