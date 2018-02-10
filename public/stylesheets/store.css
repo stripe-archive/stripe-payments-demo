@@ -730,16 +730,19 @@ button:active {
   display: none;
 }
 
-#main.success:not(.processing) #confirmation .status.processing {
+#main.success:not(.processing) #confirmation .status.processing,
+#main.success:not(.receiver) #confirmation .status.receiver {
   display: none;
 }
 
-#main.processing #confirmation .status.success {
+#main.processing #confirmation .status.success,
+#main.receiver #confirmation .status.success {
   display: none;
 }
 
 #main.error #confirmation .status.success,
-#main.error #confirmation .status.processing {
+#main.error #confirmation .status.processing,
+#main.error #confirmation .status.receiver {
   display: none;
 }
 
