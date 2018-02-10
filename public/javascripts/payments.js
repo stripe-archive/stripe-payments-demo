@@ -419,6 +419,11 @@
       name: 'Card',
       flow: 'none',
     },
+    eps: {
+      name: 'EPS',
+      flow: 'redirect',
+      countries: ['AT'],
+    },
     ideal: {
       name: 'iDEAL',
       flow: 'redirect',
