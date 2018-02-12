@@ -730,6 +730,11 @@ button:active {
   display: none;
 }
 
+#confirmation li {
+  margin-bottom: 5px;
+  list-style: none;
+}
+
 #main.success:not(.processing) #confirmation .status.processing,
 #main.success:not(.receiver) #confirmation .status.receiver {
   display: none;

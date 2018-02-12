@@ -308,26 +308,34 @@
                 break;
               case 'receiver':
                 // Display the receiver address to send the funds to.
-                document.getElementById('main').classList.add('success', 'receiver');
+                document
+                  .getElementById('main')
+                  .classList.add('success', 'receiver');
                 if (source.type === 'multibanco') {
-                  const receiverScreen = document
+                  const receiverInfo = document
                     .getElementById('confirmation')
-                    .querySelector('.status.receiver');
+                    .querySelector('.receiver .info');
 
-                  // Append receiver information to screen.
-                  let pNode = document.createElement('h2');
-                  pNode.innerText = 'MULTIBANCO INFORMAÇÕES DE ENCOMENDA:';
-                  receiverScreen.appendChild(pNode);
-                  pNode = document.createElement('p');
-                  let amount = store.formatPrice(source.amount, config.currency);
-                  pNode.innerText = `Montante: ${amount}`;
-                  receiverScreen.appendChild(pNode);
-                  pNode = document.createElement('p');
-                  pNode.innerText = `Entidade: ${source.multibanco.entity}`;
-                  receiverScreen.appendChild(pNode);
-                  pNode = document.createElement('p');
-                  pNode.innerText = `Referencia: ${source.multibanco.reference}`;
-                  receiverScreen.appendChild(pNode);
+                  // Display the Multibanco payment information to the user.
+                  let amount = store.formatPrice(
+                    source.amount,
+                    config.currency
+                  );
+                  receiverInfo.innerHTML = `
+                    <ul>
+                      <li>
+                        Amount (Montante):
+                        <strong>${amount}</strong>
+                      </li>
+                      <li>
+                        Entity (Entidade):
+                        <strong>${source.multibanco.entity}</strong>
+                      </li>
+                      <li>
+                        Reference (Referencia):
+                        <strong>${source.multibanco.reference}</strong>
+                      </li>
+                    </ul>`;
 
                   // Poll the backend and check for an order status.
                   // The backend updates the status upon receiving webhooks,
