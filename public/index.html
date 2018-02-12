@@ -112,6 +112,10 @@
                 <label for="payment-giropay">Giropay</label>
               </li>
               <li>
+                <input type="radio" name="payment" id="payment-multibanco" value="multibanco">
+                <label for="payment-multibanco">Multibanco</label>
+              </li>
+              <li>
                 <input type="radio" name="payment" id="payment-sepa_debit" value="sepa_debit">
                 <label for="payment-sepa_debit">SEPA Direct Debit</label>
               </li>
@@ -148,6 +152,9 @@
           <div class="payment-info redirect">
             <p class="notice">You’ll be redirected to the banking site to complete your payment.</p>
           </div>
+          <div class="payment-info receiver">
+            <p class="notice">Payment information will be provided after you place the order.</p>
+          </div>
           <div class="payment-info wechat">
             <div id="wechat-qrcode"></div>
             <p class="notice">Click the button below to generate a QR code for WeChat.</p>
@@ -166,6 +173,11 @@
         <h1>Thanks for your order!</h1>
         <p>Woot! You successfully made a payment with Stripe.</p>
         <p class="note">We just sent your receipt to your email address, and your items will be on their way shortly.</p>
+      </div>
+      <div class="status receiver">
+        <h1>Thanks for your order!</h1>
+        <h2>Please complete your payment using the information below.</h2>
+        <div class="info"></div>
       </div>
       <div class="status error">
         <h1>Oops, payment failed.</h1>

@@ -226,6 +226,7 @@
         currency: order.currency,
         owner: {
           name,
+          email,
         },
         redirect: {
           return_url: window.location.href,
@@ -307,6 +308,42 @@
                 break;
               case 'receiver':
                 // Display the receiver address to send the funds to.
+                document
+                  .getElementById('main')
+                  .classList.add('success', 'receiver');
+                if (source.type === 'multibanco') {
+                  const receiverInfo = document
+                    .getElementById('confirmation')
+                    .querySelector('.receiver .info');
+
+                  // Display the Multibanco payment information to the user.
+                  let amount = store.formatPrice(
+                    source.amount,
+                    config.currency
+                  );
+                  receiverInfo.innerHTML = `
+                    <ul>
+                      <li>
+                        Amount (Montante):
+                        <strong>${amount}</strong>
+                      </li>
+                      <li>
+                        Entity (Entidade):
+                        <strong>${source.multibanco.entity}</strong>
+                      </li>
+                      <li>
+                        Reference (Referencia):
+                        <strong>${source.multibanco.reference}</strong>
+                      </li>
+                    </ul>`;
+
+                  // Poll the backend and check for an order status.
+                  // The backend updates the status upon receiving webhooks,
+                  // specifically the `source.chargeable` and `charge.succeeded` events.
+                  pollOrderStatus(order.id);
+                } else {
+                  console.log('Unhandled receiver flow.', source);
+                }
                 break;
               default:
                 // Order is received, pending payment confirmation.
@@ -338,12 +375,14 @@
         // Payment for the order has failed.
         document.getElementById('main').classList.remove('success');
         document.getElementById('main').classList.remove('processing');
+        document.getElementById('main').classList.remove('receiver');
         document.getElementById('main').classList.add('error');
         break;
 
       case 'paid':
         // Success! Payment is confirmed. Update the interface to display the confirmation screen.
         document.getElementById('main').classList.remove('processing');
+        document.getElementById('main').classList.remove('receiver');
         // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
         document
           .getElementById('confirmation')
@@ -434,6 +473,11 @@
       flow: 'redirect',
       countries: ['DE'],
     },
+    multibanco: {
+      name: 'Multibanco',
+      flow: 'receiver',
+      countries: ['PT'],
+    },
     sepa_debit: {
       name: 'SEPA Direct Debit',
       flow: 'none',
@@ -519,6 +563,9 @@
       form
         .querySelector('.payment-info.redirect')
         .classList.toggle('visible', flow === 'redirect');
+      form
+        .querySelector('.payment-info.receiver')
+        .classList.toggle('visible', flow === 'receiver');
     });
   }
 
