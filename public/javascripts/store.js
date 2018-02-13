@@ -3,31 +3,14 @@
  * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
  *
  * Representation of products, line items, and orders, and saving them on Stripe.
- * Note: This is overly simplified class for demo purposes (all products are loaded
- * for convenience, there is no cart management functionality, etc.).
+ * Please note this is overly simplified class for demo purposes (all products
+ * are loaded for convenience, there is no cart management functionality, etc.).
  * A production app would need to handle this very differently.
  */
 
 class Store {
   constructor() {
-    // Default line items for the current order.
-    this.lineItems = [
-      {
-        product: 'increment',
-        sku: 'increment-03',
-        quantity: 3,
-      },
-      {
-        product: 'shirt',
-        sku: 'shirt-small-woman',
-        quantity: 1,
-      },
-      {
-        product: 'pins',
-        sku: 'pins-collector',
-        quantity: 2,
-      },
-    ];
+    this.lineItems = [];
     this.products = {};
     this.displayOrderSummary();
   }
@@ -163,33 +146,39 @@ class Store {
     const orderTotal = document.getElementById('order-total');
     let currency;
     // Build and append the line items to the order summary.
-    this.lineItems.forEach(item => {
-      let product = this.products[item.product];
+    for (let [id, product] of Object.entries(this.products)) {
+      const randomQuantity = (min, max) => {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      };
+      const quantity = randomQuantity(1, 3);
       let sku = product.skus.data[0];
       let skuPrice = this.formatPrice(sku.price, sku.currency);
-      let lineItemPrice = this.formatPrice(
-        sku.price * item.quantity,
-        sku.currency
-      );
+      let lineItemPrice = this.formatPrice(sku.price * quantity, sku.currency);
       let lineItem = document.createElement('div');
       lineItem.classList.add('line-item');
       lineItem.innerHTML = `
-        <img class="image" src="/images/products/${item.product}.png">
+        <img class="image" src="/images/products/${product.id}.png">
         <div class="label">
           <p class="product">${product.name}</p>
           <p class="sku">${Object.values(sku.attributes).join(' ')}</p>
         </div>
-        <p class="count">${item.quantity} x ${skuPrice}</p>
+        <p class="count">${quantity} x ${skuPrice}</p>
         <p class="price">${lineItemPrice}</p>`;
       orderItems.appendChild(lineItem);
       currency = sku.currency;
-    });
+      this.lineItems.push({
+        product: product.id,
+        sku: sku.id,
+        quantity,
+      });
+    }
     // Add the subtotal and total to the order summary.
     const total = this.formatPrice(this.getOrderTotal(), currency);
     orderTotal.querySelector('[data-subtotal]').innerText = total;
     orderTotal.querySelector('[data-total]').innerText = total;
-    orderItems.classList.add('visible');
-    orderTotal.classList.add('visible');
+    document.getElementById('main').classList.remove('loading');
   }
 }
 

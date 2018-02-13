@@ -27,15 +27,15 @@ body {
 /* Overall Container */
 
 #main {
-  width: calc(100% - 450px);
+  width: 100%;
   height: 100vh;
   text-align: center;
   transition: width 0.3s ease-in-out;
 }
 
-#main.success,
-#main.error {
-  width: 100%;
+#main.checkout:not(.success),
+#main.checkout:not(.error) {
+  width: calc(100% - 450px);
 }
 
 /* Header */
@@ -76,6 +76,14 @@ header a:hover {
   max-width: 480px;
   margin: 0 auto;
   padding: 30px 0;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s linear 0.5s;
+}
+
+#main.checkout #checkout {
+  visibility: visible;
+  opacity: 1;
 }
 
 section {
@@ -278,7 +286,7 @@ select:-webkit-autofill {
   margin-top: -1px;
 }
 
-#card-errors {
+.element-errors {
   display: inline-block;
   text-align: center;
   margin: 0 auto 15px;
@@ -293,7 +301,7 @@ select:-webkit-autofill {
   background-size: 15px 15px;
 }
 
-#card-errors.visible {
+.element-errors.visible {
   opacity: 1;
   transform: none;
 }
@@ -472,7 +480,7 @@ button:active {
   bottom: -2px;
   left: 0;
   border-bottom: 2px solid #6772e5;
-  visibility: hidden;
+  opacity: 0;
   transform: scaleX(0);
   transition: all 0.25s ease-in-out;
 }
@@ -488,7 +496,7 @@ button:active {
 
 #payment-methods label:hover::before,
 #payment-methods input:checked + label::before {
-  visibility: visible;
+  opacity: 1;
   transform: scaleX(1);
 }
 
@@ -506,13 +514,15 @@ button:active {
   display: block;
 }
 
-.payment-info.card.visible {
+.payment-info.card.visible,
+.payment-info.sepa_debit.visible {
   text-align: center;
 }
 
 .payment-info p.notice {
   font-size: 14px;
   color: #8898aa;
+  text-align: left;
 }
 
 #wechat-qrcode img {
@@ -524,7 +534,7 @@ button:active {
 #summary {
   position: fixed;
   top: 0;
-  right: 0;
+  right: -450px;
   bottom: 0;
   width: 450px;
   overflow: auto;
@@ -534,9 +544,8 @@ button:active {
   transition: right 0.3s ease-in-out;
 }
 
-#main.success + #summary,
-#main.error + #summary {
-  right: -450px;
+#main.checkout:not(.success) + #summary {
+  right: 0;
 }
 
 #summary header {
@@ -633,19 +642,6 @@ button:active {
   line-height: inherit;
 }
 
-#order-items,
-#order-total {
-  visibility: hidden;
-  opacity: 0;
-  transition: visibility 0s, opacity 0.3s ease-in;
-}
-
-#order-items.visible,
-#order-total.visible {
-  visibility: visible;
-  opacity: 1;
-}
-
 #demo {
   padding: 15px;
   margin: -15px -15px 0;
@@ -713,8 +709,11 @@ button:active {
 }
 
 #confirmation .status {
-  padding: 100px 100px 100px 275px;
-  max-width: 850px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 75px 0 275px;
+  max-width: 75%;
   height: 350px;
   margin: 100px auto;
   background: #fff url(/images/order.svg) 75px center no-repeat;
@@ -722,15 +721,15 @@ button:active {
   border-radius: 6px;
 }
 
-#confirmation .status p {
-  margin: 15px 0;
-}
-
 #confirmation .status.error {
   display: none;
 }
 
-#confirmation li {
+#confirmation .status p {
+  margin: 0 0 15px;
+}
+
+#confirmation .status li {
   margin-bottom: 5px;
   list-style: none;
 }
@@ -764,6 +763,7 @@ button:active {
   #summary {
     width: 320px;
   }
+  #main.loading + #summary,
   #main.success + #summary,
   #main.error + #summary {
     right: -320px;

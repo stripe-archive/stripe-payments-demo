@@ -157,7 +157,7 @@
    * This creates an order and either sends the card information from the Element
    * alongside it, or creates a Source and start a redirect to complete the purchase.
    *
-   * Note: This form is not submitted when the user chooses the "Pay" button
+   * Please note this form is not submitted when the user chooses the "Pay" button
    * or Apple Pay since they provide name and shipping information directly.
    */
 
@@ -261,6 +261,8 @@
 
   // Handle the order and source activation if required
   const handleOrder = async (order, source) => {
+    const mainElement = document.getElementById('main');
+    const confirmationElement = document.getElementById('confirmation');
     switch (order.metadata.status) {
       case 'created':
         switch (source.status) {
@@ -308,14 +310,11 @@
                 break;
               case 'receiver':
                 // Display the receiver address to send the funds to.
-                document
-                  .getElementById('main')
-                  .classList.add('success', 'receiver');
+                mainElement.classList.add('success', 'receiver');
+                const receiverInfo = confirmationElement.querySelector(
+                  '.receiver .info'
+                );
                 if (source.type === 'multibanco') {
-                  const receiverInfo = document
-                    .getElementById('confirmation')
-                    .querySelector('.receiver .info');
-
                   // Display the Multibanco payment information to the user.
                   let amount = store.formatPrice(
                     source.amount,
@@ -362,33 +361,29 @@
 
       case 'pending':
         // Success! Now waiting for payment confirmation. Update the interface to display the confirmation screen.
-        document.getElementById('main').classList.remove('processing');
+        mainElement.classList.remove('processing');
         // Update the note about receipt and shipping (the payment is not yet confirmed by the bank).
-        document
-          .getElementById('confirmation')
-          .querySelector('.note').innerText =
+        confirmationElement.querySelector('.note').innerText =
           'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
-        document.getElementById('main').classList.add('success');
+        mainElement.classList.add('success');
         break;
 
       case 'failed':
         // Payment for the order has failed.
-        document.getElementById('main').classList.remove('success');
-        document.getElementById('main').classList.remove('processing');
-        document.getElementById('main').classList.remove('receiver');
-        document.getElementById('main').classList.add('error');
+        mainElement.classList.remove('success');
+        mainElement.classList.remove('processing');
+        mainElement.classList.remove('receiver');
+        mainElement.classList.add('error');
         break;
 
       case 'paid':
         // Success! Payment is confirmed. Update the interface to display the confirmation screen.
-        document.getElementById('main').classList.remove('processing');
-        document.getElementById('main').classList.remove('receiver');
+        mainElement.classList.remove('processing');
+        mainElement.classList.remove('receiver');
         // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
-        document
-          .getElementById('confirmation')
-          .querySelector('.note').innerText =
+        confirmationElement.querySelector('.note').innerText =
           'We just sent your receipt to your email address, and your items will be on their way shortly.';
-        document.getElementById('main').classList.add('success');
+        mainElement.classList.add('success');
         break;
     }
   };
@@ -427,14 +422,18 @@
   };
 
   const orderId = store.getActiveOrderId();
+  const mainElement = document.getElementById('main');
   if (orderId && window.location.search.includes('source')) {
     // Update the interface to display the processing screen.
-    document.getElementById('main').classList.add('success', 'processing');
+    mainElement.classList.add('success', 'processing');
 
     // Poll the backend and check for an order status.
     // The backend updates the status upon receiving webhooks,
     // specifically the `source.chargeable` and `charge.succeeded` events.
     pollOrderStatus(orderId);
+  } else {
+    // Update the interface to display the checkout form.
+    mainElement.classList.add('checkout');
   }
 
   /**

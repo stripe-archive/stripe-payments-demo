@@ -62,7 +62,7 @@ module.exports = {
             id: 'pins-collector',
             product: 'pins',
             attributes: {set: 'Collector Set'},
-            price: 799,
+            price: 499,
             currency: config.currency,
             inventory: {type: 'finite', quantity: 500},
           });
@@ -72,7 +72,7 @@ module.exports = {
         } catch (err) {
           if (err.message === 'Product already exists.') {
             console.log('⚠️  Products have already been registered.');
-            console.log('Delete them from your Dashboard to run this script again.');
+            console.log('Delete them from your Dashboard to run this setup.');
           } else {
             console.log('⚠️  An error occurred.', err);
           }
