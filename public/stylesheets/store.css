@@ -33,8 +33,7 @@ body {
   transition: width 0.3s ease-in-out;
 }
 
-#main.checkout:not(.success),
-#main.checkout:not(.error) {
+#main.checkout:not(.success):not(.error) {
   width: calc(100% - 450px);
 }
 
@@ -544,7 +543,7 @@ button:active {
   transition: right 0.3s ease-in-out;
 }
 
-#main.checkout:not(.success) + #summary {
+#main.checkout:not(.success):not(.error) + #summary {
   right: 0;
 }
 
@@ -751,22 +750,21 @@ button:active {
 }
 
 #main.error #confirmation .status.error {
-  display: block;
+  display: flex;
 }
 
 /* Media Queries */
 
 @media only screen and (max-width: 1024px) {
-  #main {
+  #main.checkout:not(.success):not(.error) {
     width: calc(100% - 320px);
   }
   #summary {
     width: 320px;
-  }
-  #main.loading + #summary,
-  #main.success + #summary,
-  #main.error + #summary {
     right: -320px;
+  }
+  #main.checkout:not(.success):not(.error) + #summary {
+    right: 0;
   }
   #summary .line-item p {
     margin-top: 0;
@@ -781,7 +779,7 @@ button:active {
 }
 
 @media only screen and (max-width: 800px) {
-  #main {
+  #main.checkout:not(.success):not(.error) {
     width: 100%;
   }
   #payment-request {
