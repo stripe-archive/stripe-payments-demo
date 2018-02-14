@@ -83,7 +83,7 @@
 
   // Create the payment request.
   const paymentRequest = stripe.paymentRequest({
-    country: config.country,
+    country: config.stripeCountry,
     currency: config.currency,
     total: {
       label: 'Total',

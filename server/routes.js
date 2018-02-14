@@ -253,6 +253,7 @@ const dynamic3DS = async (source, order, req) => {
 router.get('/config', (req, res) => {
   res.json({
     stripePublishableKey: config.stripe.publishableKey,
+    stripeCountry: config.stripe.country,
     country: config.country,
     currency: config.currency,
   });

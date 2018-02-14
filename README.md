@@ -71,7 +71,7 @@ Copy the environment variables file:
 
     cp .env.example .env
 
-Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`config.js`](config.js).
+Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`config.js`](config.js), where you can review and edit other options such as the app currency and your Stripe account country.
 
 Install dependencies using npm:
 
