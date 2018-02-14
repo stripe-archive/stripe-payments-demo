@@ -10,7 +10,7 @@ require('dotenv').config();
 
 module.exports = {
   // Default country for the checkout form.
-  country: 'CN',
+  country: 'US',
 
   // Store currency.
   // Note: A few payment methods like iDEAL or SOFORT only work with euros,
