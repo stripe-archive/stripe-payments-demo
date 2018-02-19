@@ -57,7 +57,7 @@ The [Sources API](https://stripe.com/docs/sources) provides a single integration
 
 You’ll need the following:
 
-* [Node.js](http://nodejs.org) >= 7.x.
+* [Node.js](http://nodejs.org) >= 8.x.
 * Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
 * Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
 

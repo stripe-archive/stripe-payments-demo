@@ -11,6 +11,7 @@
 
 const config = require('../config');
 const stripe = require('stripe')(config.stripe.secretKey);
+stripe.setApiVersion('2018-02-06');
 
 // Create an order.
 const createOrder = async (currency, items, email, shipping) => {
@@ -37,7 +38,7 @@ const updateOrder = async (orderId, properties) => {
 
 // List all products.
 const listProducts = async () => {
-  return await stripe.products.list({ limit: 3 });
+  return await stripe.products.list({limit: 3});
 };
 
 // Retrieve a product by ID.
@@ -49,8 +50,12 @@ const retrieveProduct = async productId => {
 const checkProducts = productList => {
   const validProducts = ['increment', 'shirt', 'pins'];
   return productList.data.reduce((accumulator, currentValue) => {
-    return (accumulator && productList.data.length === 3 && validProducts.includes(currentValue.id))
-  }, (!!productList.data.length));
+    return (
+      accumulator &&
+      productList.data.length === 3 &&
+      validProducts.includes(currentValue.id)
+    );
+  }, !!productList.data.length);
 };
 
 exports.orders = {

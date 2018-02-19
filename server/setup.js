@@ -11,6 +11,7 @@
 
 const config = require('../config');
 const stripe = require('stripe')(config.stripe.secretKey);
+stripe.setApiVersion('2018-02-06');
 
 module.exports = {
   running: false,
@@ -25,6 +26,7 @@ module.exports = {
           // Increment Magazine.
           const increment = await stripe.products.create({
             id: 'increment',
+            type: 'good',
             name: 'Increment Magazine',
             attributes: ['issue'],
           });
@@ -40,6 +42,7 @@ module.exports = {
           // Stripe Shirt.
           const shirt = await stripe.products.create({
             id: 'shirt',
+            type: 'good',
             name: 'Stripe Shirt',
             attributes: ['size', 'gender'],
           });
@@ -55,6 +58,7 @@ module.exports = {
           // Stripe Pins.
           const pins = await stripe.products.create({
             id: 'pins',
+            type: 'good',
             name: 'Stripe Pins',
             attributes: ['set'],
           });
@@ -62,7 +66,7 @@ module.exports = {
             id: 'pins-collector',
             product: 'pins',
             attributes: {set: 'Collector Set'},
-            price: 499,
+            price: 799,
             currency: config.currency,
             inventory: {type: 'finite', quantity: 500},
           });

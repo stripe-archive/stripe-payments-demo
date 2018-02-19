@@ -12,9 +12,10 @@
 const config = require('../config');
 const setup = require('./setup');
 const {orders, products} = require('./orders');
-const stripe = require('stripe')(config.stripe.secretKey);
 const express = require('express');
 const router = express.Router();
+const stripe = require('stripe')(config.stripe.secretKey);
+stripe.setApiVersion('2018-02-06');
 
 // Render the main app HTML.
 router.get('/', (req, res) => {
