@@ -1,7 +1,7 @@
 {
   "name": "Stripe Payments Demo",
   "description":
-    "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, and the Sources API.",
+    "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, Google Pay, and the Sources API.",
   "repository": "https://github.com/stripe/stripe-payments-demo",
   "logo": "https://stripe-payments-demo.appspot.com/images/logo.png",
   "keywords": [
@@ -13,7 +13,8 @@
     "payments",
     "payment-methods",
     "payment-request",
-    "apple-pay"
+    "apple-pay",
+    "google-pay"
   ],
   "env": {
     "STRIPE_PUBLISHABLE_KEY": {

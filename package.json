@@ -1,6 +1,7 @@
 {
   "name": "stripe-payments-demo",
-  "description": "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, and the Sources API.",
+  "description":
+    "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, Google Pay, and the Sources API.",
   "version": "0.0.1",
   "private": true,
   "author": "Romain Huet",
