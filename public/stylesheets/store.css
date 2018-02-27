@@ -285,26 +285,6 @@ select:-webkit-autofill {
   margin-top: -1px;
 }
 
-.element-errors {
-  display: inline-block;
-  text-align: center;
-  margin: 0 auto 15px;
-  padding-left: 20px;
-  color: #e25950;
-  opacity: 0;
-  transform: translateY(10px);
-  transition-property: opacity, transform;
-  transition-duration: 0.35s;
-  transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
-  background: url(/images/error.svg) center left no-repeat;
-  background-size: 15px 15px;
-}
-
-.element-errors.visible {
-  opacity: 1;
-  transform: none;
-}
-
 button {
   display: block;
   background: #666ee8;
@@ -526,6 +506,25 @@ button:active {
 
 #wechat-qrcode img {
   margin: 0 auto;
+}
+
+.payment-errors {
+  display: inline-flex;
+  margin: 15px auto 0;
+  padding-left: 20px;
+  color: #e25950;
+  opacity: 0;
+  transform: translateY(10px);
+  transition-property: opacity, transform;
+  transition-duration: 0.35s;
+  transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+  background: url(/images/error.svg) center left no-repeat;
+  background-size: 15px 15px;
+}
+
+.payment-errors.visible {
+  opacity: 1;
+  transform: none;
 }
 
 /* Order Summary */

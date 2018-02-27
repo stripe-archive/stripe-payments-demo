@@ -30,14 +30,8 @@
   // Create an instance of Elements.
   const elements = stripe.elements();
 
-  /**
-   * Implement a Stripe Card Element that matches the look-and-feel of the app.
-   *
-   * This makes it easy to collect debit and credit card payments information.
-   */
-
-  // Create a Card Element and pass some custom styles to it.
-  const card = elements.create('card', {
+  // Prepare the options for Elements to be styled accordingly.
+  const elementsOptions = {
     style: {
       base: {
         iconColor: '#666ee8',
@@ -55,7 +49,16 @@
         },
       },
     },
-  });
+  };
+
+  /**
+   * Implement a Stripe Card Element that matches the look-and-feel of the app.
+   *
+   * This makes it easy to collect debit and credit card payments information.
+   */
+
+  // Create a Card Element and pass some custom styles to it.
+  const card = elements.create('card', elementsOptions);
 
   // Mount the Card Element on the page.
   card.mount('#card-element');
@@ -63,9 +66,13 @@
   // Monitor change events on the Card Element to display any errors.
   card.addEventListener('change', ({error}) => {
     const cardErrors = document.getElementById('card-errors');
-    cardErrors.textContent = error ? error.message : '';
-    cardErrors.classList.toggle('visible', error);
-    // Reenable the Pay button.
+    if (error) {
+      cardErrors.textContent = error.message;
+      cardErrors.classList.add('visible');
+    } else {
+      cardErrors.classList.remove('visible');
+    }
+    // Re-enable the Pay button.
     submitButton.disabled = false;
   });
 
@@ -565,6 +572,9 @@
       form
         .querySelector('.payment-info.receiver')
         .classList.toggle('visible', flow === 'receiver');
+      document
+        .getElementById('card-errors')
+        .classList.remove('visible', payment !== 'card');
     });
   }
 
