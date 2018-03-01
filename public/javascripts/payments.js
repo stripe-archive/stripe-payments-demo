@@ -453,7 +453,7 @@
     alipay: {
       name: 'Alipay',
       flow: 'redirect',
-      countries: ['CN', 'HK', 'SG'],
+      countries: ['CN', 'HK', 'SG', 'JP'],
     },
     bancontact: {
       name: 'Bancontact',
@@ -497,7 +497,7 @@
     wechat: {
       name: 'WeChat',
       flow: 'none',
-      countries: ['CN', 'HK', 'SG'],
+      countries: ['CN', 'HK', 'SG', 'JP'],
     },
   };
 
