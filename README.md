@@ -30,8 +30,8 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 
 The core logic of the Stripe integration is mostly contained within two files:
 
-1. [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
-2. [`server/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
+1.  [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
+2.  [`server/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
 
 ### Card Payments with Stripe Elements
 
@@ -45,7 +45,7 @@ This demo uses both the [Card Element](https://stripe.com/docs/elements) and the
 
 ### Beyond Cards: Payments Sources for Europe and Asia
 
-This demo also shows how to reach customers in Europe and Asia by supporting their preferred way to pay online. It supports payment methods such as [Alipay](https://stripe.com/payments/payment-methods-guide#alipay), [Bancontact](https://stripe.com/payments/payment-methods-guide#bancontact), [iDEAL](https://stripe.com/payments/payment-methods-guide#ideal), [Giropay](https://stripe.com/payments/payment-methods-guide#giropay), [SEPA Direct Debit](https://stripe.com/payments/payment-methods-guide#sepa), [SOFORT](https://stripe.com/payments/payment-methods-guide#sofort), and [WeChat Pay](https://stripe.com/payments/payment-methods-guide#wechat).
+This demo also shows how to reach customers in Europe and Asia by supporting their preferred way to pay online. It supports payment methods such as [ACH credit transfers](https://stripe.com/payments/payment-methods-guide#ach-credit-transfers), [Alipay](https://stripe.com/payments/payment-methods-guide#alipay), [Bancontact](https://stripe.com/payments/payment-methods-guide#bancontact), [iDEAL](https://stripe.com/payments/payment-methods-guide#ideal), [Giropay](https://stripe.com/payments/payment-methods-guide#giropay), [SEPA Direct Debit](https://stripe.com/payments/payment-methods-guide#sepa), [SOFORT](https://stripe.com/payments/payment-methods-guide#sofort), and [WeChat Pay](https://stripe.com/payments/payment-methods-guide#wechat).
 
 The app also supports both [Multibanco](https://stripe.com/docs/sources/multibanco) and [EPS](https://stripe.com/docs/sources/eps) which are currently in Public Beta on Stripe.
 
