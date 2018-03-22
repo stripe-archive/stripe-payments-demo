@@ -259,10 +259,8 @@
           };
           break;
         case 'ach_credit_transfer':
-          // ACH Bank Transfer only supports USD payments, in the demo we simply change the currency to USD.
-          // In your application you might want to do a currency conversion.
-          //sourceData.currency = 'usd';
-          // In test mode we can set the funds to be received via the owner email.
+          // ACH Bank Transfer: Only supports USD payments, edit the default config to try it.
+          // In test mode, we can set the funds to be received via the owner email.
           sourceData.owner.email = `amount_${order.amount}@example.com`;
           break;
       }
@@ -280,7 +278,8 @@
     if (error) {
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
-      confirmationElement.querySelector('.error-message').innerText = error.message;
+      confirmationElement.querySelector('.error-message').innerText =
+        error.message;
       mainElement.classList.add('error');
     }
     switch (order.metadata.status) {
@@ -334,13 +333,11 @@
                 const receiverInfo = confirmationElement.querySelector(
                   '.receiver .info'
                 );
-                let amount = store.formatPrice(
-                  source.amount,
-                  config.currency
-                );
+                let amount = store.formatPrice(source.amount, config.currency);
                 switch (source.type) {
                   case 'ach_credit_transfer':
                     // Display the ACH Bank Transfer information to the user.
+                    const ach = source.ach_credit_transfer;
                     receiverInfo.innerHTML = `
                       <ul>
                         <li>
@@ -349,20 +346,21 @@
                         </li>
                         <li>
                           Bank Name:
-                          <strong>${source.ach_credit_transfer.bank_name}</strong>
+                          <strong>${ach.bank_name}</strong>
                         </li>
                         <li>
                           Account Number:
-                          <strong>${source.ach_credit_transfer.account_number}</strong>
+                          <strong>${ach.account_number}</strong>
                         </li>
                         <li>
                           Routing Number:
-                          <strong>${source.ach_credit_transfer.routing_number}</strong>
+                          <strong>${ach.routing_number}</strong>
                         </li>
                       </ul>`;
                     break;
                   case 'multibanco':
                     // Display the Multibanco payment information to the user.
+                    const multibanco = source.multibanco;
                     receiverInfo.innerHTML = `
                       <ul>
                         <li>
@@ -371,11 +369,11 @@
                         </li>
                         <li>
                           Entity (Entidade):
-                          <strong>${source.multibanco.entity}</strong>
+                          <strong>${multibanco.entity}</strong>
                         </li>
                         <li>
                           Reference (Referencia):
-                          <strong>${source.multibanco.reference}</strong>
+                          <strong>${multibanco.reference}</strong>
                         </li>
                       </ul>`;
                     break;
