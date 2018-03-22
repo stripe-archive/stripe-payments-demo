@@ -752,6 +752,10 @@ button:active {
   display: flex;
 }
 
+#main.error #confirmation .error-message {
+  font-family: monospace;
+}
+
 /* Media Queries */
 
 @media only screen and (max-width: 1024px) {

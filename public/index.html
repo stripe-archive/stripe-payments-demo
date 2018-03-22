@@ -92,6 +92,10 @@
                 <label for="payment-card">Card</label>
               </li>
               <li>
+                <input type="radio" name="payment" id="payment-ach_credit_transfer" value="ach_credit_transfer" checked>
+                <label for="payment-ach_credit_transfer">Bank Transfer</label>
+              </li>
+              <li>
                 <input type="radio" name="payment" id="payment-alipay" value="alipay">
                 <label for="payment-alipay">Alipay</label>
               </li>
@@ -182,6 +186,7 @@
       <div class="status error">
         <h1>Oops, payment failed.</h1>
         <p>It looks like your order could not be paid at this time. Please try again or select a different payment option.</p>
+        <p class="error-message"></p>
       </div>
     </div>
   </div>
