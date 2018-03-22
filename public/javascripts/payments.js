@@ -258,18 +258,31 @@
             country,
           };
           break;
+        case 'ach_credit_transfer':
+          // ACH Bank Transfer only supports USD payments, in the demo we simply change the currency to USD.
+          // In your application you might want to do a currency conversion.
+          //sourceData.currency = 'usd';
+          // In test mode we can set the funds to be received via the owner email.
+          sourceData.owner.email = `amount_${order.amount}@example.com`;
+          break;
       }
 
       // Create a Stripe source with the common data and extra information.
-      const {source} = await stripe.createSource(sourceData);
-      await handleOrder(order, source);
+      const {source, error} = await stripe.createSource(sourceData);
+      await handleOrder(order, source, error);
     }
   });
 
   // Handle the order and source activation if required
-  const handleOrder = async (order, source) => {
+  const handleOrder = async (order, source, error = null) => {
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
+    if (error) {
+      mainElement.classList.remove('processing');
+      mainElement.classList.remove('receiver');
+      confirmationElement.querySelector('.error-message').innerText = error.message;
+      mainElement.classList.add('error');
+    }
     switch (order.metadata.status) {
       case 'created':
         switch (source.status) {
@@ -321,35 +334,58 @@
                 const receiverInfo = confirmationElement.querySelector(
                   '.receiver .info'
                 );
-                if (source.type === 'multibanco') {
-                  // Display the Multibanco payment information to the user.
-                  let amount = store.formatPrice(
-                    source.amount,
-                    config.currency
-                  );
-                  receiverInfo.innerHTML = `
-                    <ul>
-                      <li>
-                        Amount (Montante):
-                        <strong>${amount}</strong>
-                      </li>
-                      <li>
-                        Entity (Entidade):
-                        <strong>${source.multibanco.entity}</strong>
-                      </li>
-                      <li>
-                        Reference (Referencia):
-                        <strong>${source.multibanco.reference}</strong>
-                      </li>
-                    </ul>`;
-
-                  // Poll the backend and check for an order status.
-                  // The backend updates the status upon receiving webhooks,
-                  // specifically the `source.chargeable` and `charge.succeeded` events.
-                  pollOrderStatus(order.id);
-                } else {
-                  console.log('Unhandled receiver flow.', source);
+                let amount = store.formatPrice(
+                  source.amount,
+                  config.currency
+                );
+                switch (source.type) {
+                  case 'ach_credit_transfer':
+                    // Display the ACH Bank Transfer information to the user.
+                    receiverInfo.innerHTML = `
+                      <ul>
+                        <li>
+                          Amount:
+                          <strong>${amount}</strong>
+                        </li>
+                        <li>
+                          Bank Name:
+                          <strong>${source.ach_credit_transfer.bank_name}</strong>
+                        </li>
+                        <li>
+                          Account Number:
+                          <strong>${source.ach_credit_transfer.account_number}</strong>
+                        </li>
+                        <li>
+                          Routing Number:
+                          <strong>${source.ach_credit_transfer.routing_number}</strong>
+                        </li>
+                      </ul>`;
+                    break;
+                  case 'multibanco':
+                    // Display the Multibanco payment information to the user.
+                    receiverInfo.innerHTML = `
+                      <ul>
+                        <li>
+                          Amount (Montante):
+                          <strong>${amount}</strong>
+                        </li>
+                        <li>
+                          Entity (Entidade):
+                          <strong>${source.multibanco.entity}</strong>
+                        </li>
+                        <li>
+                          Reference (Referencia):
+                          <strong>${source.multibanco.reference}</strong>
+                        </li>
+                      </ul>`;
+                    break;
+                  default:
+                    console.log('Unhandled receiver flow.', source);
                 }
+                // Poll the backend and check for an order status.
+                // The backend updates the status upon receiving webhooks,
+                // specifically the `source.chargeable` and `charge.succeeded` events.
+                pollOrderStatus(order.id);
                 break;
               default:
                 // Order is received, pending payment confirmation.
@@ -450,6 +486,11 @@
   // List of relevant countries for the payment methods supported in this demo.
   // Read the Stripe guide: https://stripe.com/payments/payment-methods-guide
   const paymentMethods = {
+    ach_credit_transfer: {
+      name: 'Bank Transfer',
+      flow: 'receiver',
+      countries: ['US'],
+    },
     alipay: {
       name: 'Alipay',
       flow: 'redirect',
