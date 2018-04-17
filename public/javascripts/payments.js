@@ -117,7 +117,7 @@
         store.getOrderItems(),
         event.payerEmail,
         {
-          name: event.payerName,
+          name: event.shippingAddress.recipient,
           address: {
             line1: event.shippingAddress.addressLine[0],
             city: event.shippingAddress.city,
@@ -180,7 +180,9 @@
       form.querySelector('label.zip span').innerText =
         country === 'US'
           ? 'ZIP'
-          : country === 'UK' ? 'Postcode' : 'Postal Code';
+          : country === 'UK'
+            ? 'Postcode'
+            : 'Postal Code';
       event.target.parentElement.className = `field ${country}`;
       showRelevantPaymentMethods(country);
     });
