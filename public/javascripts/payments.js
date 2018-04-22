@@ -25,7 +25,9 @@
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(config.stripePublishableKey);
+  const stripe = Stripe(config.stripePublishableKey, {
+    betas: ['payment_intent_beta_1'],
+  });
 
   // Create an instance of Elements.
   const elements = stripe.elements();
@@ -219,13 +221,17 @@
     );
 
     if (payment === 'card') {
-      // Create a Stripe source from the card information and the owner name.
-      const {source} = await stripe.createSource(card, {
-        owner: {
-          name,
-        },
-      });
-      await handleOrder(order, source);
+      submitButton.textContent = 'Processing Payment…';
+      // Let Stripe handle source activation
+      const {paymentIntent, error} = await stripe.fulfillPaymentIntent(
+        order.metadata.intent_secret,
+        card
+      );
+      if (error) {
+        await handleOrder(null, null, error);
+      } else {
+        await handleOrder({metadata: {status: 'paid'}}, null, null);
+      }
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
