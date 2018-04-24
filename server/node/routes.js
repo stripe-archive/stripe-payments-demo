@@ -9,7 +9,7 @@
 
 'use strict';
 
-const config = require('../config');
+const config = require('./config');
 const setup = require('./setup');
 const {orders, products} = require('./inventory');
 const express = require('express');

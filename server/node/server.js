@@ -7,7 +7,7 @@
 
 'use strict';
 
-const config = require('../config');
+const config = require('./config');
 const express = require('express');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
@@ -28,7 +28,7 @@ app.use(
   })
 );
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../../public')));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
