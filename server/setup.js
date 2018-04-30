@@ -25,15 +25,15 @@ module.exports = {
         try {
           // Increment Magazine.
           const increment = await stripe.products.create({
-            id: 'increment',
+            id: 'support-on-demand',
             type: 'good',
-            name: 'Increment Magazine',
-            attributes: ['issue'],
+            name: 'Support On-Demand',
+            attributes: ['unit'],
           });
           await stripe.skus.create({
-            id: 'increment-03',
+            id: 'support-on-demand-request',
             product: 'increment',
-            attributes: {issue: 'Issue #3 “Development”'},
+            attributes: {unit: 'Pay Per Request'},
             price: 399,
             currency: config.currency,
             inventory: {type: 'infinite'},

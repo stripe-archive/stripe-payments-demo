@@ -48,7 +48,7 @@ const retrieveProduct = async productId => {
 
 // Validate that products exist.
 const checkProducts = productList => {
-  const validProducts = ['increment'];
+  const validProducts = ['support-on-demand'];
   return productList.data.reduce((accumulator, currentValue) => {
     return (
       accumulator &&
