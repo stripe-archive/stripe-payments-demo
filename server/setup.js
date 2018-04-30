@@ -39,37 +39,6 @@ module.exports = {
             inventory: {type: 'infinite'},
           });
 
-          // Stripe Shirt.
-          const shirt = await stripe.products.create({
-            id: 'shirt',
-            type: 'good',
-            name: 'Stripe Shirt',
-            attributes: ['size', 'gender'],
-          });
-          await stripe.skus.create({
-            id: 'shirt-small-woman',
-            product: 'shirt',
-            attributes: {size: 'Small Standard', gender: 'Woman'},
-            price: 999,
-            currency: config.currency,
-            inventory: {type: 'infinite'},
-          });
-
-          // Stripe Pins.
-          const pins = await stripe.products.create({
-            id: 'pins',
-            type: 'good',
-            name: 'Stripe Pins',
-            attributes: ['set'],
-          });
-          await stripe.skus.create({
-            id: 'pins-collector',
-            product: 'pins',
-            attributes: {set: 'Collector Set'},
-            price: 799,
-            currency: config.currency,
-            inventory: {type: 'finite', quantity: 500},
-          });
           console.log('Setup complete.');
           resolve();
           this.running = false;
