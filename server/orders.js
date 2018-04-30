@@ -48,11 +48,11 @@ const retrieveProduct = async productId => {
 
 // Validate that products exist.
 const checkProducts = productList => {
-  const validProducts = ['increment', 'shirt', 'pins'];
+  const validProducts = ['increment'];
   return productList.data.reduce((accumulator, currentValue) => {
     return (
       accumulator &&
-      productList.data.length === 3 &&
+      productList.data.length === 1 &&
       validProducts.includes(currentValue.id)
     );
   }, !!productList.data.length);
