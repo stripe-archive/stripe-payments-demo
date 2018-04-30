@@ -45,12 +45,31 @@ header {
   justify-content: space-between;
   width: 100%;
   height: 80px;
-  background: #fff url(/images/logo.svg) center center no-repeat;
   border-bottom: 1px solid #f3f3ff;
+  background: #fff;
+}
+
+.logo {
+	line-height: 0;
+	text-align: left;
+}
+
+.logo svg {
+  height: 15px;
+  margin: 30px;
+  fill: #666ee8;
+}
+
+.logo a {
+  display: inline-block;
+}
+
+.logo span {
+  display: none;
 }
 
 header a.shop,
-header a.github {
+header a.phone {
   margin: 30px;
   font-size: 13px;
   font-weight: 500;
@@ -60,9 +79,9 @@ header a.github {
   text-decoration: none;
 }
 
-header a.github {
+header a.phone {
   padding-left: 20px;
-  background: url(/images/github.svg) left center no-repeat;
+  background: url(/images/phone.svg) left center no-repeat;
 }
 
 header a:hover {
@@ -805,9 +824,19 @@ button:active {
     background-size: 40px 40px;
   }
   header a.shop,
-  header a.github {
+  header a.phone,
+  header .logo {
     display: none;
   }
+
+  header {
+    background: #fff url(/images/logo.svg) center center no-repeat;
+    background-size: auto 39px;
+  }
+  header svg {
+
+  }
+ 
   #payment-request {
     min-height: 0;
     padding-right: 15px;

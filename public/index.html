@@ -1,18 +1,31 @@
 <html>
 
 <head>
-  <title>Stripe Payments Demo</title>
+  <title>IT Solver</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="/stylesheets/store.css">
-  <link rel="icon" type="image/png" sizes="104x80" href="/images/logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/the_favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/the_favicon/favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="/the_favicon/favicon-16x16.png" sizes="16x16">
+  <link rel="mask-icon" href="/the_favicon/safari-pinned-tab.svg" color="#4182e4">
+  <link rel="shortcut icon" href="/the_favicon/favicon.ico">
+  <meta name="apple-mobile-web-app-title" content="IT Solver">
+  <meta name="application-name" content="IT Solver">
+  <meta name="msapplication-config" content="/the_favicon/browserconfig.xml">
+  <meta name="theme-color" content="#4182e4">
 </head>
 
 <body>
   <div id="main" class="loading">
     <header>
-      <a class="shop" href="/">Stripe Payments Demo</a>
-      <a class="github" href="https://github.com/stripe/stripe-payments-demo">View on GitHub</a>
+      <div class="logo">
+          <a href="https://www.itsolver.net">          
+            <svg xmlns="http://www.w3.org/2000/svg" title="IT Solver main logo" width="135.78px" height="39px" viewbox="0 0 668.06 122.99"><defs><style>.a{isolation:isolate;}</style></defs><g class="a"><path class="b" d="M36.64,12.79v98.67H14.25V12.79h22.4Z"/><path class="b" d="M75,31.53H48.5V12.79h75.83V31.53H97.4v79.93H75V31.53Z"/><path class="b" d="M166.49,88.48a56.93,56.93,0,0,0,24.74,6.15c10.25,0,15.66-4.25,15.66-10.69,0-6.15-4.68-9.66-16.54-13.91C174,64.32,163.27,55.25,163.27,40.9c0-16.83,14.05-29.72,37.33-29.72,11.13,0,19.32,2.34,25.18,5l-5,18a46.9,46.9,0,0,0-20.64-4.69c-9.66,0-14.35,4.39-14.35,9.52,0,6.29,5.56,9.08,18.3,13.91,17.42,6.44,25.62,15.52,25.62,29.42,0,16.54-12.74,30.6-39.82,30.6-11.27,0-22.4-2.93-28-6Z"/><path class="b" d="M335.13,61.1c0,32.35-19.62,52-48.46,52-29.28,0-46.41-22.11-46.41-50.21,0-29.57,18.88-51.68,48-51.68C318.59,11.18,335.13,33.88,335.13,61.1Zm-71.29,1.32c0,19.32,9.08,32.94,24,32.94S311.56,81,311.56,61.84c0-17.71-8.49-32.94-23.86-32.94C272.62,28.9,263.84,43.24,263.84,62.42Z"/><path class="b" d="M349.77,12.79h22.4V92.72H411.4v18.74H349.77V12.79Z"/><path class="b" d="M438.33,111.46L406.71,12.79h24.45l12,41.72c3.37,11.71,6.44,23,8.78,35.28h0.44C454.88,77.94,458,66.23,461.32,55l12.59-42.16h23.72l-33.23,98.67H438.33Z"/><path class="b" d="M566.86,69.74H530.56V93.16h40.55v18.3H508.16V12.79h60.9v18.3h-38.5v20.5h36.31V69.74Z"/><path class="b" d="M586.33,14.11a196.1,196.1,0,0,1,29.72-2c14.64,0,24.89,2.2,31.91,7.76,5.86,4.68,9.08,11.56,9.08,20.64,0,12.59-8.93,21.23-17.42,24.3V65.2c6.88,2.78,10.69,9.37,13.17,18.45,3.07,11.13,6.15,24,8.05,27.81H638c-1.61-2.78-4-10.83-6.88-23-2.63-12.3-6.88-15.66-16-15.81h-6.73v38.79H586.33V14.11Zm22.11,42.45h8.78c11.13,0,17.71-5.56,17.71-14.2,0-9.08-6.15-13.61-16.4-13.76a55.66,55.66,0,0,0-10.1.73V56.57Z"/></g></svg>    
+            <span>IT Solver</span>
+          </a>
+        </div>
+      <a class="phone" href="tel:+61731236000">(07) 3123 6000</a>
     </header>
     <div id="checkout">
       <div id="payment-request">
@@ -28,24 +41,28 @@
               <input name="name" class="field" placeholder="Jenny Rosen" required>
             </label>
             <label>
+              <span>Phone</span>
+              <input name="phone" type="tel" class="field" placeholder="0412345678" required>
+            </label>
+            <label>
               <span>Email</span>
               <input name="email" type="email" class="field" placeholder="jenny@example.com" required>
             </label>
             <label>
               <span>Address</span>
-              <input name="address" class="field" placeholder="185 Berry Street Suite 550">
+              <input name="address" class="field" placeholder="1 Queen Street">
             </label>
             <label>
               <span>City</span>
-              <input name="city" class="field" placeholder="San Francisco">
+              <input name="city" class="field" placeholder="Brisbane">
             </label>
             <label class="state">
               <span>State</span>
-              <input name="state" class="field" placeholder="CA">
+              <input name="state" class="field" placeholder="QLD">
             </label>
             <label class="zip">
-              <span>ZIP</span>
-              <input name="postal_code" class="field" placeholder="94107">
+              <span>Postal Code</span>
+              <input name="postal_code" class="field" placeholder="4000">
             </label>
             <label class="select">
               <span>Country</span>
@@ -175,8 +192,9 @@
       </div>
       <div class="status success">
         <h1>Thanks for your order!</h1>
-        <p>Woot! You successfully made a payment with Stripe.</p>
-        <p class="note">We just sent your receipt to your email address, and your items will be on their way shortly.</p>
+        <p>Yay! You successfully ordered support from IT Solver.</p>
+        <p class="note">We just sent your receipt to your email address, and Angus will be in contact shortly.</p>
+        <p class="schedule"><a href="https://calendly.com/itsolver/on-demand-support">Schedule in the appointment now</a>.</p>
       </div>
       <div class="status receiver">
         <h1>Thanks! One last step!</h1>
@@ -225,8 +243,8 @@
   </div>
   <!-- Stripe.js v3 for Elements -->
   <script src="https://js.stripe.com/v3/"></script>
-  <!-- Library to render QR codes -->
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <!-- Library to render QR codes, required only for WeChat -->
+  <!-- <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script> -->
   <!-- App -->
   <script src="/javascripts/store.js"></script>
   <script src="/javascripts/payments.js"></script>
