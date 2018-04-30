@@ -34,7 +34,7 @@ module.exports = {
             id: 'support-on-demand-request',
             product: 'support-on-demand',
             attributes: {unit: 'Pay Per Request'},
-            price: 399,
+            price: 18000,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
