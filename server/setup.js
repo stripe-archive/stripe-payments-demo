@@ -32,7 +32,7 @@ module.exports = {
           });
           await stripe.skus.create({
             id: 'support-on-demand-request',
-            product: 'increment',
+            product: 'support-on-demand',
             attributes: {unit: 'Pay Per Request'},
             price: 399,
             currency: config.currency,
