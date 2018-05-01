@@ -427,7 +427,7 @@
         mainElement.classList.remove('receiver');
         // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
         confirmationElement.querySelector('.note').innerText =
-          'We just sent your receipt to your email address, and your items will be on their way shortly.';
+          'We just sent your receipt to your email address, and Angus will call shortly.';
         mainElement.classList.add('success');
         break;
     }
