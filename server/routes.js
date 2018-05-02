@@ -205,6 +205,22 @@ router.post('/webhook', async (req, res) => {
     await orders.update(order.id, {metadata: {status: 'paid'}});
   }
 
+  /** BETA Payment Intent **/
+  // Monitor payment_intent.succeeded event
+  // Monitor `charge.succeeded` events.
+  if (
+    object.object === 'payment_intent' &&
+    object.status === 'succeeded' && // TODO: make status agnostic
+    object.metadata.order
+  ) {
+    const pi = object;
+    console.log(`🔔  Webhook received! The payment intent ${pi.id} succeeded.`);
+    // Find the corresponding order this source is for by looking in its metadata.
+    const order = await orders.retrieve(pi.metadata.order);
+    // Update the order status to mark it as paid.
+    await orders.update(order.id, {metadata: {status: 'paid'}});
+  }
+
   // Monitor `source.failed`, `source.canceled`, and `charge.failed` events.
   if (
     (object.object === 'source' || object.object === 'charge') &&

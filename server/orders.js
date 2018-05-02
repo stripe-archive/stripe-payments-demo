@@ -29,7 +29,9 @@ const createOrder = async (currency, items, email, shipping) => {
   const paymentIntent = await stripe.paymentIntents.create({
     amount: order.amount,
     currency: order.currency,
-    description: order.id,
+    metadata: {
+      order: order.id,
+    },
     allowed_source_types: ['card'],
   });
   // Add payment intent ID and secret to order
