@@ -30,23 +30,21 @@
   // Create an instance of Elements.
   const elements = stripe.elements();
 
-  // Prepare the options for Elements to be styled accordingly.
-  const elementsOptions = {
-    style: {
-      base: {
-        iconColor: '#666ee8',
-        color: '#31325f',
-        fontWeight: 400,
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
-        fontSmoothing: 'antialiased',
-        fontSize: '15px',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-        ':-webkit-autofill': {
-          color: '#666ee8',
-        },
+  // Prepare the styles for Elements.
+  const style = {
+    base: {
+      iconColor: '#666ee8',
+      color: '#31325f',
+      fontWeight: 400,
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '15px',
+      '::placeholder': {
+        color: '#aab7c4',
+      },
+      ':-webkit-autofill': {
+        color: '#666ee8',
       },
     },
   };
@@ -58,19 +56,48 @@
    */
 
   // Create a Card Element and pass some custom styles to it.
-  const card = elements.create('card', elementsOptions);
+  const card = elements.create('card', {style});
 
   // Mount the Card Element on the page.
   card.mount('#card-element');
 
   // Monitor change events on the Card Element to display any errors.
-  card.addEventListener('change', ({error}) => {
+  card.on('change', ({error}) => {
     const cardErrors = document.getElementById('card-errors');
     if (error) {
       cardErrors.textContent = error.message;
       cardErrors.classList.add('visible');
     } else {
       cardErrors.classList.remove('visible');
+    }
+    // Re-enable the Pay button.
+    submitButton.disabled = false;
+  });
+
+  /**
+   * Implement a Stripe IBAN Element that matches the look-and-feel of the app.
+   *
+   * This makes it easy to collect bank account information.
+   */
+
+  // Create a IBAN Element and pass the right options for styles and supported countries.
+  const ibanOptions = {
+    style,
+    supportedCountries: ['SEPA'],
+  };
+  const iban = elements.create('iban', ibanOptions);
+
+  // Mount the IBAN Element on the page.
+  iban.mount('#iban-element');
+
+  // Monitor change events on the IBAN Element to display any errors.
+  iban.on('change', ({error}) => {
+    const ibanErrors = document.getElementById('iban-errors');
+    if (error) {
+      ibanErrors.textContent = error.message;
+      ibanErrors.classList.add('visible');
+    } else {
+      ibanErrors.classList.remove('visible');
     }
     // Re-enable the Pay button.
     submitButton.disabled = false;
@@ -180,7 +207,9 @@
       form.querySelector('label.zip span').innerText =
         country === 'US'
           ? 'ZIP'
-          : country === 'UK' ? 'Postcode' : 'Postal Code';
+          : country === 'UK'
+            ? 'Postcode'
+            : 'Postal Code';
       event.target.parentElement.className = `field ${country}`;
       showRelevantPaymentMethods(country);
     });

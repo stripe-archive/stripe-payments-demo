@@ -508,8 +508,9 @@ button:active {
   margin: 0 auto;
 }
 
-.payment-errors {
+.element-errors {
   display: inline-flex;
+  height: 20px;
   margin: 15px auto 0;
   padding-left: 20px;
   color: #e25950;
@@ -522,9 +523,13 @@ button:active {
   background-size: 15px 15px;
 }
 
-.payment-errors.visible {
+.element-errors.visible {
   opacity: 1;
   transform: none;
+}
+
+#iban-errors {
+  margin-top: -20px;
 }
 
 /* Order Summary */

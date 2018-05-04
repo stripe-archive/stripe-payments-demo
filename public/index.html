@@ -145,7 +145,7 @@
             <fieldset>
               <label>
                 <span>IBAN</span>
-                <input name="iban" class="field" placeholder="FR14 2004 1010 0505 0001 3M02 606" />
+                <div id="iban-element" class="field"></div>
               </label>
             </fieldset>
             <p class="notice">By providing your IBAN and confirming this payment, you’re authorizing Payments Demo and Stripe, our payment
@@ -165,7 +165,8 @@
         </section>
         <button type="submit">Pay</button>
       </form>
-      <div id="card-errors" class="payment-errors"></div>
+      <div id="card-errors" class="element-errors"></div>
+      <div id="iban-errors" class="element-errors"></div>
     </div>
     <div id="confirmation">
       <div class="status processing">
