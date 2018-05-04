@@ -103,5 +103,5 @@ Use this second URL in your browser to start the demo.
 
 ## Credits
 
-* Code: [Romain Huet](https://twitter.com/romainhuet) and [Thorsten Schaeff](https://twitter.com/schaeff_t)
+* Code: [Romain Huet](https://twitter.com/romainhuet) and [Thorsten Schaeff](https://twitter.com/thorwebdev)
 * Design: [Tatiana Van Campenhout](https://twitter.com/tatsvc)

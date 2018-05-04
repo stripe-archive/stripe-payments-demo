@@ -144,7 +144,7 @@
         store.getOrderItems(),
         event.payerEmail,
         {
-          name: event.payerName,
+          name: event.shippingAddress.recipient,
           address: {
             line1: event.shippingAddress.addressLine[0],
             city: event.shippingAddress.city,
