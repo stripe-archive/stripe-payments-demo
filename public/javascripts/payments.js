@@ -28,7 +28,9 @@
   const stripe = Stripe(config.stripePublishableKey);
 
   // Create an instance of Elements.
-  const elements = stripe.elements();
+  const stripeElements = stripe.elements();
+  // Create an object to hold references to the different Element instances.
+  let elements = {};
 
   // Prepare the styles for Elements.
   const style = {
@@ -56,13 +58,13 @@
    */
 
   // Create a Card Element and pass some custom styles to it.
-  const card = elements.create('card', {style});
+  elements.card = stripeElements.create('card', {style});
 
   // Mount the Card Element on the page.
-  card.mount('#card-element');
+  elements.card.mount('#card-element');
 
   // Monitor change events on the Card Element to display any errors.
-  card.on('change', ({error}) => {
+  elements.card.on('change', ({error}) => {
     const cardErrors = document.getElementById('card-errors');
     if (error) {
       cardErrors.textContent = error.message;
@@ -85,13 +87,13 @@
     style,
     supportedCountries: ['SEPA'],
   };
-  const iban = elements.create('iban', ibanOptions);
+  elements.sepa_debit = stripeElements.create('iban', ibanOptions);
 
   // Mount the IBAN Element on the page.
-  iban.mount('#iban-element');
+  elements.sepa_debit.mount('#iban-element');
 
   // Monitor change events on the IBAN Element to display any errors.
-  iban.on('change', ({error, bankName}) => {
+  elements.sepa_debit.on('change', ({error, bankName}) => {
     const ibanErrors = document.getElementById('iban-errors');
     if (error) {
       ibanErrors.textContent = error.message;
@@ -171,7 +173,7 @@
   });
 
   // Create the Payment Request Button.
-  const paymentRequestButton = elements.create('paymentRequestButton', {
+  const paymentRequestButton = stripeElements.create('paymentRequestButton', {
     paymentRequest,
   });
 
@@ -248,11 +250,20 @@
       shipping
     );
 
-    if (payment === 'card') {
+    if (elements[payment]) {
+      // Unmount any Element that isn't in use.
+      Object.keys(elements).forEach(elementKey => {
+        if (payment !== elementKey) {
+          elements[elementKey].unmount();
+        }
+      });
       // Create a Stripe source from the card information and the owner name.
-      const {source} = await stripe.createSource(card, {
+      const {source, error} = await stripe.createSource(elements[payment], {
+        type: payment,
+        currency: order.currency,
         owner: {
           name,
+          email,
         },
       });
       await handleOrder(order, source);
@@ -277,12 +288,6 @@
 
       // Add extra source information which are specific to a payment method.
       switch (payment) {
-        case 'sepa_debit':
-          // SEPA Debit: Pass the IBAN entered by the user.
-          sourceData.sepa_debit = {
-            iban: form.querySelector('input[name=iban]').value,
-          };
-          break;
         case 'sofort':
           // SOFORT: The country is required before redirecting to the bank.
           sourceData.sofort = {
