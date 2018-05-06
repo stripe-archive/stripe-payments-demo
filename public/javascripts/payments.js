@@ -91,13 +91,16 @@
   iban.mount('#iban-element');
 
   // Monitor change events on the IBAN Element to display any errors.
-  iban.on('change', ({error}) => {
+  iban.on('change', ({error, bankName}) => {
     const ibanErrors = document.getElementById('iban-errors');
     if (error) {
       ibanErrors.textContent = error.message;
       ibanErrors.classList.add('visible');
     } else {
       ibanErrors.classList.remove('visible');
+      if (bankName) {
+        updateButtonLabel('sepa_debit', bankName);
+      }
     }
     // Re-enable the Pay button.
     submitButton.disabled = false;
@@ -569,7 +572,7 @@
   };
 
   // Update the main button to reflect the payment method being selected.
-  const updateButtonLabel = paymentMethod => {
+  const updateButtonLabel = (paymentMethod, bankName) => {
     let amount = store.formatPrice(store.getOrderTotal(), config.currency);
     let name = paymentMethods[paymentMethod].name;
     let label = `Pay ${amount}`;
@@ -578,6 +581,9 @@
     }
     if (paymentMethod === 'wechat') {
       label = `Generate QR code to pay ${amount} with ${name}`;
+    }
+    if (paymentMethod === 'sepa_debit' && bankName) {
+      label = `Debit ${amount} from ${bankName}`;
     }
     submitButton.innerText = label;
   };
