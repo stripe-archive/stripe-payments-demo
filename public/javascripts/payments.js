@@ -91,13 +91,16 @@
   iban.mount('#iban-element');
 
   // Monitor change events on the IBAN Element to display any errors.
-  iban.on('change', ({error}) => {
+  iban.on('change', ({error, bankName}) => {
     const ibanErrors = document.getElementById('iban-errors');
     if (error) {
       ibanErrors.textContent = error.message;
       ibanErrors.classList.add('visible');
     } else {
       ibanErrors.classList.remove('visible');
+      if (bankName) {
+        updateButtonLabel('sepa_debit', bankName);
+      }
     }
     // Re-enable the Pay button.
     submitButton.disabled = false;
@@ -253,6 +256,23 @@
         },
       });
       await handleOrder(order, source);
+    } else if (payment === 'sepa_debit') {
+      // Create a SEPA Debit source from the IBAN information.
+      const sourceData = {
+        type: payment,
+        currency: order.currency,
+        owner: {
+          name,
+          email,
+        },
+        mandate: {
+          // Automatically send a mandate notification email to your customer
+          // once the source is charged.
+          notification_method: 'email',
+        },
+      };
+      const {source} = await stripe.createSource(iban, sourceData);
+      await handleOrder(order, source);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -274,12 +294,6 @@
 
       // Add extra source information which are specific to a payment method.
       switch (payment) {
-        case 'sepa_debit':
-          // SEPA Debit: Pass the IBAN entered by the user.
-          sourceData.sepa_debit = {
-            iban: form.querySelector('input[name=iban]').value,
-          };
-          break;
         case 'sofort':
           // SOFORT: The country is required before redirecting to the bank.
           sourceData.sofort = {
@@ -569,7 +583,7 @@
   };
 
   // Update the main button to reflect the payment method being selected.
-  const updateButtonLabel = paymentMethod => {
+  const updateButtonLabel = (paymentMethod, bankName) => {
     let amount = store.formatPrice(store.getOrderTotal(), config.currency);
     let name = paymentMethods[paymentMethod].name;
     let label = `Pay ${amount}`;
@@ -578,6 +592,9 @@
     }
     if (paymentMethod === 'wechat') {
       label = `Generate QR code to pay ${amount} with ${name}`;
+    }
+    if (paymentMethod === 'sepa_debit' && bankName) {
+      label = `Debit ${amount} from ${bankName}`;
     }
     submitButton.innerText = label;
   };
