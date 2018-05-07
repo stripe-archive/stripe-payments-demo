@@ -28,9 +28,7 @@
   const stripe = Stripe(config.stripePublishableKey);
 
   // Create an instance of Elements.
-  const stripeElements = stripe.elements();
-  // Create an object to hold references to the different Element instances.
-  let elements = {};
+  const elements = stripe.elements();
 
   // Prepare the styles for Elements.
   const style = {
@@ -58,13 +56,13 @@
    */
 
   // Create a Card Element and pass some custom styles to it.
-  elements.card = stripeElements.create('card', {style});
+  const card = elements.create('card', {style});
 
   // Mount the Card Element on the page.
-  elements.card.mount('#card-element');
+  card.mount('#card-element');
 
   // Monitor change events on the Card Element to display any errors.
-  elements.card.on('change', ({error}) => {
+  card.on('change', ({error}) => {
     const cardErrors = document.getElementById('card-errors');
     if (error) {
       cardErrors.textContent = error.message;
@@ -87,13 +85,13 @@
     style,
     supportedCountries: ['SEPA'],
   };
-  elements.sepa_debit = stripeElements.create('iban', ibanOptions);
+  const iban = elements.create('iban', ibanOptions);
 
   // Mount the IBAN Element on the page.
-  elements.sepa_debit.mount('#iban-element');
+  iban.mount('#iban-element');
 
   // Monitor change events on the IBAN Element to display any errors.
-  elements.sepa_debit.on('change', ({error, bankName}) => {
+  iban.on('change', ({error, bankName}) => {
     const ibanErrors = document.getElementById('iban-errors');
     if (error) {
       ibanErrors.textContent = error.message;
@@ -173,7 +171,7 @@
   });
 
   // Create the Payment Request Button.
-  const paymentRequestButton = stripeElements.create('paymentRequestButton', {
+  const paymentRequestButton = elements.create('paymentRequestButton', {
     paymentRequest,
   });
 
@@ -250,22 +248,30 @@
       shipping
     );
 
-    if (elements[payment]) {
-      // Unmount any Element that isn't in use.
-      Object.keys(elements).forEach(elementKey => {
-        if (payment !== elementKey) {
-          elements[elementKey].unmount();
-        }
-      });
+    if (payment === 'card') {
       // Create a Stripe source from the card information and the owner name.
-      const {source, error} = await stripe.createSource(elements[payment], {
+      const {source} = await stripe.createSource(card, {
+        owner: {
+          name,
+        },
+      });
+      await handleOrder(order, source);
+    } else if (payment === 'sepa_debit') {
+      // Create a SEPA Debit source from the IBAN information.
+      const sourceData = {
         type: payment,
         currency: order.currency,
         owner: {
           name,
           email,
         },
-      });
+        mandate: {
+          // Automatically send a mandate notification email to your customer
+          // once the source is charged.
+          notification_method: 'email',
+        },
+      };
+      const {source} = await stripe.createSource(iban, sourceData);
       await handleOrder(order, source);
     } else {
       // Prepare all the Stripe source common data.

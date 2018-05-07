@@ -64,7 +64,7 @@ router.post('/orders/:id/pay', async (req, res, next) => {
       source = await dynamic3DS(source, order, req);
     }
     // Demo: In test mode, replace the source with a test token so charges can work.
-    if (!source.livemode) {
+    if (source.type === 'card' && !source.livemode) {
       source.id = 'tok_visa';
     }
     // Pay the order using the Stripe source.
