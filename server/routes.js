@@ -23,13 +23,11 @@ router.get('/', (req, res) => {
 });
 
 /**
- * Stripe integration to accept all types of payments with 3 POST endpoints:
+ * Stripe integration to accept all types of payments with 3 POST endpoints.
  *
  * 1. POST endpoint to create orders with all user information.
- *
  * 2. POST endpoint to complete a payment immediately when a card is used.
- * For payments using Elements, Payment Request, Apple Pay, or Pay with Google.
- *
+ * For payments using Elements, Payment Request, Apple Pay, Google Pay, Microsoft Pay.
  * 3. POST endpoint to be set as a webhook endpoint on your Stripe account.
  * It creates a charge as soon as a non-card payment source becomes chargeable.
  */

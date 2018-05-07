@@ -110,7 +110,7 @@
    * Implement a Stripe Payment Request Button Element.
    *
    * This automatically supports the Payment Request API (already live on Chrome),
-   * as well as Apple Pay on the Web on Safari.
+   * as well as Apple Pay on the Web on Safari, Google Pay, and Microsoft Pay.
    * When of these two options is available, this element adds a “Pay” button on top
    * of the page to let users pay in just a click (or a tap on mobile).
    */
@@ -194,7 +194,8 @@
    * alongside it, or creates a Source and start a redirect to complete the purchase.
    *
    * Please note this form is not submitted when the user chooses the "Pay" button
-   * or Apple Pay since they provide name and shipping information directly.
+   * or Apple Pay, Google Pay, and Microsoft Pay since they provide name and
+   * shipping information directly.
    */
 
   // Listen to changes to the user-selected country.
