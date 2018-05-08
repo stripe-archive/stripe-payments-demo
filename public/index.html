@@ -162,7 +162,7 @@
             <fieldset>
               <label>
                 <span>IBAN</span>
-                <input name="iban" class="field" placeholder="FR14 2004 1010 0505 0001 3M02 606" />
+                <div id="iban-element" class="field"></div>
               </label>
             </fieldset>
             <p class="notice">By providing your IBAN and confirming this payment, you’re authorizing Payments Demo and Stripe, our payment
@@ -182,7 +182,8 @@
         </section>
         <button type="submit">Pay</button>
       </form>
-      <div id="card-errors" class="payment-errors"></div>
+      <div id="card-errors" class="element-errors"></div>
+      <div id="iban-errors" class="element-errors"></div>
     </div>
     <div id="confirmation">
       <div class="status processing">
@@ -192,10 +193,8 @@
       </div>
       <div class="status success">
         <h1>Thanks for your order!</h1>
-        <p>Yay! You successfully ordered support from IT Solver.</p>
-        <p class="note">We just sent your receipt to your email address, and Angus will call shortly.</p>
-        <button type="submit">Pay A$180.00</button>
-        <p class="schedule"><a href="https://calendly.com/itsolver/on-demand-support">Schedule in an appointment now</a>.</p>
+        <p>Woot! You successfully made a payment with Stripe.</p>
+        <p class="note">We just sent your receipt to your email address, and your items will be on their way shortly.</p>
       </div>
       <div class="status receiver">
         <h1>Thanks! One last step!</h1>
