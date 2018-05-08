@@ -147,12 +147,7 @@ class Store {
     let currency;
     // Build and append the line items to the order summary.
     for (let [id, product] of Object.entries(this.products)) {
-      const randomQuantity = (min, max) => {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      };
-      const quantity = randomQuantity(1, 3);
+      const quantity = 1;
       let sku = product.skus.data[0];
       let skuPrice = this.formatPrice(sku.price, sku.currency);
       let lineItemPrice = this.formatPrice(sku.price * quantity, sku.currency);

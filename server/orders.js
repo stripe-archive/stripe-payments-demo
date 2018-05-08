@@ -38,7 +38,7 @@ const updateOrder = async (orderId, properties) => {
 
 // List all products.
 const listProducts = async () => {
-  return await stripe.products.list({limit: 3});
+  return await stripe.products.list({limit: 1});
 };
 
 // Retrieve a product by ID.
@@ -48,11 +48,11 @@ const retrieveProduct = async productId => {
 
 // Validate that products exist.
 const checkProducts = productList => {
-  const validProducts = ['increment', 'shirt', 'pins'];
+  const validProducts = ['support-on-demand'];
   return productList.data.reduce((accumulator, currentValue) => {
     return (
       accumulator &&
-      productList.data.length === 3 &&
+      productList.data.length === 1 &&
       validProducts.includes(currentValue.id)
     );
   }, !!productList.data.length);

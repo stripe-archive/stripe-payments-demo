@@ -25,51 +25,20 @@ module.exports = {
         try {
           // Increment Magazine.
           const increment = await stripe.products.create({
-            id: 'increment',
+            id: 'support-on-demand',
             type: 'good',
-            name: 'Increment Magazine',
-            attributes: ['issue'],
+            name: 'Support On-Demand',
+            attributes: ['unit'],
           });
           await stripe.skus.create({
-            id: 'increment-03',
-            product: 'increment',
-            attributes: {issue: 'Issue #3 “Development”'},
-            price: 399,
+            id: 'support-on-demand-request',
+            product: 'support-on-demand',
+            attributes: {unit: 'Pay Per Request'},
+            price: 18000,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
 
-          // Stripe Shirt.
-          const shirt = await stripe.products.create({
-            id: 'shirt',
-            type: 'good',
-            name: 'Stripe Shirt',
-            attributes: ['size', 'gender'],
-          });
-          await stripe.skus.create({
-            id: 'shirt-small-woman',
-            product: 'shirt',
-            attributes: {size: 'Small Standard', gender: 'Woman'},
-            price: 999,
-            currency: config.currency,
-            inventory: {type: 'infinite'},
-          });
-
-          // Stripe Pins.
-          const pins = await stripe.products.create({
-            id: 'pins',
-            type: 'good',
-            name: 'Stripe Pins',
-            attributes: ['set'],
-          });
-          await stripe.skus.create({
-            id: 'pins-collector',
-            product: 'pins',
-            attributes: {set: 'Collector Set'},
-            price: 799,
-            currency: config.currency,
-            inventory: {type: 'finite', quantity: 500},
-          });
           console.log('Setup complete.');
           resolve();
           this.running = false;
