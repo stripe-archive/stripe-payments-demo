@@ -9,7 +9,7 @@
 
 'use strict';
 
-const config = require('../config');
+const config = require('./config');
 const stripe = require('stripe')(config.stripe.secretKey);
 stripe.setApiVersion(config.stripe.apiVersion);
 

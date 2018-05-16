@@ -24,7 +24,7 @@ module.exports = {
   // You can fill them in your own `.env` file.
   stripe: {
     // The two-letter country code of your Stripe account (required for Payment Request).
-    country: 'US',
+    country: process.env.STRIPE_ACCOUNT_COUNTRY || 'US',
     // API version to set for this app (Stripe otherwise uses your default account version).
     apiVersion: '2018-02-06',
     // Use your test keys for development and live keys for real charges in production.

@@ -28,10 +28,12 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 
 ## Payments Integration
 
+The frontend code for the demo is in the `public/` directory.
+
 The core logic of the Stripe integration is mostly contained within two files:
 
 1.  [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
-2.  [`server/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
+2.  [`server/node/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
 
 ### Card Payments with Stripe Elements
 
@@ -55,7 +57,11 @@ The [Sources API](https://stripe.com/docs/sources) provides a single integration
 
 ![Stripe Payment Settings](public/images/screenshots/stripe-payments-settings.png)
 
-## Requirements
+## Getting Started with Node
+
+There are a couple server implementations in the [`server`](/server) directory. Instructions for running the Node.js server in [`server/node`](/server/node) are below, but if you’re more comfortable with Python you can find a README explaining how to run a Flask server in the [`server/python`](/server/python) directory. Both servers have the same endpoints to handle requests from the frontend and interact with the [Stripe libraries](https://stripe.com/docs/libraries).
+
+### Requirements
 
 You’ll need the following:
 
@@ -67,13 +73,13 @@ In your Stripe Dashboard, you can [enable the payment methods](https://dashboard
 
 Some payment methods require receiving a real-time webhook notification to complete a charge. This demo is bundled with [ngrok](https://ngrok.com/), which allows us to securely receive webhooks and serve the app locally via HTTPS, which is also required to complete transactions in the browser with Elements or the Payment Request API.
 
-## Getting Started
+### Running the Node Server
 
-Copy the environment variables file:
+Copy the environment variables file from the root of the repository:
 
     cp .env.example .env
 
-Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`config.js`](config.js), where you can review and edit other options such as the app currency and your Stripe account country.
+Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`server/node/config.js`](/server/node/config.js), where you can review and edit other options such as the app currency and your Stripe account country.
 
 Install dependencies using npm:
 
