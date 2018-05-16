@@ -11,7 +11,7 @@
 
 const config = require('../config');
 const setup = require('./setup');
-const {orders, products} = require('./orders');
+const {orders, products} = require('./inventory');
 const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(config.stripe.secretKey);
