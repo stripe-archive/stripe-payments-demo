@@ -40,6 +40,7 @@
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
       fontSmoothing: 'antialiased',
       fontSize: '15px',
+      padding: '10px 15px',
       '::placeholder': {
         color: '#aab7c4',
       },
@@ -105,6 +106,18 @@
     // Re-enable the Pay button.
     submitButton.disabled = false;
   });
+
+  /**
+   * Add an iDEAL Bank selection Element that matches the look-and-feel of the app.
+   *
+   * This allows you to send the customer directly to their iDEAL enabled bank.
+   */
+
+  // Create a iDEAL Bank Element and pass the style options.
+  const idealBank = elements.create('idealBank', {style});
+
+  // Mount the iDEAL Bank Element on the page.
+  idealBank.mount('#ideal-bank-element');
 
   /**
    * Implement a Stripe Payment Request Button Element.
@@ -295,6 +308,15 @@
 
       // Add extra source information which are specific to a payment method.
       switch (payment) {
+        case 'ideal':
+          // iDEAL: Add the selected Bank from the iDEAL Bank Element.
+          const {source, error} = await stripe.createSource(
+            idealBank,
+            sourceData
+          );
+          await handleOrder(order, source, error);
+          return;
+          break;
         case 'sofort':
           // SOFORT: The country is required before redirecting to the bank.
           sourceData.sofort = {
@@ -625,6 +647,7 @@
     // Check the first payment option again.
     paymentInputs[0].checked = 'checked';
     form.querySelector('.payment-info.card').classList.add('visible');
+    form.querySelector('.payment-info.ideal').classList.remove('visible');
     form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
     form.querySelector('.payment-info.redirect').classList.remove('visible');
@@ -645,6 +668,9 @@
       form
         .querySelector('.payment-info.card')
         .classList.toggle('visible', payment === 'card');
+      form
+        .querySelector('.payment-info.ideal')
+        .classList.toggle('visible', payment === 'ideal');
       form
         .querySelector('.payment-info.sepa_debit')
         .classList.toggle('visible', payment === 'sepa_debit');

@@ -138,7 +138,6 @@ fieldset {
     0 4px 6px 0 rgba(112, 157, 199, 0.15);
   border-radius: 4px;
   border: none;
-  overflow: hidden;
   font-size: 0;
 }
 
@@ -283,6 +282,10 @@ select:-webkit-autofill {
 
 #card-element {
   margin-top: -1px;
+}
+
+#ideal-bank-element {
+  padding: 0;
 }
 
 button {
