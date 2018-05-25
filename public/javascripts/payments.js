@@ -33,7 +33,6 @@
   // Prepare the styles for Elements.
   const style = {
     base: {
-      padding: '10px 12px',
       iconColor: '#666ee8',
       color: '#31325f',
       fontWeight: 400,
@@ -41,6 +40,7 @@
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
       fontSmoothing: 'antialiased',
       fontSize: '15px',
+      padding: '10px 15px',
       '::placeholder': {
         color: '#aab7c4',
       },

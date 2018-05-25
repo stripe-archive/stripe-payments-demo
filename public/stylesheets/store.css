@@ -284,6 +284,10 @@ select:-webkit-autofill {
   margin-top: -1px;
 }
 
+#ideal-bank-element {
+  padding: 0;
+}
+
 button {
   display: block;
   background: #666ee8;
