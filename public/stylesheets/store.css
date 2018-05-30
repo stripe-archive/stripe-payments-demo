@@ -491,6 +491,10 @@ button:active {
   margin-bottom: 15px;
 }
 
+.payment-info.ideal {
+  margin-bottom: 0;
+}
+
 #payment-methods.visible,
 .payment-info.visible {
   display: block;

@@ -40,7 +40,6 @@
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
       fontSmoothing: 'antialiased',
       fontSize: '15px',
-      padding: '10px 15px',
       '::placeholder': {
         color: '#aab7c4',
       },
@@ -113,8 +112,10 @@
    * This allows you to send the customer directly to their iDEAL enabled bank.
    */
 
-  // Create a iDEAL Bank Element and pass the style options.
-  const idealBank = elements.create('idealBank', {style});
+  // Create a iDEAL Bank Element and pass the style options, along with an extra `padding` property.
+  const idealBank = elements.create('idealBank', {
+    style: {base: {...style.base, padding: '10px 15px'}},
+  });
 
   // Mount the iDEAL Bank Element on the page.
   idealBank.mount('#ideal-bank-element');
