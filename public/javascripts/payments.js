@@ -114,7 +114,7 @@
 
   // Create a iDEAL Bank Element and pass the style options, along with an extra `padding` property.
   const idealBank = elements.create('idealBank', {
-    style: {base: {...style.base, padding: '10px 15px'}},
+    style: {base: Object.assign({padding: '10px 15px'}, style.base)},
   });
 
   // Mount the iDEAL Bank Element on the page.
