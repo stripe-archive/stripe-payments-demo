@@ -1,4 +1,10 @@
-# Configuration for a flexible environment on Google Cloud Platform.
+# Configuration for Node in App Engine standard on Google Cloud Platform.
 
-runtime: nodejs
-env: flex
+runtime: nodejs8
+instance_class: F1
+
+handlers:
+- url: /.*
+  secure: always
+  redirect_http_response_code: 301
+  script: auto
