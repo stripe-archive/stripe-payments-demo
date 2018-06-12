@@ -228,7 +228,7 @@
         card
       );
       if (error) {
-        await handleOrder(null, null, error);
+        await handleOrder({metadata: {status: 'failed'}}, null, error);
       } else {
         await handleOrder({metadata: {status: 'paid'}}, null, null);
       }
