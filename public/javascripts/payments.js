@@ -736,7 +736,9 @@
   let country = config.country;
   // Override it if a valid country is passed as a URL parameter.
   var urlParams = new URLSearchParams(window.location.search);
-  let countryParam = urlParams.get('country').toUpperCase();
+  let countryParam = urlParams.get('country')
+    ? urlParams.get('country').toUpperCase()
+    : config.country;
   if (form.querySelector(`option[value="${countryParam}"]`)) {
     country = countryParam;
   }
