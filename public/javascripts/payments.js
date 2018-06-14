@@ -217,19 +217,7 @@
     .querySelector('select[name=country]')
     .addEventListener('change', event => {
       event.preventDefault();
-      const country = event.target.value;
-      const zipLabel = form.querySelector('label.zip');
-      // Only show the state input for the United States.
-      zipLabel.parentElement.classList.toggle('with-state', country === 'US');
-      // Update the ZIP label to make it more relevant for each country.
-      form.querySelector('label.zip span').innerText =
-        country === 'US'
-          ? 'ZIP'
-          : country === 'UK'
-            ? 'Postcode'
-            : 'Postal Code';
-      event.target.parentElement.className = `field ${country}`;
-      showRelevantPaymentMethods(country);
+      selectCountry(event.target.value);
     });
 
   // Submit handler for our payment form.
@@ -653,6 +641,29 @@
     submitButton.innerText = label;
   };
 
+  const selectCountry = country => {
+    const selector = document.getElementById('country');
+    selector.querySelector(`option[value=${country}]`).selected = 'selected';
+    selector.className = `field ${country}`;
+
+    // Trigger the methods to show relevant fields and payment methods on page load.
+    showRelevantFormFields();
+    showRelevantPaymentMethods();
+  };
+
+  // Show only form fields that are relevant to the selected country.
+  const showRelevantFormFields = country => {
+    if (!country) {
+      country = form.querySelector('select[name=country] option:checked').value;
+    }
+    const zipLabel = form.querySelector('label.zip');
+    // Only show the state input for the United States.
+    zipLabel.parentElement.classList.toggle('with-state', country === 'US');
+    // Update the ZIP label to make it more relevant for each country.
+    form.querySelector('label.zip span').innerText =
+      country === 'US' ? 'ZIP' : country === 'UK' ? 'Postcode' : 'Postal Code';
+  };
+
   // Show only the payment methods that are relevant to the selected country.
   const showRelevantPaymentMethods = country => {
     if (!country) {
@@ -722,11 +733,12 @@
   }
 
   // Select the default country from the config on page load.
-  const countrySelector = document.getElementById('country');
-  countrySelector.querySelector(`option[value=${config.country}]`).selected =
-    'selected';
-  countrySelector.className = `field ${config.country}`;
-
-  // Trigger the method to show relevant payment methods on page load.
-  showRelevantPaymentMethods();
+  let country = config.country;
+  // Override it if a valid country is passed as a URL parameter.
+  var urlParams = new URLSearchParams(window.location.search);
+  let countryParam = urlParams.get('country').toUpperCase();
+  if (form.querySelector(`option[value="${countryParam}"]`)) {
+    country = countryParam;
+  }
+  selectCountry(country);
 })();
