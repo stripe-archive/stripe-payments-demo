@@ -597,7 +597,7 @@
     sepa_debit: {
       name: 'SEPA Direct Debit',
       flow: 'none',
-      countries: ['FR', 'DE', 'ES', 'BE', 'NL', 'LU', 'IT', 'PT', 'AT', 'IE'],
+      countries: ['FR', 'DE', 'ES', 'BE', 'NL', 'LU', 'IT', 'PT', 'AT', 'IE', 'FI'],
       currencies: ['eur'],
     },
     sofort: {
