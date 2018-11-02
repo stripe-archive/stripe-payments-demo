@@ -1,6 +1,7 @@
 /**
  * config.js
- * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
+ * Stripe Payments Demo. Created by Romain Huet (@romainhuet)
+ * and Thorsten Schaeff (@thorwebdev).
  */
 
 'use strict';

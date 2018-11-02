@@ -1,6 +1,7 @@
 /**
  * routes.js
- * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
+ * Stripe Payments Demo. Created by Romain Huet (@romainhuet)
+ * and Thorsten Schaeff (@thorwebdev).
  *
  * This file defines all the endpoints for this demo app. The two most interesting
  * endpoints for a Stripe integration are marked as such at the beginning of the file.
@@ -11,7 +12,7 @@
 
 const config = require('./config');
 const setup = require('./setup');
-const {orders, products} = require('./inventory');
+const {products} = require('./inventory');
 const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(config.stripe.secretKey);
@@ -25,70 +26,37 @@ router.get('/', (req, res) => {
 /**
  * Stripe integration to accept all types of payments with 3 POST endpoints.
  *
- * 1. POST endpoint to create orders with all user information.
- * 2. POST endpoint to complete a payment immediately when a card is used.
- * For payments using Elements, Payment Request, Apple Pay, Google Pay, Microsoft Pay.
+ * 1. POST endpoint to create a PaymentIntent.
+ * 2. For payments using Elements, Payment Request, Apple Pay, Google Pay, Microsoft Pay
+ * the PaymentIntent is confirmed automatically with Stripe.js on the client-side.
  * 3. POST endpoint to be set as a webhook endpoint on your Stripe account.
- * It creates a charge as soon as a non-card payment source becomes chargeable.
+ * It confirms the PaymentIntent as soon as a non-card payment source becomes chargeable.
  */
 
-// Create an order on the backend.
-router.post('/orders', async (req, res, next) => {
-  let {currency, items, email, shipping, createIntent} = req.body;
-  try {
-    let order = await orders.create(currency, items, email, shipping, createIntent);
-    return res.status(200).json({order});
-  } catch (err) {
-    return res.status(500).json({error: err.message});
-  }
-});
+// Calculate total payment amount based on items in basket.
+const calculatePaymentAmount = async items => {
+  const products = await stripe.products.list({limit: 3, type: 'good'});
+  const skus = products.data.reduce((a, c) => [...a, ...c.skus.data], []);
+  const total = items.reduce((a, c) => {
+    const sku = skus.filter(sku => sku.id === c.parent)[0];
+    return a + sku.price * c.quantity;
+  }, 0);
+  return total;
+};
 
-// Complete payment for an order using a source.
-router.post('/orders/:id/pay', async (req, res, next) => {
-  let {source} = req.body;
+// Create the PaymentIntent on the backend.
+router.post('/payment_intents', async (req, res, next) => {
+  let {currency, items} = req.body;
+  const amount = await calculatePaymentAmount(items);
+
   try {
-    // Retrieve the order associated to the ID.
-    let order = await orders.retrieve(req.params.id);
-    // Verify that this order actually needs to be paid.
-    if (
-      order.metadata.status === 'pending' ||
-      order.metadata.status === 'paid'
-    ) {
-      return res.status(403).json({order, source});
-    }
-    // Pay the order using the Stripe source.
-    if (source && source.status === 'chargeable') {
-      let charge, status;
-      try {
-        charge = await stripe.charges.create(
-          {
-            source: source.id,
-            amount: order.amount,
-            currency: order.currency,
-            receipt_email: order.email,
-          },
-          {
-            // Set a unique idempotency key based on the order ID.
-            // This is to avoid any race conditions with your webhook handler.
-            idempotency_key: order.id,
-          }
-        );
-      } catch (err) {
-        // This is where you handle declines and errors.
-        // For the demo we simply set to failed.
-        status = 'failed';
-      }
-      if (charge && charge.status === 'succeeded') {
-        status = 'paid';
-      } else if (charge) {
-        status = charge.status;
-      } else {
-        status = 'failed';
-      }
-      // Update the order with the charge status.
-      order = await orders.update(order.id, {metadata: {status}});
-    }
-    return res.status(200).json({order, source});
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      allowed_source_types: ['card', 'ideal', 'sepa_debit'], // TODO config
+      return_url: req.headers.origin,
+    });
+    return res.status(200).json({paymentIntent});
   } catch (err) {
     return res.status(500).json({error: err.message});
   }
@@ -124,21 +92,26 @@ router.post('/webhook', async (req, res) => {
   }
   const object = data.object;
 
-  // PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents 
+  // PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents
   // Monitor payment_intent.succeeded & payment_intent.payment_failed events.
-  if (
-    object.object === 'payment_intent' &&
-    object.metadata.order
-  ) {
+  if (object.object === 'payment_intent' && object.metadata.order) {
     const paymentIntent = object;
     // Find the corresponding order this source is for by looking in its metadata.
     const order = await orders.retrieve(paymentIntent.metadata.order);
     if (eventType === 'payment_intent.succeeded') {
-      console.log(`🔔  Webhook received! Payment for PaymentIntent ${paymentIntent.id} succeeded.`);
+      console.log(
+        `🔔  Webhook received! Payment for PaymentIntent ${
+          paymentIntent.id
+        } succeeded.`
+      );
       // Update the order status to mark it as paid.
       await orders.update(order.id, {metadata: {status: 'paid'}});
     } else if (eventType === 'payment_intent.payment_failed') {
-      console.log(`🔔  Webhook received! Payment on source ${paymentIntent.last_payment_error.source.id} for PaymentIntent ${paymentIntent.id} failed.`);
+      console.log(
+        `🔔  Webhook received! Payment on source ${
+          paymentIntent.last_payment_error.source.id
+        } for PaymentIntent ${paymentIntent.id} failed.`
+      );
       // Note: you can use the existing PaymentIntent to prompt your customer to try again by attaching a newly created source:
       // https://stripe.com/docs/payments/payment-intents#lifecycle
     }
@@ -148,96 +121,30 @@ router.post('/webhook', async (req, res) => {
   if (
     object.object === 'source' &&
     object.status === 'chargeable' &&
-    object.metadata.order
+    object.metadata.paymentIntent
   ) {
     const source = object;
     console.log(`🔔  Webhook received! The source ${source.id} is chargeable.`);
-    // Find the corresponding order this source is for by looking in its metadata.
-    const order = await orders.retrieve(source.metadata.order);
-    // Verify that this order actually needs to be paid.
-    if (
-      order.metadata.status === 'pending' ||
-      order.metadata.status === 'paid' ||
-      order.metadata.status === 'failed'
-    ) {
+    // Find the corresponding PaymentIntent this source is for by looking in its metadata.
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      source.metadata.paymentIntent
+    );
+    // Check whether this PaymentIntent requires a source.
+    if (paymentIntent.status != 'requires_source') {
       return res.sendStatus(403);
     }
-
-    // Note: We're setting an idempotency key below on the charge creation to
-    // prevent any race conditions. It's set to the order ID, which protects us from
-    // 2 different sources becoming `chargeable` simultaneously for the same order ID.
-    // Depending on your use cases and your idempotency keys, you might need an extra
-    // lock surrounding your webhook code to prevent other race conditions.
-    // Read more on Stripe's best practices here for asynchronous charge creation:
-    // https://stripe.com/docs/sources/best-practices#charge-creation
-
-    // Pay the order using the source we just received.
-    let charge, status;
-    try {
-      charge = await stripe.charges.create(
-        {
-          source: source.id,
-          amount: order.amount,
-          currency: order.currency,
-          receipt_email: order.email,
-        },
-        {
-          // Set a unique idempotency key based on the order ID.
-          // This is to avoid any race conditions with your webhook handler.
-          idempotency_key: order.id,
-        }
-      );
-    } catch (err) {
-      // This is where you handle declines and errors.
-      // For the demo, we simply set the status to mark the order as failed.
-      status = 'failed';
-    }
-    if (charge && charge.status === 'succeeded') {
-      status = 'paid';
-    } else if (charge) {
-      status = charge.status;
-    } else {
-      status = 'failed';
-    }
-    // Update the order status based on the charge status.
-    await orders.update(order.id, {metadata: {status}});
+    // Confirm the PaymentIntent with the chargeable source.
+    await stripe.paymentIntents.confirm(paymentIntent.id, {source: source.id});
   }
 
-  // Monitor `charge.succeeded` events.
-  if (
-    object.object === 'charge' &&
-    object.status === 'succeeded' &&
-    object.source.metadata.order
-  ) {
-    const charge = object;
-    console.log(`🔔  Webhook received! The charge ${charge.id} succeeded.`);
-    // Find the corresponding order this source is for by looking in its metadata.
-    const order = await orders.retrieve(charge.source.metadata.order);
-    // Update the order status to mark it as paid.
-    await orders.update(order.id, {metadata: {status: 'paid'}});
-  }
-
-  // Monitor `source.failed`, `source.canceled`, and `charge.failed` events.
-  if (
-    (object.object === 'source' || object.object === 'charge') &&
-    (object.status === 'failed' || object.status === 'canceled')
-  ) {
-    const source = object.source ? object.source : object;
-    console.log(`🔔  Webhook received! Failure for ${object.id}.`);
-    if (source.metadata.order) {
-      // Find the corresponding order this source is for by looking in its metadata.
-      const order = await orders.retrieve(source.metadata.order);
-      // Update the order status to mark it as failed.
-      await orders.update(order.id, {metadata: {status: 'failed'}});
-    }
-  }
+  // TODO Monitor `source.failed`, `source.canceled`, and `PI.?` events.
 
   // Return a 200 success code to Stripe.
   res.sendStatus(200);
 });
 
 /**
- * Routes exposing the config as well as the ability to retrieve products and orders.
+ * Routes exposing the config as well as the ability to retrieve products.
  */
 
 // Expose the Stripe publishable key and other pieces of config via an endpoint.
@@ -248,15 +155,6 @@ router.get('/config', (req, res) => {
     country: config.country,
     currency: config.currency,
   });
-});
-
-// Retrieve an order.
-router.get('/orders/:id', async (req, res) => {
-  try {
-    return res.status(200).json(await orders.retrieve(req.params.id));
-  } catch (err) {
-    return res.sendStatus(404);
-  }
 });
 
 // Retrieve all products.
