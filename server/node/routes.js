@@ -53,8 +53,8 @@ router.post('/payment_intents', async (req, res, next) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      allowed_source_types: ['card', 'ideal', 'sepa_debit'], // TODO config
-      return_url: req.headers.origin,
+      allowed_source_types: ['card'], // TODO config & gating
+      //return_url: req.headers.origin,
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {
