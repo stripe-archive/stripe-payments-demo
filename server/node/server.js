@@ -1,6 +1,7 @@
 /**
  * server.js
- * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
+ * Stripe Payments Demo. Created by Romain Huet (@romainhuet)
+ * and Thorsten Schaeff (@thorwebdev).
  *
  * This is the main file starting the Express server for the demo and enabling ngrok.
  */
