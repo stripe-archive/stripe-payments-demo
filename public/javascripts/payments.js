@@ -1,6 +1,7 @@
 /**
  * payments.js
- * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
+ * Stripe Payments Demo. Created by Romain Huet (@romainhuet)
+ * and Thorsten Schaeff (@thorwebdev).
  *
  * This modern JavaScript file handles the checkout process using Stripe.
  *
@@ -20,15 +21,17 @@
   const form = document.getElementById('payment-form');
   const submitButton = form.querySelector('button[type=submit]');
 
+  // Global variable to store the PaymentIntent object.
+  let paymentIntent;
+
   /**
    * Setup Stripe Elements.
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(
-    config.stripePublishableKey,
-    {betas: ['payment_intent_beta_3']},
-  );
+  const stripe = Stripe(config.stripePublishableKey, {
+    betas: ['payment_intent_beta_3'],
+  });
 
   // Create an instance of Elements.
   const elements = stripe.elements();
@@ -132,7 +135,7 @@
    * of the page to let users pay in just a click (or a tap on mobile).
    */
 
-  // Make sure all data is loaded from the store to compute the order amount.
+  // Make sure all data is loaded from the store to compute the payment amount.
   await store.loadProducts();
 
   // Create the payment request.
@@ -141,7 +144,7 @@
     currency: config.currency,
     total: {
       label: 'Total',
-      amount: store.getOrderTotal(),
+      amount: store.getPaymentTotal(),
     },
     requestShipping: true,
     requestPayerEmail: true,
@@ -158,51 +161,14 @@
   // Callback when a source is created.
   paymentRequest.on('source', async event => {
     try {
-      // Create the order using the email and shipping information from the Payment Request callback.
-      const order = await store.createOrder(
-        config.currency,
-        store.getOrderItems(),
-        event.payerEmail,
-        {
-          name: event.shippingAddress.recipient,
-          address: {
-            line1: event.shippingAddress.addressLine[0],
-            city: event.shippingAddress.city,
-            country: event.shippingAddress.country,
-            postal_code: event.shippingAddress.postalCode,
-            state: event.shippingAddress.region,
-          },
-        },
-        true,
-      );
-      // Confirm the PaymentIntent with the source returned on the event.
-      const {paymentIntent, error} = await stripe.confirmPaymentIntent(
-        order.paymentIntent.client_secret,
+      const paymentResponse = await stripe.handleCardPayment(
+        paymentIntent.client_secret,
         {
           source: event.source.id,
-          use_stripe_sdk: true,
         }
       );
-      if (error) {
-        event.complete('fail');
-        await handleOrder({metadata: {status: 'failed'}}, null, error);
-      } else {
-        event.complete('success');
-        if (paymentIntent.status === 'succeeded') {
-          // No authentication required, show success message.
-          await handleOrder({metadata: {status: 'paid'}}, null, null);
-        } else if (paymentIntent.status === 'requires_source_action') {
-          // We need to perform authentication.
-          const {error: handleError} = await stripe.handleCardPayment(order.paymentIntent.client_secret);
-            if (handleError) {
-              // 3D Secure authentication failed.
-              await handleOrder({metadata: {status: 'failed'}}, null, error);
-            } else {
-              // 3D Secure authentication successful.
-              await handleOrder({metadata: {status: 'paid'}}, null, null);
-            }
-        }
-      }
+      handlePayment(paymentResponse);
+      event.complete('success');
     } catch (error) {
       event.complete('fail');
     }
@@ -233,8 +199,8 @@
   /**
    * Handle the form submission.
    *
-   * This creates an order and either sends the card information from the Element
-   * alongside it, or creates a Source and start a redirect to complete the purchase.
+   * This uses Stripe.js to confirm the PaymentIntent using payment details collected
+   * with Elements.
    *
    * Please note this form is not submitted when the user chooses the "Pay" button
    * or Apple Pay, Google Pay, and Microsoft Pay since they provide name and
@@ -273,62 +239,45 @@
     submitButton.disabled = true;
     submitButton.textContent = 'Processing Payment…';
 
-    // Create the order using the email and shipping information from the form.
-    // For Demo purposes we only create an order / a PaymentIntent on form submit.
-    // In a real application you should create this before entering the checkout, see
-    // https://stripe.com/docs/payments/payment-intents
-    const usesPaymentIntent = payment === 'card';
-    // Note: PaymentIntents Beta currently only support card sources to enable dynamic authentication:
-    // https://stripe.com/docs/payments/dynamic-3ds
-    const order = await store.createOrder(
-      config.currency,
-      store.getOrderItems(),
-      email,
-      shipping,
-      usesPaymentIntent,
-    );
-
-    if (usesPaymentIntent) {
-      // Let Stripe handle source activation
-      const {paymentIntent, error} = await stripe
-      .handleCardPayment(order.paymentIntent.client_secret, card, {
-        source_data: {
-          owner: {
-            name,
+    if (payment === 'card') {
+      // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
+      const response = await stripe.handleCardPayment(
+        paymentIntent.client_secret,
+        card,
+        {
+          source_data: {
+            owner: {
+              name,
+            },
           },
-        },
-      });
-      if (error) {
-        await handleOrder({metadata: {status: 'failed'}}, null, error);
-      } else if (paymentIntent.status === 'succeeded') {
-        await handleOrder({metadata: {status: 'paid'}}, null, null);
-      }
+        }
+      );
+      handlePayment(response);
     } else if (payment === 'sepa_debit') {
-      // Create a SEPA Debit source from the IBAN information.
-      const sourceData = {
-        type: payment,
-        currency: order.currency,
-        owner: {
-          name,
-          email,
-        },
-        mandate: {
-          // Automatically send a mandate notification email to your customer
-          // once the source is charged.
-          notification_method: 'email',
-        },
-        metadata: {
-          order: order.id,
-        },
-      };
-      const {source} = await stripe.createSource(iban, sourceData);
-      await handleOrder(order, source);
+      const response = await stripe.handleSepaDebitPayment(
+        paymentIntent.client_secret,
+        iban,
+        {
+          source_data: {
+            owner: {
+              name,
+              email,
+            },
+            mandate: {
+              // Automatically send a mandate notification email to your customer
+              // once the source is charged.
+              notification_method: 'email',
+            },
+          },
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
         type: payment,
-        amount: order.amount,
-        currency: order.currency,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
         owner: {
           name,
           email,
@@ -338,7 +287,7 @@
         },
         statement_descriptor: 'Stripe Payments Demo',
         metadata: {
-          order: order.id,
+          paymentIntent: paymentIntent.id,
         },
       };
 
@@ -346,11 +295,8 @@
       switch (payment) {
         case 'ideal':
           // iDEAL: Add the selected Bank from the iDEAL Bank Element.
-          const {source, error} = await stripe.createSource(
-            idealBank,
-            sourceData
-          );
-          await handleOrder(order, source, error);
+          const {source} = await stripe.createSource(idealBank, sourceData);
+          handleSourceActiviation(source);
           return;
           break;
         case 'sofort':
@@ -362,170 +308,150 @@
         case 'ach_credit_transfer':
           // ACH Bank Transfer: Only supports USD payments, edit the default config to try it.
           // In test mode, we can set the funds to be received via the owner email.
-          sourceData.owner.email = `amount_${order.amount}@example.com`;
+          sourceData.owner.email = `amount_${paymentIntent.amount}@example.com`;
           break;
       }
 
       // Create a Stripe source with the common data and extra information.
-      const {source, error} = await stripe.createSource(sourceData);
-      await handleOrder(order, source, error);
+      const {source} = await stripe.createSource(sourceData);
+      handleSourceActiviation(source);
     }
   });
 
-  // Handle the order and source activation if required
-  const handleOrder = async (order, source, error = null) => {
+  // Handle new PaymentIntent result
+  const handlePayment = paymentResponse => {
+    const {paymentIntent, error} = paymentResponse;
+
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
+
     if (error) {
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
       confirmationElement.querySelector('.error-message').innerText =
         error.message;
       mainElement.classList.add('error');
+    } else if (paymentIntent.status === 'succeeded') {
+      // Success! Payment is confirmed. Update the interface to display the confirmation screen.
+      mainElement.classList.remove('processing');
+      mainElement.classList.remove('receiver');
+      // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
+      confirmationElement.querySelector('.note').innerText =
+        'We just sent your receipt to your email address, and your items will be on their way shortly.';
+      mainElement.classList.add('success');
+    } else if (paymentIntent.status === 'processing') {
+      // Success! Now waiting for payment confirmation. Update the interface to display the confirmation screen.
+      mainElement.classList.remove('processing');
+      // Update the note about receipt and shipping (the payment is not yet confirmed by the bank).
+      confirmationElement.querySelector('.note').innerText =
+        'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
+      mainElement.classList.add('success');
+    } else {
+      // Payment has failed.
+      mainElement.classList.remove('success');
+      mainElement.classList.remove('processing');
+      mainElement.classList.remove('receiver');
+      mainElement.classList.add('error');
     }
-    switch (order.metadata.status) {
-      case 'created':
-        switch (source.status) {
-          case 'chargeable':
-            submitButton.textContent = 'Processing Payment…';
-            const response = await store.payOrder(order, source);
-            await handleOrder(response.order, response.source);
-            break;
-          case 'pending':
-            switch (source.flow) {
-              case 'none':
-                // Normally, sources with a `flow` value of `none` are chargeable right away,
-                // but there are exceptions, for instance for WeChat QR codes just below.
-                if (source.type === 'wechat') {
-                  // Display the QR code.
-                  const qrCode = new QRCode('wechat-qrcode', {
-                    text: source.wechat.qr_code_url,
-                    width: 128,
-                    height: 128,
-                    colorDark: '#424770',
-                    colorLight: '#f8fbfd',
-                    correctLevel: QRCode.CorrectLevel.H,
-                  });
-                  // Hide the previous text and update the call to action.
-                  form.querySelector('.payment-info.wechat p').style.display =
-                    'none';
-                  let amount = store.formatPrice(
-                    store.getOrderTotal(),
-                    config.currency
-                  );
-                  submitButton.textContent = `Scan this QR code on WeChat to pay ${amount}`;
-                  // Start polling the order status.
-                  pollOrderStatus(order.id, 300000);
-                } else {
-                  console.log('Unhandled none flow.', source);
-                }
-                break;
-              case 'redirect':
-                // Immediately redirect the customer.
-                submitButton.textContent = 'Redirecting…';
-                window.location.replace(source.redirect.url);
-                break;
-              case 'code_verification':
-                // Display a code verification input to verify the source.
-                break;
-              case 'receiver':
-                // Display the receiver address to send the funds to.
-                mainElement.classList.add('success', 'receiver');
-                const receiverInfo = confirmationElement.querySelector(
-                  '.receiver .info'
-                );
-                let amount = store.formatPrice(source.amount, config.currency);
-                switch (source.type) {
-                  case 'ach_credit_transfer':
-                    // Display the ACH Bank Transfer information to the user.
-                    const ach = source.ach_credit_transfer;
-                    receiverInfo.innerHTML = `
-                      <ul>
-                        <li>
-                          Amount:
-                          <strong>${amount}</strong>
-                        </li>
-                        <li>
-                          Bank Name:
-                          <strong>${ach.bank_name}</strong>
-                        </li>
-                        <li>
-                          Account Number:
-                          <strong>${ach.account_number}</strong>
-                        </li>
-                        <li>
-                          Routing Number:
-                          <strong>${ach.routing_number}</strong>
-                        </li>
-                      </ul>`;
-                    break;
-                  case 'multibanco':
-                    // Display the Multibanco payment information to the user.
-                    const multibanco = source.multibanco;
-                    receiverInfo.innerHTML = `
-                      <ul>
-                        <li>
-                          Amount (Montante):
-                          <strong>${amount}</strong>
-                        </li>
-                        <li>
-                          Entity (Entidade):
-                          <strong>${multibanco.entity}</strong>
-                        </li>
-                        <li>
-                          Reference (Referencia):
-                          <strong>${multibanco.reference}</strong>
-                        </li>
-                      </ul>`;
-                    break;
-                  default:
-                    console.log('Unhandled receiver flow.', source);
-                }
-                // Poll the backend and check for an order status.
-                // The backend updates the status upon receiving webhooks,
-                // specifically the `source.chargeable` and `charge.succeeded` events.
-                pollOrderStatus(order.id);
-                break;
-              default:
-                // Order is received, pending payment confirmation.
-                break;
-            }
-            break;
-          case 'failed':
-          case 'canceled':
-            // Authentication failed, offer to select another payment method.
-            break;
-          default:
-            // Order is received, pending payment confirmation.
-            break;
+  };
+
+  // Handle activation of payment sources not yet supported by PaymentIntents
+  const handleSourceActiviation = source => {
+    const mainElement = document.getElementById('main');
+    const confirmationElement = document.getElementById('confirmation');
+    switch (source.flow) {
+      case 'none':
+        // Normally, sources with a `flow` value of `none` are chargeable right away,
+        // but there are exceptions, for instance for WeChat QR codes just below.
+        if (source.type === 'wechat') {
+          // Display the QR code.
+          const qrCode = new QRCode('wechat-qrcode', {
+            text: source.wechat.qr_code_url,
+            width: 128,
+            height: 128,
+            colorDark: '#424770',
+            colorLight: '#f8fbfd',
+            correctLevel: QRCode.CorrectLevel.H,
+          });
+          // Hide the previous text and update the call to action.
+          form.querySelector('.payment-info.wechat p').style.display = 'none';
+          let amount = store.formatPrice(
+            store.getPaymentTotal(),
+            config.currency
+          );
+          submitButton.textContent = `Scan this QR code on WeChat to pay ${amount}`;
+          // Start polling the PaymentIntent status.
+          pollPaymentIntentStatus(paymentIntent.client_secret, 300000);
+        } else {
+          console.log('Unhandled none flow.', source);
         }
         break;
-
-      case 'pending':
-        // Success! Now waiting for payment confirmation. Update the interface to display the confirmation screen.
-        mainElement.classList.remove('processing');
-        // Update the note about receipt and shipping (the payment is not yet confirmed by the bank).
-        confirmationElement.querySelector('.note').innerText =
-          'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
-        mainElement.classList.add('success');
+      case 'redirect':
+        // Immediately redirect the customer.
+        submitButton.textContent = 'Redirecting…';
+        window.location.replace(source.redirect.url);
         break;
-
-      case 'failed':
-        // Payment for the order has failed.
-        mainElement.classList.remove('success');
-        mainElement.classList.remove('processing');
-        mainElement.classList.remove('receiver');
-        mainElement.classList.add('error');
+      case 'code_verification':
+        // Display a code verification input to verify the source.
         break;
-
-      case 'paid':
-        // Success! Payment is confirmed. Update the interface to display the confirmation screen.
-        mainElement.classList.remove('processing');
-        mainElement.classList.remove('receiver');
-        // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
-        confirmationElement.querySelector('.note').innerText =
-          'We just sent your receipt to your email address, and your items will be on their way shortly.';
-        mainElement.classList.add('success');
+      case 'receiver':
+        // Display the receiver address to send the funds to.
+        mainElement.classList.add('success', 'receiver');
+        const receiverInfo = confirmationElement.querySelector(
+          '.receiver .info'
+        );
+        let amount = store.formatPrice(source.amount, config.currency);
+        switch (source.type) {
+          case 'ach_credit_transfer':
+            // Display the ACH Bank Transfer information to the user.
+            const ach = source.ach_credit_transfer;
+            receiverInfo.innerHTML = `
+              <ul>
+                <li>
+                  Amount:
+                  <strong>${amount}</strong>
+                </li>
+                <li>
+                  Bank Name:
+                  <strong>${ach.bank_name}</strong>
+                </li>
+                <li>
+                  Account Number:
+                  <strong>${ach.account_number}</strong>
+                </li>
+                <li>
+                  Routing Number:
+                  <strong>${ach.routing_number}</strong>
+                </li>
+              </ul>`;
+            break;
+          case 'multibanco':
+            // Display the Multibanco payment information to the user.
+            const multibanco = source.multibanco;
+            receiverInfo.innerHTML = `
+              <ul>
+                <li>
+                  Amount (Montante):
+                  <strong>${amount}</strong>
+                </li>
+                <li>
+                  Entity (Entidade):
+                  <strong>${multibanco.entity}</strong>
+                </li>
+                <li>
+                  Reference (Referencia):
+                  <strong>${multibanco.reference}</strong>
+                </li>
+              </ul>`;
+            break;
+          default:
+            console.log('Unhandled receiver flow.', source);
+        }
+        // Poll the PaymentIntent status.
+        pollPaymentIntentStatus(paymentIntent.client_secret);
+        break;
+      default:
+        // Customer's PaymentIntent is received, pending payment confirmation.
         break;
     }
   };
@@ -533,49 +459,66 @@
   /**
    * Monitor the status of a source after a redirect flow.
    *
-   * This means there is a `source` parameter in the URL, and an active order.
-   * When this happens, we'll monitor the status of the order and present real-time
+   * This means there is a `source` parameter in the URL, and an active PaymentIntent.
+   * When this happens, we'll monitor the status of the PaymentIntent and present real-time
    * information to the user.
    */
 
-  const pollOrderStatus = async (
-    orderId,
+  const pollPaymentIntentStatus = async (
+    paymentIntent_client_secret,
     timeout = 30000,
     interval = 500,
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = ['paid', 'failed'];
-    // Retrieve the latest order status.
-    const order = await store.getOrderStatus(orderId);
-    await handleOrder(order, {status: null});
+    const endStates = ['succeeded', 'processing', 'canceled'];
+    // Retrieve the PaymentIntent from it's secret
+    const response = await stripe.retrievePaymentIntent(
+      paymentIntent_client_secret
+    );
     if (
-      !endStates.includes(order.metadata.status) &&
+      !endStates.includes(response.paymentIntent.status) &&
       Date.now() < start + timeout
     ) {
       // Not done yet. Let's wait and check again.
-      setTimeout(pollOrderStatus, interval, orderId, timeout, interval, start);
+      setTimeout(
+        pollPaymentIntentStatus,
+        interval,
+        paymentIntent_client_secret,
+        timeout,
+        interval,
+        start
+      );
     } else {
-      if (!endStates.includes(order.metadata.status)) {
+      handlePayment(response);
+      if (!endStates.includes(response.paymentIntent.status)) {
         // Status has not changed yet. Let's time out.
         console.warn(new Error('Polling timed out.'));
       }
     }
   };
 
-  const orderId = store.getActiveOrderId();
+  const paymentIntent_client_secret = store.getActivePaymentIntent();
   const mainElement = document.getElementById('main');
-  if (orderId && window.location.search.includes('source')) {
+  if (
+    paymentIntent_client_secret &&
+    window.location.search.includes('source')
+  ) {
     // Update the interface to display the processing screen.
     mainElement.classList.add('success', 'processing');
 
-    // Poll the backend and check for an order status.
-    // The backend updates the status upon receiving webhooks,
-    // specifically the `source.chargeable` and `charge.succeeded` events.
-    pollOrderStatus(orderId);
+    // Poll the PaymentIntent status.
+    pollPaymentIntentStatus(paymentIntent_client_secret);
   } else {
     // Update the interface to display the checkout form.
     mainElement.classList.add('checkout');
+
+    // Create the PaymentIntent with the cart details.
+    const response = await store.createPaymentIntent(
+      config.currency,
+      store.getPaymentItems()
+    );
+    paymentIntent = response.paymentIntent;
   }
 
   /**
@@ -644,7 +587,19 @@
     sepa_debit: {
       name: 'SEPA Direct Debit',
       flow: 'none',
-      countries: ['FR', 'DE', 'ES', 'BE', 'NL', 'LU', 'IT', 'PT', 'AT', 'IE', 'FI'],
+      countries: [
+        'FR',
+        'DE',
+        'ES',
+        'BE',
+        'NL',
+        'LU',
+        'IT',
+        'PT',
+        'AT',
+        'IE',
+        'FI',
+      ],
       currencies: ['eur'],
     },
     sofort: {
@@ -673,7 +628,7 @@
 
   // Update the main button to reflect the payment method being selected.
   const updateButtonLabel = (paymentMethod, bankName) => {
-    let amount = store.formatPrice(store.getOrderTotal(), config.currency);
+    let amount = store.formatPrice(store.getPaymentTotal(), config.currency);
     let name = paymentMethods[paymentMethod].name;
     let label = `Pay ${amount}`;
     if (paymentMethod !== 'card') {

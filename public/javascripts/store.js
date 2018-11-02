@@ -1,8 +1,9 @@
 /**
  * store.js
- * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
+ * Stripe Payments Demo. Created by Romain Huet (@romainhuet)
+ * and Thorsten Schaeff (@thorwebdev).
  *
- * Representation of products, line items, and orders, and saving them on Stripe.
+ * Representation of products, and line items stored in Stripe.
  * Please note this is overly simplified class for demo purposes (all products
  * are loaded for convenience, there is no cart management functionality, etc.).
  * A production app would need to handle this very differently.
@@ -12,11 +13,11 @@ class Store {
   constructor() {
     this.lineItems = [];
     this.products = {};
-    this.displayOrderSummary();
+    this.displayPaymentSummary();
   }
 
-  // Compute the total for the order based on the line items (SKUs and quantity).
-  getOrderTotal() {
+  // Compute the total for the payment based on the line items (SKUs and quantity).
+  getPaymentTotal() {
     return Object.values(this.lineItems).reduce(
       (total, {product, sku, quantity}) =>
         total + quantity * this.products[product].skus.data[0].price,
@@ -24,8 +25,8 @@ class Store {
     );
   }
 
-  // Expose the line items for the order (in a way that is friendly to the Stripe Orders API).
-  getOrderItems() {
+  // Expose the line items for the payment using products and skus stored in Stripe.
+  getPaymentItems() {
     let items = [];
     this.lineItems.forEach(item =>
       items.push({
@@ -59,60 +60,27 @@ class Store {
     products.forEach(product => (this.products[product.id] = product));
   }
 
-  // Create an order object to represent the line items.
-  async createOrder(currency, items, email, shipping, createIntent=false) {
+  // Create the PaymentIntent with the cart details.
+  async createPaymentIntent(currency, items) {
     try {
-      const response = await fetch('/orders', {
+      const response = await fetch('/payment_intents', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           currency,
           items,
-          email,
-          shipping,
-          createIntent
         }),
       });
       const data = await response.json();
       if (data.error) {
         return {error: data.error};
       } else {
-        // Save the current order locally to lookup its status later.
-        this.setActiveOrderId(data.order.id);
-        return data.order;
-      }
-    } catch (err) {
-      return {error: err.message};
-    }
-    return order;
-  }
-
-  // Pay the specified order by sending a payment source alongside it.
-  async payOrder(order, source) {
-    try {
-      const response = await fetch(`/orders/${order.id}/pay`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({source}),
-      });
-      const data = await response.json();
-      if (data.error) {
-        return {error: data.error};
-      } else {
+        // Save the current PaymentIntent client secret locally to lookup its status later.
+        this.setActivePaymentIntent(data.paymentIntent.client_secret);
         return data;
       }
     } catch (err) {
       return {error: err.message};
-    }
-  }
-
-  // Fetch an order status from the API.
-  async getOrderStatus(orderId) {
-    try {
-      const response = await fetch(`/orders/${orderId}`);
-      return await response.json();
-    } catch (err) {
-      return {error: err};
     }
   }
 
@@ -127,26 +95,29 @@ class Store {
     return numberFormat.format(price);
   }
 
-  // Set the active order ID in the local storage.
-  setActiveOrderId(orderId) {
-    localStorage.setItem('orderId', orderId);
+  // Set the active PaymentIntent client secret in the local storage.
+  setActivePaymentIntent(paymentIntent_client_secret) {
+    localStorage.setItem(
+      'paymentIntent_client_secret',
+      paymentIntent_client_secret
+    );
   }
 
-  // Get the active order ID from the local storage.
-  getActiveOrderId() {
-    return localStorage.getItem('orderId');
+  // Get the active PaymentIntent client secret from the local storage.
+  getActivePaymentIntent() {
+    return localStorage.getItem('paymentIntent_client_secret');
   }
 
-  // Manipulate the DOM to display the order summary on the right panel.
+  // Manipulate the DOM to display the payment summary on the right panel.
   // Note: For simplicity, we're just using template strings to inject data in the DOM,
   // but in production you would typically use a library like React to manage this effectively.
-  async displayOrderSummary() {
+  async displayPaymentSummary() {
     // Fetch the products from the store to get all the details (name, price, etc.).
     await this.loadProducts();
     const orderItems = document.getElementById('order-items');
     const orderTotal = document.getElementById('order-total');
     let currency;
-    // Build and append the line items to the order summary.
+    // Build and append the line items to the payment summary.
     for (let [id, product] of Object.entries(this.products)) {
       const randomQuantity = (min, max) => {
         min = Math.ceil(min);
@@ -175,8 +146,8 @@ class Store {
         quantity,
       });
     }
-    // Add the subtotal and total to the order summary.
-    const total = this.formatPrice(this.getOrderTotal(), currency);
+    // Add the subtotal and total to the payment summary.
+    const total = this.formatPrice(this.getPaymentTotal(), currency);
     orderTotal.querySelector('[data-subtotal]').innerText = total;
     orderTotal.querySelector('[data-total]').innerText = total;
     document.getElementById('main').classList.remove('loading');
