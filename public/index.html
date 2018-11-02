@@ -22,6 +22,7 @@
     <div id="checkout">
       <div id="payment-request">
         <div id="payment-request-button"></div>
+        <div id="google-pay-button"></div>
       </div>
       <form id="payment-form" method="POST" action="/orders">
         <p class="instruction">Complete your shipping and payment details below</p>
@@ -242,8 +243,11 @@
   <!-- Library to render QR codes -->
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <!-- App -->
-  <script src="/javascripts/store.js"></script>
-  <script src="/javascripts/payments.js"></script>
+  <script type="module" src="/javascripts/store.js"></script>
+  <script type="module" src="/javascripts/googlePayClient.js"></script>
+  <script type="module" src="/javascripts/payments.js"></script>
+  <!-- Google Pay.js for cross-browser GPay support -->
+  <script src="https://pay.google.com/gp/p/js/pay.js"></script>
 </body>
 
 </html>

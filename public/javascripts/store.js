@@ -9,7 +9,7 @@
  * A production app would need to handle this very differently.
  */
 
-class Store {
+export default class Store {
   constructor() {
     this.lineItems = [];
     this.products = {};
@@ -150,5 +150,3 @@ class Store {
     document.getElementById('main').classList.remove('loading');
   }
 }
-
-window.store = new Store();

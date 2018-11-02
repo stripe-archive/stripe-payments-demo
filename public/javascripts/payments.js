@@ -1,3 +1,5 @@
+import Store from '/javascripts/store.js';
+import GooglePay from '/javascripts/googlePayClient.js';
 /**
  * payments.js
  * Stripe Payments Demo. Created by Romain Huet (@romainhuet) 
@@ -13,6 +15,9 @@
 
 (async () => {
   'use strict';
+
+  // Initialise the Store
+  const store = new Store();
 
   // Retrieve the configuration for the store.
   const config = await store.getConfig();
@@ -183,17 +188,45 @@
     paymentRequest,
   });
 
-  // Check if the Payment Request is available (or Apple Pay on the Web).
-  const paymentRequestSupport = await paymentRequest.canMakePayment();
-  if (paymentRequestSupport) {
-    // Display the Pay button by mounting the Element in the DOM.
-    paymentRequestButton.mount('#payment-request-button');
-    // Replace the instruction.
-    document.querySelector('.instruction').innerText =
-      'Or enter your shipping and payment details below';
-    // Show the payment request section.
-    document.getElementById('payment-request').classList.add('visible');
-  }
+  // Initialise cross-browser Google
+  const gPay = new GooglePay(config);
+  // Parallelise promises for Stripe PRAPI button and Google cross-browser Pay.js
+  const gPayClient = gPay.getGooglePaymentsClient();
+  Promise.all([
+    paymentRequest.canMakePayment(), // from Stripe.js
+    gPayClient.isReadyToPay(gPay.getGoogleIsReadyToPayRequest()) // from Pay.js
+  ]).then(function(values) {
+    const PRAPI = (values[0] && !values[0].applePay);
+    const APAY = values[0] ? values[0].applePay : false;
+    const GPAY = (values[1].result && values[1].paymentMethodPresent);
+    console.log({PRAPI, APAY, GPAY});
+    if (APAY || (PRAPI && !GPAY)) {
+      // Display the Pay button by mounting the Element in the DOM.
+      paymentRequestButton.mount('#payment-request-button');
+    } else if (GPAY) {
+      gPay.addGooglePayButton('payment-request-button', async googlePaymentData => {
+        const {token, error} = googlePaymentData;
+        if (error) {
+          handlePayment(error);
+        }
+        const paymentResponse = await stripe
+          .handleCardPayment(paymentIntent.client_secret, {
+            source_data: {
+              type: 'card', 
+              token: token.id
+            },
+          });
+          handlePayment(paymentResponse);
+      });
+    }
+    if (APAY || PRAPI || GPAY) {
+      // Replace the instruction.
+      document.querySelector('.instruction').innerText =
+        'Or enter your shipping and payment details below';
+      // Show the payment request section.
+      document.getElementById('payment-request').classList.add('visible');
+    }
+  });
 
   /**
    * Handle the form submission.
