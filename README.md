@@ -2,7 +2,7 @@
 
 This demo features a sample e-commerce store that uses [Stripe Elements](https://stripe.com/docs/elements) and the [Sources API](https://stripe.com/docs/sources) to illustrate how to accept both card payments and additional payment methods on the web.
 
-If you’re running a compatible browser, this demo also showcases the [Payment Request API](https://stripe.com/docs/payment-request-api), [Apple Pay](https://stripe.com/docs/apple-pay), and [Google Pay](https://stripe.com/docs/google-pay) for a seamless payment experience.
+If you’re running a compatible browser, this demo also showcases the [Payment Request API](https://stripe.com/docs/payment-request-api), [Apple Pay](https://stripe.com/docs/apple-pay), [Google Pay](https://stripe.com/docs/google-pay), and [Microsoft Pay](https://stripe.com/docs/microsoft-pay) for a seamless payment experience.
 
 **You can see this demo app running in test mode on [stripe-payments-demo.appspot.com](https://stripe-payments-demo.appspot.com).**
 
@@ -16,7 +16,7 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 |     | Features
 :---: | :---
 ✨ | **Beautiful UI components for card payments**. This demo uses pre-built Stripe components customized to fit the app design, including the [Card Element](https://stripe.com/docs/elements) which provides real-time validation, formatting, and autofill.
-💳 | **Card payments with Payment Request, Apple Pay, and Google Pay.** The app offers frictionless card payment experiences with a single integration using the new [Payment Request Button Element](https://stripe.com/docs/elements/payment-request-button).
+💳 | **Card payments with Payment Request, Apple Pay, Google Pay, and Microsoft Pay.** The app offers frictionless card payment experiences with a single integration using the new [Payment Request Button Element](https://stripe.com/docs/elements/payment-request-button).
 🌍 | **Payment methods for Europe and Asia.** A dozen redirect-based payment methods are supported through the [Sources API](https://stripe.com/docs/sources), from iDEAL to WeChat Pay.
 🎩 | **Automatic payment methods suggestion.** Picking a country will automatically show relevant payment methods. For example, selecting  “Germany” will suggest SOFORT, Giropay, and SEPA Debit.
 🔐 | **Dynamic 3D Secure for Visa and Mastercard.** The app automatically handles the correct flow to complete card payments with [3D Secure](https://stripe.com/docs/sources/three-d-secure), whether it’s required by the card or by the app above a certain amount.
@@ -28,10 +28,12 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 
 ## Payments Integration
 
+The frontend code for the demo is in the `public/` directory.
+
 The core logic of the Stripe integration is mostly contained within two files:
 
 1.  [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
-2.  [`server/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
+2.  [`server/node/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
 
 ### Card Payments with Stripe Elements
 
@@ -55,7 +57,11 @@ The [Sources API](https://stripe.com/docs/sources) provides a single integration
 
 ![Stripe Payment Settings](public/images/screenshots/stripe-payments-settings.png)
 
-## Requirements
+## Getting Started with Node
+
+There are a couple server implementations in the [`server`](/server) directory. Instructions for running the Node.js server in [`server/node`](/server/node) are below, but if you’re more comfortable with Python you can find a README explaining how to run a Flask server in the [`server/python`](/server/python) directory. Both servers have the same endpoints to handle requests from the frontend and interact with the [Stripe libraries](https://stripe.com/docs/libraries).
+
+### Requirements
 
 You’ll need the following:
 
@@ -67,13 +73,13 @@ In your Stripe Dashboard, you can [enable the payment methods](https://dashboard
 
 Some payment methods require receiving a real-time webhook notification to complete a charge. This demo is bundled with [ngrok](https://ngrok.com/), which allows us to securely receive webhooks and serve the app locally via HTTPS, which is also required to complete transactions in the browser with Elements or the Payment Request API.
 
-## Getting Started
+### Running the Node Server
 
-Copy the environment variables file:
+Copy the environment variables file from the root of the repository:
 
     cp .env.example .env
 
-Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`config.js`](config.js), where you can review and edit other options such as the app currency and your Stripe account country.
+Update `.env` with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details. These environment variables are loaded and used in [`server/node/config.js`](/server/node/config.js), where you can review and edit other options such as the app currency and your Stripe account country.
 
 Install dependencies using npm:
 
@@ -103,5 +109,5 @@ Use this second URL in your browser to start the demo.
 
 ## Credits
 
-* Code: [Romain Huet](https://twitter.com/romainhuet) and [Thorsten Schaeff](https://twitter.com/schaeff_t)
+* Code: [Romain Huet](https://twitter.com/romainhuet) and [Thorsten Schaeff](https://twitter.com/thorwebdev)
 * Design: [Tatiana Van Campenhout](https://twitter.com/tatsvc)

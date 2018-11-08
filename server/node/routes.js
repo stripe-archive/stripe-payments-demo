@@ -9,9 +9,9 @@
 
 'use strict';
 
-const config = require('../config');
+const config = require('./config');
 const setup = require('./setup');
-const {orders, products} = require('./orders');
+const {orders, products} = require('./inventory');
 const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(config.stripe.secretKey);
@@ -23,13 +23,11 @@ router.get('/', (req, res) => {
 });
 
 /**
- * Stripe integration to accept all types of payments with 3 POST endpoints:
+ * Stripe integration to accept all types of payments with 3 POST endpoints.
  *
  * 1. POST endpoint to create orders with all user information.
- *
  * 2. POST endpoint to complete a payment immediately when a card is used.
- * For payments using Elements, Payment Request, Apple Pay, or Pay with Google.
- *
+ * For payments using Elements, Payment Request, Apple Pay, Google Pay, Microsoft Pay.
  * 3. POST endpoint to be set as a webhook endpoint on your Stripe account.
  * It creates a charge as soon as a non-card payment source becomes chargeable.
  */
@@ -64,7 +62,7 @@ router.post('/orders/:id/pay', async (req, res, next) => {
       source = await dynamic3DS(source, order, req);
     }
     // Demo: In test mode, replace the source with a test token so charges can work.
-    if (!source.livemode) {
+    if (source.type === 'card' && !source.livemode) {
       source.id = 'tok_visa';
     }
     // Pay the order using the Stripe source.

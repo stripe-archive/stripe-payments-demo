@@ -1,5 +1,5 @@
 /**
- * orders.js
+ * inventory.js
  * Stripe Payments Demo. Created by Romain Huet (@romainhuet).
  *
  * Simple library to store and interact with orders and products.
@@ -9,7 +9,7 @@
 
 'use strict';
 
-const config = require('../config');
+const config = require('./config');
 const stripe = require('stripe')(config.stripe.secretKey);
 stripe.setApiVersion(config.stripe.apiVersion);
 
@@ -64,7 +64,7 @@ const retrieveProduct = async productId => {
 };
 
 // Validate that products exist.
-const checkProducts = productList => {
+const productsExist = productList => {
   const validProducts = ['increment', 'shirt', 'pins'];
   return productList.data.reduce((accumulator, currentValue) => {
     return (
@@ -84,5 +84,5 @@ exports.orders = {
 exports.products = {
   list: listProducts,
   retrieve: retrieveProduct,
-  exist: checkProducts,
+  exist: productsExist,
 };

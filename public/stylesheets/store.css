@@ -138,7 +138,6 @@ fieldset {
     0 4px 6px 0 rgba(112, 157, 199, 0.15);
   border-radius: 4px;
   border: none;
-  overflow: hidden;
   font-size: 0;
 }
 
@@ -283,6 +282,10 @@ select:-webkit-autofill {
 
 #card-element {
   margin-top: -1px;
+}
+
+#ideal-bank-element {
+  padding: 0;
 }
 
 button {
@@ -488,6 +491,10 @@ button:active {
   margin-bottom: 15px;
 }
 
+.payment-info.ideal {
+  margin-bottom: 0;
+}
+
 #payment-methods.visible,
 .payment-info.visible {
   display: block;
@@ -508,8 +515,9 @@ button:active {
   margin: 0 auto;
 }
 
-.payment-errors {
+.element-errors {
   display: inline-flex;
+  height: 20px;
   margin: 15px auto 0;
   padding-left: 20px;
   color: #e25950;
@@ -522,9 +530,13 @@ button:active {
   background-size: 15px 15px;
 }
 
-.payment-errors.visible {
+.element-errors.visible {
   opacity: 1;
   transform: none;
+}
+
+#iban-errors {
+  margin-top: -20px;
 }
 
 /* Order Summary */

@@ -32,23 +32,21 @@
   // Create an instance of Elements.
   const elements = stripe.elements();
 
-  // Prepare the options for Elements to be styled accordingly.
-  const elementsOptions = {
-    style: {
-      base: {
-        iconColor: '#666ee8',
-        color: '#31325f',
-        fontWeight: 400,
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
-        fontSmoothing: 'antialiased',
-        fontSize: '15px',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-        ':-webkit-autofill': {
-          color: '#666ee8',
-        },
+  // Prepare the styles for Elements.
+  const style = {
+    base: {
+      iconColor: '#666ee8',
+      color: '#31325f',
+      fontWeight: 400,
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '15px',
+      '::placeholder': {
+        color: '#aab7c4',
+      },
+      ':-webkit-autofill': {
+        color: '#666ee8',
       },
     },
   };
@@ -60,13 +58,13 @@
    */
 
   // Create a Card Element and pass some custom styles to it.
-  const card = elements.create('card', elementsOptions);
+  const card = elements.create('card', {style});
 
   // Mount the Card Element on the page.
   card.mount('#card-element');
 
   // Monitor change events on the Card Element to display any errors.
-  card.addEventListener('change', ({error}) => {
+  card.on('change', ({error}) => {
     const cardErrors = document.getElementById('card-errors');
     if (error) {
       cardErrors.textContent = error.message;
@@ -79,10 +77,56 @@
   });
 
   /**
+   * Implement a Stripe IBAN Element that matches the look-and-feel of the app.
+   *
+   * This makes it easy to collect bank account information.
+   */
+
+  // Create a IBAN Element and pass the right options for styles and supported countries.
+  const ibanOptions = {
+    style,
+    supportedCountries: ['SEPA'],
+  };
+  const iban = elements.create('iban', ibanOptions);
+
+  // Mount the IBAN Element on the page.
+  iban.mount('#iban-element');
+
+  // Monitor change events on the IBAN Element to display any errors.
+  iban.on('change', ({error, bankName}) => {
+    const ibanErrors = document.getElementById('iban-errors');
+    if (error) {
+      ibanErrors.textContent = error.message;
+      ibanErrors.classList.add('visible');
+    } else {
+      ibanErrors.classList.remove('visible');
+      if (bankName) {
+        updateButtonLabel('sepa_debit', bankName);
+      }
+    }
+    // Re-enable the Pay button.
+    submitButton.disabled = false;
+  });
+
+  /**
+   * Add an iDEAL Bank selection Element that matches the look-and-feel of the app.
+   *
+   * This allows you to send the customer directly to their iDEAL enabled bank.
+   */
+
+  // Create a iDEAL Bank Element and pass the style options, along with an extra `padding` property.
+  const idealBank = elements.create('idealBank', {
+    style: {base: Object.assign({padding: '10px 15px'}, style.base)},
+  });
+
+  // Mount the iDEAL Bank Element on the page.
+  idealBank.mount('#ideal-bank-element');
+
+  /**
    * Implement a Stripe Payment Request Button Element.
    *
    * This automatically supports the Payment Request API (already live on Chrome),
-   * as well as Apple Pay on the Web on Safari.
+   * as well as Apple Pay on the Web on Safari, Google Pay, and Microsoft Pay.
    * When of these two options is available, this element adds a “Pay” button on top
    * of the page to let users pay in just a click (or a tap on mobile).
    */
@@ -166,7 +210,8 @@
    * alongside it, or creates a Source and start a redirect to complete the purchase.
    *
    * Please note this form is not submitted when the user chooses the "Pay" button
-   * or Apple Pay since they provide name and shipping information directly.
+   * or Apple Pay, Google Pay, and Microsoft Pay since they provide name and
+   * shipping information directly.
    */
 
   // Listen to changes to the user-selected country.
@@ -174,19 +219,7 @@
     .querySelector('select[name=country]')
     .addEventListener('change', event => {
       event.preventDefault();
-      const country = event.target.value;
-      const zipLabel = form.querySelector('label.zip');
-      // Only show the state input for the United States.
-      zipLabel.parentElement.classList.toggle('with-state', country === 'US');
-      // Update the ZIP label to make it more relevant for each country.
-      form.querySelector('label.zip span').innerText =
-        country === 'US'
-          ? 'ZIP'
-          : country === 'UK'
-            ? 'Postcode'
-            : 'Postal Code';
-      event.target.parentElement.className = `field ${country}`;
-      showRelevantPaymentMethods(country);
+      selectCountry(event.target.value);
     });
 
   // Submit handler for our payment form.
@@ -232,6 +265,23 @@
       } else {
         await handleOrder({metadata: {status: 'paid'}}, null, null);
       }
+    } else if (payment === 'sepa_debit') {
+      // Create a SEPA Debit source from the IBAN information.
+      const sourceData = {
+        type: payment,
+        currency: order.currency,
+        owner: {
+          name,
+          email,
+        },
+        mandate: {
+          // Automatically send a mandate notification email to your customer
+          // once the source is charged.
+          notification_method: 'email',
+        },
+      };
+      const {source} = await stripe.createSource(iban, sourceData);
+      await handleOrder(order, source);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -253,11 +303,14 @@
 
       // Add extra source information which are specific to a payment method.
       switch (payment) {
-        case 'sepa_debit':
-          // SEPA Debit: Pass the IBAN entered by the user.
-          sourceData.sepa_debit = {
-            iban: form.querySelector('input[name=iban]').value,
-          };
+        case 'ideal':
+          // iDEAL: Add the selected Bank from the iDEAL Bank Element.
+          const {source, error} = await stripe.createSource(
+            idealBank,
+            sourceData
+          );
+          await handleOrder(order, source, error);
+          return;
           break;
         case 'sofort':
           // SOFORT: The country is required before redirecting to the bank.
@@ -495,16 +548,29 @@
       name: 'Bank Transfer',
       flow: 'receiver',
       countries: ['US'],
+      currencies: ['usd'],
     },
     alipay: {
       name: 'Alipay',
       flow: 'redirect',
       countries: ['CN', 'HK', 'SG', 'JP'],
+      currencies: [
+        'aud',
+        'cad',
+        'eur',
+        'gbp',
+        'hkd',
+        'jpy',
+        'nzd',
+        'sgd',
+        'usd',
+      ],
     },
     bancontact: {
       name: 'Bancontact',
       flow: 'redirect',
       countries: ['BE'],
+      currencies: ['eur'],
     },
     card: {
       name: 'Card',
@@ -514,41 +580,58 @@
       name: 'EPS',
       flow: 'redirect',
       countries: ['AT'],
+      currencies: ['eur'],
     },
     ideal: {
       name: 'iDEAL',
       flow: 'redirect',
       countries: ['NL'],
+      currencies: ['eur'],
     },
     giropay: {
       name: 'Giropay',
       flow: 'redirect',
       countries: ['DE'],
+      currencies: ['eur'],
     },
     multibanco: {
       name: 'Multibanco',
       flow: 'receiver',
       countries: ['PT'],
+      currencies: ['eur'],
     },
     sepa_debit: {
       name: 'SEPA Direct Debit',
       flow: 'none',
-      countries: ['FR', 'DE', 'ES', 'BE', 'NL', 'LU', 'IT', 'PT', 'AT', 'IE'],
+      countries: ['FR', 'DE', 'ES', 'BE', 'NL', 'LU', 'IT', 'PT', 'AT', 'IE', 'FI'],
+      currencies: ['eur'],
     },
     sofort: {
       name: 'SOFORT',
       flow: 'redirect',
       countries: ['DE', 'AT'],
+      currencies: ['eur'],
     },
     wechat: {
       name: 'WeChat',
       flow: 'none',
       countries: ['CN', 'HK', 'SG', 'JP'],
+      currencies: [
+        'aud',
+        'cad',
+        'eur',
+        'gbp',
+        'hkd',
+        'jpy',
+        'nzd',
+        'sgd',
+        'usd',
+      ],
     },
   };
 
   // Update the main button to reflect the payment method being selected.
-  const updateButtonLabel = paymentMethod => {
+  const updateButtonLabel = (paymentMethod, bankName) => {
     let amount = store.formatPrice(store.getOrderTotal(), config.currency);
     let name = paymentMethods[paymentMethod].name;
     let label = `Pay ${amount}`;
@@ -558,7 +641,33 @@
     if (paymentMethod === 'wechat') {
       label = `Generate QR code to pay ${amount} with ${name}`;
     }
+    if (paymentMethod === 'sepa_debit' && bankName) {
+      label = `Debit ${amount} from ${bankName}`;
+    }
     submitButton.innerText = label;
+  };
+
+  const selectCountry = country => {
+    const selector = document.getElementById('country');
+    selector.querySelector(`option[value=${country}]`).selected = 'selected';
+    selector.className = `field ${country}`;
+
+    // Trigger the methods to show relevant fields and payment methods on page load.
+    showRelevantFormFields();
+    showRelevantPaymentMethods();
+  };
+
+  // Show only form fields that are relevant to the selected country.
+  const showRelevantFormFields = country => {
+    if (!country) {
+      country = form.querySelector('select[name=country] option:checked').value;
+    }
+    const zipLabel = form.querySelector('label.zip');
+    // Only show the state input for the United States.
+    zipLabel.parentElement.classList.toggle('with-state', country === 'US');
+    // Update the ZIP label to make it more relevant for each country.
+    form.querySelector('label.zip span').innerText =
+      country === 'US' ? 'ZIP' : country === 'UK' ? 'Postcode' : 'Postal Code';
   };
 
   // Show only the payment methods that are relevant to the selected country.
@@ -572,7 +681,8 @@
       input.parentElement.classList.toggle(
         'visible',
         input.value === 'card' ||
-          paymentMethods[input.value].countries.includes(country)
+          (paymentMethods[input.value].countries.includes(country) &&
+            paymentMethods[input.value].currencies.includes(config.currency))
       );
     }
 
@@ -586,6 +696,7 @@
     // Check the first payment option again.
     paymentInputs[0].checked = 'checked';
     form.querySelector('.payment-info.card').classList.add('visible');
+    form.querySelector('.payment-info.ideal').classList.remove('visible');
     form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
     form.querySelector('.payment-info.redirect').classList.remove('visible');
@@ -607,6 +718,9 @@
         .querySelector('.payment-info.card')
         .classList.toggle('visible', payment === 'card');
       form
+        .querySelector('.payment-info.ideal')
+        .classList.toggle('visible', payment === 'ideal');
+      form
         .querySelector('.payment-info.sepa_debit')
         .classList.toggle('visible', payment === 'sepa_debit');
       form
@@ -625,11 +739,14 @@
   }
 
   // Select the default country from the config on page load.
-  const countrySelector = document.getElementById('country');
-  countrySelector.querySelector(`option[value=${config.country}]`).selected =
-    'selected';
-  countrySelector.className = `field ${config.country}`;
-
-  // Trigger the method to show relevant payment methods on page load.
-  showRelevantPaymentMethods();
+  let country = config.country;
+  // Override it if a valid country is passed as a URL parameter.
+  var urlParams = new URLSearchParams(window.location.search);
+  let countryParam = urlParams.get('country')
+    ? urlParams.get('country').toUpperCase()
+    : config.country;
+  if (form.querySelector(`option[value="${countryParam}"]`)) {
+    country = countryParam;
+  }
+  selectCountry(country);
 })();
