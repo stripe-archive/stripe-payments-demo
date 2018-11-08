@@ -34,9 +34,9 @@ router.get('/', (req, res) => {
 
 // Create an order on the backend.
 router.post('/orders', async (req, res, next) => {
-  let {currency, items, email, shipping} = req.body;
+  let {currency, items, email, shipping, createIntent} = req.body;
   try {
-    let order = await orders.create(currency, items, email, shipping);
+    let order = await orders.create(currency, items, email, shipping, createIntent);
     return res.status(200).json({order});
   } catch (err) {
     return res.status(500).json({error: err.message});

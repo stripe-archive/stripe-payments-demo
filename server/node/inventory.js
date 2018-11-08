@@ -14,9 +14,9 @@ const stripe = require('stripe')(config.stripe.secretKey);
 stripe.setApiVersion(config.stripe.apiVersion);
 
 // Create an order.
-const createOrder = async (currency, items, email, shipping) => {
+const createOrder = async (currency, items, email, shipping, createIntent) => {
   // Create order
-  const order = await stripe.orders.create({
+  let order = await stripe.orders.create({
     currency,
     items,
     email,
@@ -25,22 +25,25 @@ const createOrder = async (currency, items, email, shipping) => {
       status: 'created',
     },
   });
-  // Create Payment Intent to represent customers intent to pay this order
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: order.amount,
-    currency: order.currency,
-    metadata: {
-      order: order.id,
-    },
-    allowed_source_types: ['card'],
-  });
-  // Add payment intent ID and secret to order
-  return await updateOrder(order.id, {
-    metadata: {
-      intent_id: paymentIntent.id,
-      intent_secret: paymentIntent.client_secret,
-    },
-  });
+  if (createIntent) {
+    // Create Payment Intent to represent customers intent to pay this order
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: order.amount,
+      currency: order.currency,
+      metadata: {
+        order: order.id,
+      },
+      allowed_source_types: ['card'],
+    });
+    // Add payment intent ID and secret to order
+    order = await updateOrder(order.id, {
+      metadata: {
+        intent_id: paymentIntent.id,
+        intent_secret: paymentIntent.client_secret,
+      },
+    });
+  }
+  return order;
 };
 
 // Retrieve an order by ID.
