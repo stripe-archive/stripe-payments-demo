@@ -56,15 +56,6 @@ router.post('/orders/:id/pay', async (req, res, next) => {
     ) {
       return res.status(403).json({order, source});
     }
-    // Dynamically evaluate if 3D Secure should be used.
-    if (source && source.type === 'card') {
-      // A 3D Secure source may be created referencing the card source.
-      source = await dynamic3DS(source, order, req);
-    }
-    // Demo: In test mode, replace the source with a test token so charges can work.
-    if (source.type === 'card' && !source.livemode) {
-      source.id = 'tok_visa';
-    }
     // Pay the order using the Stripe source.
     if (source && source.status === 'chargeable') {
       let charge, status;
@@ -237,28 +228,6 @@ router.post('/webhook', async (req, res) => {
   // Return a 200 success code to Stripe.
   res.sendStatus(200);
 });
-
-// Dynamically create a 3D Secure source.
-const dynamic3DS = async (source, order, req) => {
-  // Check if 3D Secure is required, or trigger it based on a custom rule (in this case, if the amount is above a threshold).
-  if (source.card.three_d_secure === 'required' || order.amount > 5000) {
-    source = await stripe.sources.create({
-      amount: order.amount,
-      currency: order.currency,
-      type: 'three_d_secure',
-      three_d_secure: {
-        card: source.id,
-      },
-      metadata: {
-        order: order.id,
-      },
-      redirect: {
-        return_url: req.headers.origin,
-      },
-    });
-  }
-  return source;
-};
 
 /**
  * Routes exposing the config as well as the ability to retrieve products and orders.
