@@ -121,6 +121,28 @@ router.post('/webhook', async (req, res) => {
   }
   const object = data.object;
 
+  /** PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents **/
+  // Monitor payment_intent.succeeded & payment_intent.payment_failed events.
+  if (
+    object.object === 'payment_intent' &&
+    object.metadata.order
+  ) {
+    const paymentIntent = object;
+    // Find the corresponding order this source is for by looking in its metadata.
+    const order = await orders.retrieve(paymentIntent.metadata.order);
+    if (paymentIntent.status === 'succeeded') {
+      console.log(`🔔  Webhook received! Payment for PaymentIntent ${paymentIntent.id} succeeded.`);
+      // Update the order status to mark it as paid.
+      await orders.update(order.id, {metadata: {status: 'paid'}});
+    } else if (paymentIntent.status === 'requires_source') {
+      console.log(`🔔  Webhook received! Payment on source ${paymentIntent.last_payment_error.source.id} for PaymentIntent ${paymentIntent.id} failed.`);
+      // Note: you can use the existing PaymentIntent to prompt your customer to try again by attaching a newly created source:
+      // https://stripe.com/docs/payments/payment-intents#lifecycle
+    } else {
+      console.log(`⚠️  Unhandled event for PaymentIntent ${paymentIntent.id}: ${object.status}.`);
+    }
+  }
+
   // Monitor `source.chargeable` events.
   if (
     object.object === 'source' &&
@@ -190,22 +212,6 @@ router.post('/webhook', async (req, res) => {
     console.log(`🔔  Webhook received! The charge ${charge.id} succeeded.`);
     // Find the corresponding order this source is for by looking in its metadata.
     const order = await orders.retrieve(charge.source.metadata.order);
-    // Update the order status to mark it as paid.
-    await orders.update(order.id, {metadata: {status: 'paid'}});
-  }
-
-  /** BETA Payment Intent **/
-  // Monitor payment_intent.succeeded event
-  // Monitor `charge.succeeded` events.
-  if (
-    object.object === 'payment_intent' &&
-    object.status === 'succeeded' && // TODO: make status agnostic
-    object.metadata.order
-  ) {
-    const pi = object;
-    console.log(`🔔  Webhook received! The payment intent ${pi.id} succeeded.`);
-    // Find the corresponding order this source is for by looking in its metadata.
-    const order = await orders.retrieve(pi.metadata.order);
     // Update the order status to mark it as paid.
     await orders.update(order.id, {metadata: {status: 'paid'}});
   }

@@ -296,6 +296,9 @@
           // once the source is charged.
           notification_method: 'email',
         },
+        metadata: {
+          order: order.id,
+        },
       };
       const {source} = await stripe.createSource(iban, sourceData);
       await handleOrder(order, source);

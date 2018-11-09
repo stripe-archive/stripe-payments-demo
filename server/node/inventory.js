@@ -37,7 +37,7 @@ const createOrder = async (currency, items, email, shipping, createIntent) => {
       },
       allowed_source_types: ['card'],
     });
-    // Add payment intent ID and secret to order
+    // Add PaymentIntent ID and secret to the order.
     order = await updateOrder(order.id, {
       metadata: {
         intent_id: paymentIntent.id,
