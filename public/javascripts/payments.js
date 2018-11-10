@@ -661,7 +661,7 @@
     zipLabel.parentElement.classList.toggle('with-state', country === 'US');
     // Update the ZIP label to make it more relevant for each country.
     form.querySelector('label.zip span').innerText =
-      country === 'US' ? 'ZIP' : country === 'UK' ? 'Postcode' : 'Postal Code';
+      country === 'US' ? 'ZIP' : country === 'GB' ? 'Postcode' : 'Postal Code';
   };
 
   // Show only the payment methods that are relevant to the selected country.
