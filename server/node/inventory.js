@@ -26,7 +26,7 @@ const createOrder = async (currency, items, email, shipping, createIntent) => {
     },
   });
   if (createIntent) {
-    // Create Payment Intent to represent customers intent to pay this order.
+    // Create PaymentIntent to represent customers intent to pay this order.
     // Note: PaymentIntents currently only support card sources to enable dynamic authentication:
     // https://stripe.com/docs/payments/dynamic-authentication
     const paymentIntent = await stripe.paymentIntents.create({
@@ -38,7 +38,7 @@ const createOrder = async (currency, items, email, shipping, createIntent) => {
       allowed_source_types: ['card'],
     });
     // Add PaymentIntent to order object so our frontend can access the client_secret.
-    // The client_secret is used on the frontent to confirm the PaymentIntent which creates a payment.
+    // The client_secret is used on the frontend to confirm the PaymentIntent and create a payment.
     // Therefore, do not log, store, or append the client_secret to a URL.
     order.paymentIntent = paymentIntent;
   }

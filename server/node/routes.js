@@ -124,7 +124,7 @@ router.post('/webhook', async (req, res) => {
   }
   const object = data.object;
 
-  /** PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents **/
+  // PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents 
   // Monitor payment_intent.succeeded & payment_intent.payment_failed events.
   if (
     object.object === 'payment_intent' &&
