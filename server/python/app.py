@@ -1,9 +1,13 @@
+#! /usr/bin/env python3.6
+
 """
 app.py
 Stripe Payments Demo. Created by Adrienne Dreyfus (@adrind).
 
 This is our Flask server that handles requests from our Stripe checkout flow.
 It has all the endpoints you need to accept payments and manage orders.
+
+Python 3.6 or newer required.
 """
 
 import stripe
@@ -209,7 +213,8 @@ def webhook_received():
     return jsonify({'status': 'success'})
 
 
-if __name__ == 'main':
+if __name__ == '__main__':
     load_dotenv(find_dotenv())
     stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
     stripe.api_version = '2018-02-06'
+    app.run()
