@@ -176,7 +176,7 @@
         true,
       );
       const {paymentIntent, error} = await stripe
-      .handleCardPayment(order.metadata.intent_secret, {
+      .handleCardPayment(order.paymentIntent.client_secret, {
         source: event.source.id,
       });
       if (error) {
@@ -270,7 +270,7 @@
     if (payment === 'card') {
       // Let Stripe handle source activation
       const {paymentIntent, error} = await stripe
-      .handleCardPayment(order.metadata.intent_secret, card, {
+      .handleCardPayment(order.paymentIntent.client_secret, card, {
         source_data: {
           owner: {
             name,

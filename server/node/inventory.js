@@ -37,13 +37,10 @@ const createOrder = async (currency, items, email, shipping, createIntent) => {
       },
       allowed_source_types: ['card'],
     });
-    // Add PaymentIntent ID and secret to the order.
-    order = await updateOrder(order.id, {
-      metadata: {
-        intent_id: paymentIntent.id,
-        intent_secret: paymentIntent.client_secret,
-      },
-    });
+    // Add PaymentIntent to order object so our frontend can access the client_secret.
+    // The client_secret is used on the frontent to confirm the PaymentIntent which creates a payment.
+    // Therefore, do not log, store, or append the client_secret to a URL.
+    order.paymentIntent = paymentIntent;
   }
   return order;
 };
