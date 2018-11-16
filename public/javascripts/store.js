@@ -153,7 +153,7 @@ class Store {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;
       };
-      const quantity = randomQuantity(1, 3);
+      const quantity = randomQuantity(1, 2);
       let sku = product.skus.data[0];
       let skuPrice = this.formatPrice(sku.price, sku.currency);
       let lineItemPrice = this.formatPrice(sku.price * quantity, sku.currency);

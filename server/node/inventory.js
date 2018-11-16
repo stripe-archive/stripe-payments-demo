@@ -26,9 +26,9 @@ const createOrder = async (currency, items, email, shipping, createIntent) => {
     },
   });
   if (createIntent) {
-    // Create PaymentIntent to represent customers intent to pay this order.
+    // Create PaymentIntent to represent your customer's intent to pay this order.
     // Note: PaymentIntents currently only support card sources to enable dynamic authentication:
-    // https://stripe.com/docs/payments/dynamic-authentication
+    // // https://stripe.com/docs/payments/dynamic-3ds
     const paymentIntent = await stripe.paymentIntents.create({
       amount: order.amount,
       currency: order.currency,

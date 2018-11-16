@@ -258,16 +258,20 @@
 
     // Create the order using the email and shipping information from the form.
     // For Demo purposes we only create an order / a PaymentIntent on form submit.
-    // In a real application you should create this before entering the checkout.
+    // In a real application you should create this before entering the checkout, see
+    // https://stripe.com/docs/payments/payment-intents
+    const usesPaymentIntent = payment === 'card';
+    // Note: PaymentIntents Beta currently only support card sources to enable dynamic authentication:
+    // https://stripe.com/docs/payments/dynamic-3ds
     const order = await store.createOrder(
       config.currency,
       store.getOrderItems(),
       email,
       shipping,
-      (payment === 'card')
+      usesPaymentIntent,
     );
 
-    if (payment === 'card') {
+    if (usesPaymentIntent) {
       // Let Stripe handle source activation
       const {paymentIntent, error} = await stripe
       .handleCardPayment(order.paymentIntent.client_secret, card, {
