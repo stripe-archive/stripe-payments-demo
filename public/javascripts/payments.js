@@ -175,16 +175,33 @@
         },
         true,
       );
-      const {paymentIntent, error} = await stripe
-      .handleCardPayment(order.paymentIntent.client_secret, {
-        source: event.source.id,
-      });
+      // Confirm the PaymentIntent with the source returned on the event.
+      const {paymentIntent, error} = await stripe.confirmPaymentIntent(
+        order.paymentIntent.client_secret,
+        {
+          source: event.source.id,
+          use_stripe_sdk: true,
+        }
+      );
       if (error) {
         event.complete('fail');
         await handleOrder({metadata: {status: 'failed'}}, null, error);
-      } else if (paymentIntent.status === 'succeeded') {
+      } else {
         event.complete('success');
-        await handleOrder({metadata: {status: 'paid'}}, null, null);
+        if (paymentIntent.status === 'succeeded') {
+          // No authentication required, show success message.
+          await handleOrder({metadata: {status: 'paid'}}, null, null);
+        } else if (paymentIntent.status === 'requires_source_action') {
+          // We need to perform authentication.
+          const {error: handleError} = await stripe.handleCardPayment(order.paymentIntent.client_secret);
+            if (handleError) {
+              // 3D Secure authentication failed.
+              await handleOrder({metadata: {status: 'failed'}}, null, error);
+            } else {
+              // 3D Secure authentication successful.
+              await handleOrder({metadata: {status: 'paid'}}, null, null);
+            }
+        }
       }
     } catch (error) {
       event.complete('fail');
