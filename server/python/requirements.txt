@@ -6,7 +6,7 @@ click==6.7
 Flask==0.12.4
 gunicorn==19.7.1
 idna==2.6
-idna-ssl==1.0.1
+idna-ssl==1.1.0
 itsdangerous==0.24
 Jinja2==2.10
 livereload==2.5.1
@@ -17,9 +17,9 @@ pluggy==0.6.0
 py==1.5.3
 pytest==3.5.0
 python-dotenv==0.8.2
-requests==2.18.4
+requests==2.20
 six==1.11.0
-stripe==1.79.1
+stripe==2.12.0
 tornado==5.0.2
 urllib3==1.22
 Werkzeug==0.14.1

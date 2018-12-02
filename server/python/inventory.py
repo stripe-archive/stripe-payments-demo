@@ -18,11 +18,23 @@ load_dotenv(find_dotenv())
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 stripe.api_version = '2018-02-06'
 
+
 class Inventory:
     @staticmethod
-    def create_order(currency: str, items: list, email: str, shipping: dict) -> Order:
-        return stripe.Order.create(currency=currency, items=items, email=email, shipping=shipping,
-                                   metadata={'status': 'created'})
+    def create_order(currency: str, items: list, email: str, shipping: dict, create_intent: bool) -> Order:
+        order = stripe.Order.create(currency=currency, items=items,
+                                    email=email, shipping=shipping, metadata={'status': 'created'})
+        if create_intent:
+            # Create PaymentIntent to represent customers intent to pay this order.
+            # Note: PaymentIntents currently only support card sources to enable dynamic authentication:
+            # https://stripe.com/docs/payments/dynamic-authentication
+            payment_intent = stripe.PaymentIntent.create(
+                amount=order['amount'], currency=currency, metadata={'order': order['id']}, allowed_source_types=['card'])
+            # Add PaymentIntent to order object so our frontend can access the client_secret.
+            # The client_secret is used on the frontend to confirm the PaymentIntent and create a payment.
+            # Therefore, do not log, store, or append the client_secret to a URL.
+            order['paymentIntent'] = payment_intent
+        return order
 
     @staticmethod
     def retrieve_order(order_id: str) -> Order:

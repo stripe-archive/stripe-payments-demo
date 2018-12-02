@@ -24,17 +24,6 @@ static_dir = f'{os.path.abspath(os.path.join(__file__ ,"../../.."))}/public'
 app = Flask(__name__, static_folder=static_dir)
 
 
-def dynamic_3ds(source: Source, order: Order) -> Source:
-    """
-    Create a 3DS Secure payment Source if the Source is a card that requires it or if the Order is over 5000.
-    """
-    if source['card']['three_d_secure'] == 'required' or order['amount'] > 5000:
-        source = stripe.Source.create(amount=order['amount'], currency=order['currency'], type='three_d_secure',
-                                      three_d_secure={'card': source['id']}, metadata={'order': order['id']},
-                                      redirect={'return_url': request.headers.get('origin')})
-    return source
-
-
 @app.route('/')
 def home():
     return send_from_directory(static_dir, 'index.html')
@@ -91,7 +80,7 @@ def make_order():
     data = json.loads(request.data)
     try:
         order = Inventory.create_order(currency=data['currency'], items=data['items'], email=data['email'],
-                                           shipping=data['shipping'])
+                                       shipping=data['shipping'], create_intent=data['createIntent'])
 
         return jsonify({'order': order})
     except Exception as e:
@@ -113,13 +102,6 @@ def pay_order(order_id):
         # Somehow this Order has already been paid for -- abandon request.
         return jsonify({'source': source, 'order': order}), 403
 
-    if source['type'] == 'card':
-        source = dynamic_3ds(source, order)
-
-    if not source['livemode']:
-        # Demo: In test mode, replace the Source with a test token so Charges can work.
-        source['id'] = 'tok_visa'
-
     if source['status'] == 'chargeable':
         # Yay! Our user gave us a valid payment Source we can charge.
         charge = stripe.Charge.create(source=source['id'], amount=order['amount'], currency=order['currency'],
@@ -133,7 +115,8 @@ def pay_order(order_id):
             status = 'failed'
 
         # Update the Order with a new status based on what happened with the Charge.
-        Inventory.update_order(properties={'metadata': {'status': status}}, order=order)
+        Inventory.update_order(
+            properties={'metadata': {'status': status}}, order=order)
 
     return jsonify({'order': order, 'source': source})
 
@@ -149,14 +132,30 @@ def webhook_received():
         # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
         signature = request.headers.get('stripe-signature')
         try:
-            event = stripe.Webhook.construct_event(payload=request.data, sig_header=signature, secret=webhook_secret)
+            event = stripe.Webhook.construct_event(
+                payload=request.data, sig_header=signature, secret=webhook_secret)
             data = event['data']
         except Exception as e:
             return e
+        # Get the type of webhook event sent - used to check the status of PaymentIntents.
+        event_type = event['type']
     else:
         data = request_data['data']
-
+        event_type = request_data['type']
     data_object = data['object']
+
+    # PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents
+    # Monitor payment_intent.succeeded & payment_intent.payment_failed events.
+    if data_object['object'] == 'payment_intent' and 'order' in data_object['metadata']:
+        payment_intent = data_object
+        order = stripe.Order.retrieve(payment_intent['metadata']['order'])
+
+        if event_type == 'payment_intent.succeeded':
+            print('🔔  Webhook received! Payment for PaymentIntent ' +
+                  payment_intent['id']+' succeeded')
+        elif event_type == 'payment_intent.payment_failed':
+            print('🔔  Webhook received! Payment on source ' + payment_intent['last_payment_error']['source']['id'] +
+                  ' for PaymentIntent ' + payment_intent['id'] + ' failed.')
 
     # Monitor `source.chargeable` events.
     if data_object['object'] == 'source' \
@@ -190,7 +189,8 @@ def webhook_received():
             # For the demo, we simply set the status to mark the Order as failed.
             status = 'failed'
 
-        Inventory.update_order(properties={'metadata': {'status': status}}, order=order)
+        Inventory.update_order(
+            properties={'metadata': {'status': status}}, order=order)
 
     # Monitor `charge.succeeded` events.
     if data_object['object'] == 'charge' \
@@ -199,7 +199,7 @@ def webhook_received():
         charge = data_object
         print(f'Webhook received! The charge {charge["id"]} succeeded.')
         Inventory.update_order(properties={'metadata': {'status': 'paid'}},
-                                   order_id=charge['source']['metadata']['order'])
+                               order_id=charge['source']['metadata']['order'])
 
     # Monitor `source.failed`, `source.canceled`, and `charge.failed` events.
     if data_object['object'] in ['source', 'charge'] and data_object['status'] in ['failed', 'canceled']:
@@ -208,7 +208,7 @@ def webhook_received():
 
         if source['metadata']['order']:
             Inventory.update_order(properties={'metadata': {'status': 'failed'}},
-                                       order_id=source['metadata']['order']['id'])
+                                   order_id=source['metadata']['order']['id'])
 
     return jsonify({'status': 'success'})
 

@@ -34,9 +34,9 @@ router.get('/', (req, res) => {
 
 // Create an order on the backend.
 router.post('/orders', async (req, res, next) => {
-  let {currency, items, email, shipping} = req.body;
+  let {currency, items, email, shipping, createIntent} = req.body;
   try {
-    let order = await orders.create(currency, items, email, shipping);
+    let order = await orders.create(currency, items, email, shipping, createIntent);
     return res.status(200).json({order});
   } catch (err) {
     return res.status(500).json({error: err.message});
@@ -55,15 +55,6 @@ router.post('/orders/:id/pay', async (req, res, next) => {
       order.metadata.status === 'paid'
     ) {
       return res.status(403).json({order, source});
-    }
-    // Dynamically evaluate if 3D Secure should be used.
-    if (source && source.type === 'card') {
-      // A 3D Secure source may be created referencing the card source.
-      source = await dynamic3DS(source, order, req);
-    }
-    // Demo: In test mode, replace the source with a test token so charges can work.
-    if (source.type === 'card' && !source.livemode) {
-      source.id = 'tok_visa';
     }
     // Pay the order using the Stripe source.
     if (source && source.status === 'chargeable') {
@@ -106,6 +97,7 @@ router.post('/orders/:id/pay', async (req, res, next) => {
 // Webhook handler to process payments for sources asynchronously.
 router.post('/webhook', async (req, res) => {
   let data;
+  let eventType;
   // Check if webhook signing is configured.
   if (config.stripe.webhookSecret) {
     // Retrieve the event by verifying the signature using the raw body and secret.
@@ -123,12 +115,34 @@ router.post('/webhook', async (req, res) => {
     }
     // Extract the object from the event.
     data = event.data;
+    eventType = event.type;
   } else {
     // Webhook signing is recommended, but if the secret is not configured in `config.js`,
     // retrieve the event data directly from the request body.
     data = req.body.data;
+    eventType = req.body.type;
   }
   const object = data.object;
+
+  // PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents 
+  // Monitor payment_intent.succeeded & payment_intent.payment_failed events.
+  if (
+    object.object === 'payment_intent' &&
+    object.metadata.order
+  ) {
+    const paymentIntent = object;
+    // Find the corresponding order this source is for by looking in its metadata.
+    const order = await orders.retrieve(paymentIntent.metadata.order);
+    if (eventType === 'payment_intent.succeeded') {
+      console.log(`🔔  Webhook received! Payment for PaymentIntent ${paymentIntent.id} succeeded.`);
+      // Update the order status to mark it as paid.
+      await orders.update(order.id, {metadata: {status: 'paid'}});
+    } else if (eventType === 'payment_intent.payment_failed') {
+      console.log(`🔔  Webhook received! Payment on source ${paymentIntent.last_payment_error.source.id} for PaymentIntent ${paymentIntent.id} failed.`);
+      // Note: you can use the existing PaymentIntent to prompt your customer to try again by attaching a newly created source:
+      // https://stripe.com/docs/payments/payment-intents#lifecycle
+    }
+  }
 
   // Monitor `source.chargeable` events.
   if (
@@ -221,28 +235,6 @@ router.post('/webhook', async (req, res) => {
   // Return a 200 success code to Stripe.
   res.sendStatus(200);
 });
-
-// Dynamically create a 3D Secure source.
-const dynamic3DS = async (source, order, req) => {
-  // Check if 3D Secure is required, or trigger it based on a custom rule (in this case, if the amount is above a threshold).
-  if (source.card.three_d_secure === 'required' || order.amount > 5000) {
-    source = await stripe.sources.create({
-      amount: order.amount,
-      currency: order.currency,
-      type: 'three_d_secure',
-      three_d_secure: {
-        card: source.id,
-      },
-      metadata: {
-        order: order.id,
-      },
-      redirect: {
-        return_url: req.headers.origin,
-      },
-    });
-  }
-  return source;
-};
 
 /**
  * Routes exposing the config as well as the ability to retrieve products and orders.

@@ -1,7 +1,6 @@
 {
   "name": "stripe-payments-demo",
-  "description":
-    "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, Google Pay, Microsoft Pay, and the Sources API.",
+  "description": "Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, Google Pay, Microsoft Pay, and the Sources API.",
   "version": "0.0.1",
   "private": true,
   "author": "Romain Huet",
@@ -22,7 +21,7 @@
     "ejs": "^2.5.7",
     "express": "^4.15.2",
     "morgan": "^1.8.1",
-    "stripe": "^4.18.0"
+    "stripe": "^6.13.0"
   },
   "devDependencies": {
     "ngrok": "^2.2.9"
