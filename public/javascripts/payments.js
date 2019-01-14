@@ -707,8 +707,36 @@
     // Only show the state input for the United States.
     zipLabel.parentElement.classList.toggle('with-state', country === 'US');
     // Update the ZIP label to make it more relevant for each country.
-    form.querySelector('label.zip span').innerText =
-      country === 'US' ? 'ZIP' : country === 'GB' ? 'Postcode' : 'Postal Code';
+    switch (country){
+      case 'US': 
+        form.querySelector('label.zip span').innerText = 'ZIP'
+        form.querySelector('label.zip input').placeholder = '94103'
+        break;
+      case 'GB':
+        form.querySelector('label.zip span').innerText = 'Postcode'
+        break;
+      case 'AU':
+        form.querySelector('label.zip span').innerText = 'Postcode'
+        form.querySelector('label.zip input').placeholder = '3000'
+        break;
+      default: 
+        form.querySelector('label.zip span').innerText = 'Postal Code'
+        form.querySelector('label.zip input').placeholder = '94103'
+        break;
+    }
+
+    // Update the 'City' to appropriate name
+
+    switch (country){
+      case 'AU':
+        form.querySelector('label.city span').innerText = 'City / Suburb'
+        form.querySelector('label.city input').placeholder = 'Melbourne'
+        break;
+      default:
+        form.querySelector('label.city span').innerText = 'City'
+        form.querySelector('label.city input').placeholder = 'San Francisco'
+        break;
+    }
   };
 
   // Show only the payment methods that are relevant to the selected country.
