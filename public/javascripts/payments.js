@@ -707,34 +707,38 @@
     // Only show the state input for the United States.
     zipLabel.parentElement.classList.toggle('with-state', country === 'US');
     // Update the ZIP label to make it more relevant for each country.
+
+    const zipInput = form.querySelector('label.zip input');
+    const zipSpan = form.querySelector('label.zip span');
     switch (country){
       case 'US': 
-        form.querySelector('label.zip span').innerText = 'ZIP'
-        form.querySelector('label.zip input').placeholder = '94103'
+        zipSpan.innerText = 'ZIP'
+        zipInput.placeholder = '94103'
         break;
       case 'GB':
-        form.querySelector('label.zip span').innerText = 'Postcode'
+        zipSpan.innerText = 'Postcode'
         break;
       case 'AU':
-        form.querySelector('label.zip span').innerText = 'Postcode'
-        form.querySelector('label.zip input').placeholder = '3000'
+        zipSpan.innerText = 'Postcode'
+        zipInput.placeholder = '3000'
         break;
       default: 
-        form.querySelector('label.zip span').innerText = 'Postal Code'
-        form.querySelector('label.zip input').placeholder = '94103'
+        zipSpan.innerText = 'Postal Code'
+        zipInput.placeholder = '94103'
         break;
     }
 
     // Update the 'City' to appropriate name
-
+    const cityInput = form.querySelector('label.zip input');
+    const citySpan = form.querySelector('label.zip span');
     switch (country){
       case 'AU':
-        form.querySelector('label.city span').innerText = 'City / Suburb'
-        form.querySelector('label.city input').placeholder = 'Melbourne'
+        citySpan.innerText = 'City / Suburb'
+        cityInput.placeholder = 'Melbourne'
         break;
       default:
-        form.querySelector('label.city span').innerText = 'City'
-        form.querySelector('label.city input').placeholder = 'San Francisco'
+        citySpan.innerText = 'City'
+        cityInput.placeholder = 'San Francisco'
         break;
     }
   };
