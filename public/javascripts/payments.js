@@ -707,7 +707,6 @@
     // Only show the state input for the United States.
     zipLabel.parentElement.classList.toggle('with-state', country === 'US');
     // Update the ZIP label to make it more relevant for each country.
-
     const zipInput = form.querySelector('label.zip input');
     const zipSpan = form.querySelector('label.zip span');
     switch (country){
