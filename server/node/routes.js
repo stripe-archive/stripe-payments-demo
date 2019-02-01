@@ -53,8 +53,19 @@ router.post('/payment_intents', async (req, res, next) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      allowed_source_types: ['card', 'ideal', 'sepa_debit'], // TODO config
-      return_url: req.headers.origin,
+      allowed_source_types: [
+        // 'ach_credit_transfer', // throws: error: "Invalid currency: eur. The payment method `ach_credit_transfer` only supports the following currencies: usd."
+        'alipay',
+        'bancontact',
+        'card',
+        'eps',
+        'ideal',
+        'giropay',
+        'multibanco',
+        'sepa_debit',
+        'sofort',
+        'wechat',
+      ], // TODO config & gating
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {

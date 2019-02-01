@@ -237,7 +237,7 @@
     };
     // Disable the Pay button to prevent multiple click events.
     submitButton.disabled = true;
-    submitButton.textContent = 'Processing Payment…';
+    submitButton.textContent = 'Processing…';
 
     if (payment === 'card') {
       // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
@@ -505,7 +505,7 @@
     window.location.search.includes('source')
   ) {
     // Update the interface to display the processing screen.
-    mainElement.classList.add('success', 'processing');
+    mainElement.classList.add('checkout', 'success', 'processing');
 
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(paymentIntent_client_secret);
@@ -520,6 +520,7 @@
     );
     paymentIntent = response.paymentIntent;
   }
+  document.getElementById('main').classList.remove('loading');
 
   /**
    * Display the relevant payment methods for a selected country.
