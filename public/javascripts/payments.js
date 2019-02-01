@@ -34,9 +34,8 @@ import googlePay from '/javascripts/googlePayClient.js';
    */
   const checkoutButton = document.getElementById('start-checkout');
   checkoutButton.addEventListener('click', async () => {
-    // Update the interface to display the checkout form.
-    mainElement.classList.add('checkout');
-    checkoutButton.style.display = 'none';
+    checkoutButton.disabled = true;
+    checkoutButton.textContent = 'Loading…';
 
     // Create the PaymentIntent with the cart details.
     const response = await store.createPaymentIntent(
@@ -44,6 +43,10 @@ import googlePay from '/javascripts/googlePayClient.js';
       store.getPaymentItems()
     );
     paymentIntent = response.paymentIntent;
+
+    // Update the interface to display the checkout form.
+    mainElement.classList.add('checkout');
+    checkoutButton.style.display = 'none';
   });
 
   /**
@@ -293,7 +296,7 @@ import googlePay from '/javascripts/googlePayClient.js';
     };
     // Disable the Pay button to prevent multiple click events.
     submitButton.disabled = true;
-    submitButton.textContent = 'Processing Payment…';
+    submitButton.textContent = 'Processing…';
 
     if (payment === 'card') {
       // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
@@ -561,11 +564,12 @@ import googlePay from '/javascripts/googlePayClient.js';
     window.location.search.includes('source')
   ) {
     // Update the interface to display the processing screen.
-    mainElement.classList.add('success', 'processing');
+    mainElement.classList.add('checkout', 'success', 'processing');
 
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(paymentIntent_client_secret);
   }
+  document.getElementById('main').classList.remove('loading');
 
   /**
    * Display the relevant payment methods for a selected country.

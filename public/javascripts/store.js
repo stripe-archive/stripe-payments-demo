@@ -150,6 +150,5 @@ export default class Store {
     const total = this.formatPrice(this.getPaymentTotal(), currency);
     orderTotal.querySelector('[data-subtotal]').innerText = total;
     orderTotal.querySelector('[data-total]').innerText = total;
-    document.getElementById('main').classList.remove('loading');
   }
 }
