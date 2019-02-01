@@ -129,6 +129,11 @@ h2 {
   border: 1px solid #e8e8fb;
 }
 
+/* Google Pay */
+.gpay-button.long {
+  width: 100% !important;
+}
+
 /* Form */
 
 fieldset {
@@ -551,7 +556,14 @@ button:active {
   height: 100%;
   background: #fff;
   box-shadow: 0 2px 19px 4px rgba(0, 0, 0, 0.04);
-  transition: right 0.3s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+#main:not(.loading):not(.checkout) + #summary {
+  right: 0;
+  top: 80px;
+  width: 100%;
+  padding: 0 20%;
 }
 
 #main.checkout:not(.success):not(.error) + #summary {
@@ -591,6 +603,11 @@ button:active {
   margin-right: 15px;
   background: #f6f9fc;
   border-radius: 3px;
+}
+
+#main:not(.loading):not(.checkout) + #summary .line-item .image {
+  width: 40px;
+  height: 40px;
 }
 
 #summary .line-item .label {
@@ -801,7 +818,12 @@ button:active {
     padding-top: 0;
     min-height: 80px;
   }
-  #summary {
+  #main:not(.loading):not(.checkout) + #summary {
+    top: 60px;
+    width: 100%;
+    padding: 0;
+  }
+  #main.checkout + #summary {
     display: none;
   }
   #confirmation .status {

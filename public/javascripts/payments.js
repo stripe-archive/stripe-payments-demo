@@ -30,6 +30,23 @@ import googlePay from '/javascripts/googlePayClient.js';
   let paymentIntent;
 
   /**
+   * Create a PaymentIntent when the customer enters the checkout process.
+   */
+  const checkoutButton = document.getElementById('start-checkout');
+  checkoutButton.addEventListener('click', async () => {
+    // Update the interface to display the checkout form.
+    mainElement.classList.add('checkout');
+    checkoutButton.style.display = 'none';
+
+    // Create the PaymentIntent with the cart details.
+    const response = await store.createPaymentIntent(
+      config.currency,
+      store.getPaymentItems()
+    );
+    paymentIntent = response.paymentIntent;
+  });
+
+  /**
    * Setup Stripe Elements.
    */
 
@@ -548,16 +565,6 @@ import googlePay from '/javascripts/googlePayClient.js';
 
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(paymentIntent_client_secret);
-  } else {
-    // Update the interface to display the checkout form.
-    mainElement.classList.add('checkout');
-
-    // Create the PaymentIntent with the cart details.
-    const response = await store.createPaymentIntent(
-      config.currency,
-      store.getPaymentItems()
-    );
-    paymentIntent = response.paymentIntent;
   }
 
   /**
