@@ -35,8 +35,8 @@ router.get('/', (req, res) => {
 
 // Calculate total payment amount based on items in basket.
 const calculatePaymentAmount = async items => {
-  const products = await stripe.products.list({limit: 3, type: 'good'});
-  const skus = products.data.reduce((a, c) => [...a, ...c.skus.data], []);
+  const productList = await products.list();
+  const skus = productList.data.reduce((a, c) => [...a, ...c.skus.data], []);
   const total = items.reduce((a, c) => {
     const sku = skus.filter(sku => sku.id === c.parent)[0];
     return a + sku.price * c.quantity;
@@ -53,7 +53,7 @@ router.post('/payment_intents', async (req, res, next) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      allowed_source_types: [
+      payment_method_types: [
         // 'ach_credit_transfer', // throws: error: "Invalid currency: eur. The payment method `ach_credit_transfer` only supports the following currencies: usd."
         'alipay',
         'bancontact',
@@ -137,7 +137,7 @@ router.post('/webhook', async (req, res) => {
       source.metadata.paymentIntent
     );
     // Check whether this PaymentIntent requires a source.
-    if (paymentIntent.status != 'requires_source') {
+    if (paymentIntent.status != 'requires_payment_method') {
       return res.sendStatus(403);
     }
     // Confirm the PaymentIntent with the chargeable source.
