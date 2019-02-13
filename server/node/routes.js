@@ -105,18 +105,14 @@ router.post('/webhook', async (req, res) => {
 
   // PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents
   // Monitor payment_intent.succeeded & payment_intent.payment_failed events.
-  if (object.object === 'payment_intent' && object.metadata.order) {
+  if (object.object === 'payment_intent') {
     const paymentIntent = object;
-    // Find the corresponding order this source is for by looking in its metadata.
-    const order = await orders.retrieve(paymentIntent.metadata.order);
     if (eventType === 'payment_intent.succeeded') {
       console.log(
         `🔔  Webhook received! Payment for PaymentIntent ${
           paymentIntent.id
         } succeeded.`
       );
-      // Update the order status to mark it as paid.
-      await orders.update(order.id, {metadata: {status: 'paid'}});
     } else if (eventType === 'payment_intent.payment_failed') {
       console.log(
         `🔔  Webhook received! Payment on source ${

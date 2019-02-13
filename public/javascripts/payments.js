@@ -211,7 +211,6 @@ import googlePay from '/javascripts/googlePayClient.js';
 
   // Initialise cross-browser Google
   const gPay = googlePay(config);
-  console.log(gPay);
   // Parallelise promises for Stripe PRAPI button and Google cross-browser Pay.js
   const gPayClient = gPay.getGooglePaymentsClient();
   Promise.all([
@@ -221,7 +220,6 @@ import googlePay from '/javascripts/googlePayClient.js';
     const PRAPI = values[0] && !values[0].applePay;
     const APAY = values[0] ? values[0].applePay : false;
     const GPAY = values[1].result && values[1].paymentMethodPresent;
-    console.log({PRAPI, APAY, GPAY});
     if (APAY || (PRAPI && !GPAY)) {
       // Display the Pay button by mounting the Element in the DOM.
       paymentRequestButton.mount('#payment-request-button');
@@ -231,7 +229,7 @@ import googlePay from '/javascripts/googlePayClient.js';
         async googlePaymentData => {
           const {token, error} = googlePaymentData;
           if (error) {
-            handlePayment(error);
+            handlePayment({error});
           }
           const paymentResponse = await stripe.handleCardPayment(
             paymentIntent.client_secret,
@@ -385,6 +383,10 @@ import googlePay from '/javascripts/googlePayClient.js';
     const confirmationElement = document.getElementById('confirmation');
 
     if (error) {
+      if (error.statusCode === 'CANCELED') {
+        // Google Pay was aborted. Do nothing.
+        return;
+      }
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
       confirmationElement.querySelector('.error-message').innerText =
