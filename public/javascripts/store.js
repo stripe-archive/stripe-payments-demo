@@ -82,6 +82,35 @@ class Store {
     }
   }
 
+  // Create the PaymentIntent with the cart details.
+  async updatePaymentIntentWithShippingCost(
+    paymentIntent,
+    items,
+    shippingOption
+  ) {
+    try {
+      const response = await fetch(
+        `/payment_intents/${paymentIntent}/shipping_change`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            shippingOption,
+            items,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        return {error: data.error};
+      } else {
+        return data;
+      }
+    } catch (err) {
+      return {error: err.message};
+    }
+  }
+
   // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
   formatPrice(amount, currency) {
     let price = (amount / 100).toFixed(2);

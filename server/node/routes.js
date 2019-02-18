@@ -73,6 +73,22 @@ router.post('/payment_intents', async (req, res, next) => {
   }
 });
 
+// Update PaymentIntent with shipping cost.
+router.post('/payment_intents/:id/shipping_change', async (req, res, next) => {
+  const {items, shippingOption} = req.body;
+  let amount = await calculatePaymentAmount(items);
+  amount += products.getShippingCost(shippingOption.id);
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.update(req.params.id, {
+      amount,
+    });
+    return res.status(200).json({paymentIntent});
+  } catch (err) {
+    return res.status(500).json({error: err.message});
+  }
+});
+
 // Webhook handler to process payments for sources asynchronously.
 router.post('/webhook', async (req, res) => {
   let data;

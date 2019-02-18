@@ -37,8 +37,18 @@ const productsExist = productList => {
   }, !!productList.data.length);
 };
 
+// Shipping cost.
+const getShippingCost = id => {
+  const shippingCost = {
+    free: 0,
+    express: 500,
+  };
+  return shippingCost[id];
+};
+
 exports.products = {
   list: listProducts,
   retrieve: retrieveProduct,
   exist: productsExist,
+  getShippingCost,
 };

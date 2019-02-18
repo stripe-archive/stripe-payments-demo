@@ -155,6 +155,12 @@
         detail: 'Delivery within 5 days',
         amount: 0,
       },
+      {
+        id: 'express',
+        label: 'Express Shipping',
+        detail: 'Next day delivery',
+        amount: 500,
+      },
     ],
   });
 
@@ -177,6 +183,23 @@
   // Callback when the shipping address is updated.
   paymentRequest.on('shippingaddresschange', event => {
     event.updateWith({status: 'success'});
+  });
+
+  // Callback when the shipping option is changed.
+  paymentRequest.on('shippingoptionchange', async event => {
+    // Update the PaymentIntent to reflect the shipping cost.
+    const response = await store.updatePaymentIntentWithShippingCost(
+      paymentIntent.id,
+      store.getPaymentItems(),
+      event.shippingOption
+    );
+    event.updateWith({
+      total: {
+        label: 'Total',
+        amount: response.paymentIntent.amount,
+      },
+      status: 'success',
+    });
   });
 
   // Create the Payment Request Button.
