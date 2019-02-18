@@ -182,4 +182,10 @@ router.get('/products/:id', async (req, res) => {
   res.json(await products.retrieve(req.params.id));
 });
 
+// Retrieve the PaymentIntent status.
+router.get('/payment_intents/:id/status', async (req, res) => {
+  const paymentIntent = await stripe.paymentIntents.retrieve(req.params.id);
+  res.json({paymentIntent: {status: paymentIntent.status}});
+});
+
 module.exports = router;

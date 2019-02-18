@@ -75,8 +75,6 @@ class Store {
       if (data.error) {
         return {error: data.error};
       } else {
-        // Save the current PaymentIntent client secret locally to lookup its status later.
-        this.setActivePaymentIntent(data.paymentIntent.client_secret);
         return data;
       }
     } catch (err) {
@@ -93,19 +91,6 @@ class Store {
       currencyDisplay: 'symbol',
     });
     return numberFormat.format(price);
-  }
-
-  // Set the active PaymentIntent client secret in the local storage.
-  setActivePaymentIntent(paymentIntent_client_secret) {
-    localStorage.setItem(
-      'paymentIntent_client_secret',
-      paymentIntent_client_secret
-    );
-  }
-
-  // Get the active PaymentIntent client secret from the local storage.
-  getActivePaymentIntent() {
-    return localStorage.getItem('paymentIntent_client_secret');
   }
 
   // Manipulate the DOM to display the payment summary on the right panel.

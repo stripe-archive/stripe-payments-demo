@@ -381,7 +381,7 @@
           );
           submitButton.textContent = `Scan this QR code on WeChat to pay ${amount}`;
           // Start polling the PaymentIntent status.
-          pollPaymentIntentStatus(paymentIntent.client_secret, 300000);
+          pollPaymentIntentStatus(paymentIntent.id, 300000);
         } else {
           console.log('Unhandled none flow.', source);
         }
@@ -448,7 +448,7 @@
             console.log('Unhandled receiver flow.', source);
         }
         // Poll the PaymentIntent status.
-        pollPaymentIntentStatus(paymentIntent.client_secret);
+        pollPaymentIntentStatus(paymentIntent.id);
         break;
       default:
         // Customer's PaymentIntent is received, pending payment confirmation.
@@ -465,17 +465,16 @@
    */
 
   const pollPaymentIntentStatus = async (
-    paymentIntent_client_secret,
+    paymentIntent,
     timeout = 30000,
     interval = 500,
     start = null
   ) => {
     start = start ? start : Date.now();
     const endStates = ['succeeded', 'processing', 'canceled'];
-    // Retrieve the PaymentIntent from it's secret
-    const response = await stripe.retrievePaymentIntent(
-      paymentIntent_client_secret
-    );
+    // Retrieve the PaymentIntent status from our server.
+    const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
+    const response = await rawResponse.json();
     if (
       !endStates.includes(response.paymentIntent.status) &&
       Date.now() < start + timeout
@@ -484,7 +483,7 @@
       setTimeout(
         pollPaymentIntentStatus,
         interval,
-        paymentIntent_client_secret,
+        paymentIntent,
         timeout,
         interval,
         start
@@ -498,17 +497,19 @@
     }
   };
 
-  const paymentIntent_client_secret = store.getActivePaymentIntent();
+  const url = new URL(window.location.href);
   const mainElement = document.getElementById('main');
-  if (
-    paymentIntent_client_secret &&
-    window.location.search.includes('source')
-  ) {
+  if (url.searchParams.get('source') && url.searchParams.get('client_secret')) {
     // Update the interface to display the processing screen.
     mainElement.classList.add('checkout', 'success', 'processing');
 
+    const {source} = await stripe.retrieveSource({
+      id: url.searchParams.get('source'),
+      client_secret: url.searchParams.get('client_secret'),
+    });
+
     // Poll the PaymentIntent status.
-    pollPaymentIntentStatus(paymentIntent_client_secret);
+    pollPaymentIntentStatus(source.metadata.paymentIntent);
   } else {
     // Update the interface to display the checkout form.
     mainElement.classList.add('checkout');
