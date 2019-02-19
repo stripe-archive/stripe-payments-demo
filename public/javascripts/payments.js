@@ -277,11 +277,13 @@
       );
       handlePayment(response);
     } else if (payment === 'sepa_debit') {
-      const response = await stripe.handleSepaDebitPayment(
+      // Confirm the PaymentIntent with the IBAN Element and additional SEPA Debit source data.
+      const response = await stripe.confirmPaymentIntent(
         paymentIntent.client_secret,
         iban,
         {
           source_data: {
+            type: 'sepa_debit',
             owner: {
               name,
               email,
