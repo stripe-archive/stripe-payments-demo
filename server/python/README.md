@@ -80,7 +80,7 @@ Don't forget to append `/webhook` when you set up your Stripe webhook URL in the
 You can find tests for the API located in the `tests` directory. Make sure you're running in the virtual environment you created earlier.
 
 ```
-souce env/bin/activate
+source env/bin/activate
 cd tests
 python tests.py
 ```
