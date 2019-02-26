@@ -26,7 +26,7 @@ class Store {
   }
 
   // Expose the line items for the payment using products and skus stored in Stripe.
-  getPaymentItems() {
+  getLineItems() {
     let items = [];
     this.lineItems.forEach(item =>
       items.push({

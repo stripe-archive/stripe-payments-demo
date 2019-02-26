@@ -190,7 +190,7 @@
     // Update the PaymentIntent to reflect the shipping cost.
     const response = await store.updatePaymentIntentWithShippingCost(
       paymentIntent.id,
-      store.getPaymentItems(),
+      store.getLineItems(),
       event.shippingOption
     );
     event.updateWith({
@@ -542,7 +542,7 @@
     // Create the PaymentIntent with the cart details.
     const response = await store.createPaymentIntent(
       config.currency,
-      store.getPaymentItems()
+      store.getLineItems()
     );
     paymentIntent = response.paymentIntent;
   }
