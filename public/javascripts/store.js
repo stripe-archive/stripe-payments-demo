@@ -13,6 +13,7 @@ class Store {
   constructor() {
     this.lineItems = [];
     this.products = {};
+    this.productsFetchPromise = null;
     this.displayPaymentSummary();
   }
 
@@ -54,10 +55,16 @@ class Store {
   }
 
   // Load the product details.
-  async loadProducts() {
-    const productsResponse = await fetch('/products');
-    const products = (await productsResponse.json()).data;
-    products.forEach(product => (this.products[product.id] = product));
+  loadProducts() {
+    if (!this.productsFetchPromise) {
+      this.productsFetchPromise = new Promise(async resolve => {
+        const productsResponse = await fetch('/products');
+        const products = (await productsResponse.json()).data;
+        products.forEach(product => (this.products[product.id] = product));
+        resolve();
+      });
+    }
+    return this.productsFetchPromise;
   }
 
   // Create the PaymentIntent with the cart details.
