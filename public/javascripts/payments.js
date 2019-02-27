@@ -704,7 +704,8 @@
       input.parentElement.classList.toggle(
         'visible',
         input.value === 'card' ||
-          (paymentMethods[input.value].countries.includes(country) &&
+          (config.paymentMethods.includes(input.value) &&
+            paymentMethods[input.value].countries.includes(country) &&
             paymentMethods[input.value].currencies.includes(config.currency))
       );
     }

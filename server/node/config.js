@@ -14,9 +14,24 @@ module.exports = {
   country: 'US',
 
   // Store currency.
-  // Note: A few payment methods like iDEAL or SOFORT only work with euros,
-  // so it's a good common denominator to test both Elements and Sources.
   currency: 'eur',
+
+  // Supported payment methods for the store.
+  // Some payment methods support only a subset of currencies.
+  // Make sure to check the docs: https://stripe.com/docs/sources
+  paymentMethods: [
+    // 'ach_credit_transfer', // usd (ACH Credit Transfer payments must be in U.S. Dollars)
+    'alipay', // Can be aud, cad, eur, gbp, hkd, jpy, nzd, sgd, or usd.
+    'bancontact', // eur (Bancontact must always use Euros)
+    'card', // many (https://stripe.com/docs/currencies#presentment-currencies)
+    'eps', // eur (EPS must always use Euros)
+    'ideal', // eur (iDEAL must always use Euros)
+    'giropay', // eur (Giropay must always use Euros)
+    'multibanco', // eur (Multibanco must always use Euros)
+    // 'sepa_debit', // Restricted. See docs for activation details: https://stripe.com/docs/sources/sepa-debit
+    'sofort', // eur (SOFORT must always use Euros)
+    'wechat', // Can be aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
+  ],
 
   // Configuration for Stripe.
   // API Keys: https://dashboard.stripe.com/account/apikeys
