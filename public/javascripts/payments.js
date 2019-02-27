@@ -166,17 +166,28 @@
 
   // Callback when a source is created.
   paymentRequest.on('source', async event => {
-    try {
-      const paymentResponse = await stripe.handleCardPayment(
-        paymentIntent.client_secret,
-        {
-          source: event.source.id,
-        }
-      );
-      handlePayment(paymentResponse);
-      event.complete('success');
-    } catch (error) {
+    // Confirm the PaymentIntent with the source returned from the payment request.
+    const {error} = await stripe.confirmPaymentIntent(
+      paymentIntent.client_secret,
+      {
+        source: event.source.id,
+        // We set use_stripe_sdk to true so that we can use Stripe.js for 3D Secure if needed.
+        use_stripe_sdk: true,
+      }
+    );
+    if (error) {
+      // Report to the browser that the payment failed.
       event.complete('fail');
+      handlePayment({error});
+    } else {
+      // Report to the browser that the confirmation was successful, prompting
+      // it to close the browser payment method collection interface.
+      event.complete('success');
+      // Let Stripe.js handle the rest of the payment flow, including 3D Secure if needed.
+      const response = await stripe.handleCardPayment(
+        paymentIntent.client_secret
+      );
+      handlePayment(response);
     }
   });
 
