@@ -148,7 +148,17 @@ router.post('/webhook', async (req, res) => {
     await stripe.paymentIntents.confirm(paymentIntent.id, {source: source.id});
   }
 
-  // TODO Monitor `source.failed`, `source.canceled`, and `PI.?` events.
+  // Monitor `source.failed` and `source.canceled` events.
+  if (
+    object.object === 'source' &&
+    ['failed', 'canceled'].includes(object.status) &&
+    object.metadata.paymentIntent
+  ) {
+    const source = object;
+    console.log(`🔔  The source ${source.id} failed or timed out.`);
+    // Cancel the PaymentIntent.
+    await stripe.paymentIntents.cancel(source.metadata.paymentIntent);
+  }
 
   // Return a 200 success code to Stripe.
   res.sendStatus(200);
