@@ -6,9 +6,9 @@ This directory contains the main Node implementation of the payments server.
 
 You’ll need the following:
 
-* [Node.js](http://nodejs.org) >= 8.x.
-* Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
-* Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
+- [Node.js](http://nodejs.org) >= 8.x.
+- Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
+- Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
 
 In your Stripe Dashboard, you can [enable the payment methods](https://dashboard.stripe.com/payments/settings) you’d like to test with one click.
 
@@ -26,7 +26,7 @@ Install dependencies using npm:
 
     npm install
 
-This demo uses the Stripe API as a datastore for products and orders, but you can always choose to use your own datastore instead. When starting the app for the first time, the initial loading can take a couple of seconds as it will automatically set up the products within Stripe.
+This demo uses the Stripe API as a datastore for products and SKUs, but you can always choose to use your own datastore instead. When starting the app for the first time, the initial loading can take a couple of seconds as it will automatically set up the products and SKUs within Stripe.
 
 Run the app:
 
@@ -50,4 +50,4 @@ Use this second URL in your browser to start the demo.
 
 ## Credits
 
-* Code: [Romain Huet](https://twitter.com/romainhuet) and [Thorsten Schaeff](https://twitter.com/schaeff_t)
+- Code: [Romain Huet](https://twitter.com/romainhuet) and [Thorsten Schaeff](https://twitter.com/schaeff_t)

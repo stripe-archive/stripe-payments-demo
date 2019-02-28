@@ -3,7 +3,7 @@ setup.py
 Stripe Payments Demo. Created by Adrienne Dreyfus (@adrind).
 
 This is a one-time setup script for your server. It creates a set of fixtures,
-namely products and SKUs, that can then used to create orders when completing the
+namely products and SKUs, that can then used to caluclate payment amounts when completing the
 checkout flow in the web interface.
 """
 
@@ -14,13 +14,14 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-stripe.api_version = '2018-02-06'
+stripe.api_version = '2019-02-11'
 
 
 def create_data():
     try:
         products = [{'id': 'increment', 'type': 'good', 'name': 'Increment Magazine', 'attributes': ['issue']},
-                    {'id': 'pins', 'type': 'good', 'name': 'Stripe Pins', 'attributes': ['set']},
+                    {'id': 'pins', 'type': 'good',
+                        'name': 'Stripe Pins', 'attributes': ['set']},
                     {'id': 'shirt', 'type': 'good', 'name': 'Stripe Shirt', 'attributes': ['size', 'gender']}]
 
         for product in products:

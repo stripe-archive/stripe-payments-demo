@@ -4,19 +4,19 @@ This demo uses a simple [Flask](http://flask.pocoo.org/) application as the serv
 
 ## Payments Integration
 
-* [`app.py`](app.py) contains the routes that interface with Stripe to create charges and receive webhook events.
-* [`setup.py`](setup.py) a simple setup script to make some fake Products and SKUs for our Stripe store.
-* [`tests/tests.py`](tests/tests.py) some unit tests that test the logic of our heavier APIs like `orders/<string:id>/pay` and `/webhook`.
-* [`test_data.py`](tests/tests.py) contains some hardcoded mocked responses to test with.
-* [`inventory_manager.py`](stripe_lib.py) a minimal wrapper over the Stripe Python SDK that handles creating/fetching orders and products. You can override this class with your own order management system code.
+- [`app.py`](app.py) contains the routes that interface with Stripe to create charges and receive webhook events.
+- [`setup.py`](setup.py) a simple setup script to make some fake Products and SKUs for our Stripe store.
+- [`tests/tests.py`](tests/tests.py) some unit tests that test the logic of our heavier APIs like `/webhook`.
+- [`test_data.py`](tests/tests.py) contains some hardcoded mocked responses to test with.
+- [`inventory_manager.py`](stripe_lib.py) a minimal wrapper over the Stripe Python SDK that handles creating/fetching products and caluclating payment amounts from SKUs. You can override this class with your own product and order management system code.
 
 ## Requirements
 
 You’ll need the following:
 
-* [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
-* Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
-* Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free!)
+- [Python 3.6.5](https://www.python.org/downloads/release/python-365/)
+- Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
+- Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free!)
 
 ## Getting Started
 
@@ -87,4 +87,4 @@ python tests.py
 
 ## Credits
 
-* Code: [Adrienne Dreyfus](http://twitter.com/adrind)
+- Code: [Adrienne Dreyfus](http://twitter.com/adrind)
