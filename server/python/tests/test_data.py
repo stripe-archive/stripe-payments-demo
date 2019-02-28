@@ -4,115 +4,60 @@ import copy
 # Most was taken from the webhooks portion of the Dashboard.
 # https://dashboard.stripe.com/account/webhooks
 
-mocked_created_order = {
-    "id": "or_1CGAuMLz2oBaUePUHh3z2EQ4",
-    "object": "order",
-    "amount": 444,
-    "charge": None,
-    "created": 1523560594,
-    "currency": "usd",
-    "metadata": {"status": "created"},
-    "redirect": "",
-    "email": "me@cooldomain.com"
-}
-
-mocked_pending_order = copy.deepcopy(mocked_created_order)
-mocked_pending_order['metadata']['status'] = 'pending'
-mocked_failed_order = copy.deepcopy(mocked_created_order)
-mocked_failed_order['metadata']['status'] = 'failed'
-mocked_paid_order = copy.deepcopy(mocked_created_order)
-mocked_paid_order['metadata']['status'] = 'paid'
-
-mocked_source_chargeable_webhook_request = {
-    "created": 1326853478,
-    "livemode": False,
-    "id": "evt_00000000000000",
-    "type": "source.chargeable",
-    "object": "event",
-    "data": {"object": {"id": "src_00000000000000",
-                        "object": "source", "amount": None,
-                        "client_secret": "src_client_secret_CfY0xjFvOkWpM4XeFBrSEUE8",
-                        "created": 1523568262, "currency": "usd", "flow": "receiver", "livemode": False,
-                        "metadata": {}, "owner": {"address": None, "email": "jenny.rosen@example.com", "name": None,
-                                                  "phone": None, "verified_address": None, "verified_email": None,
-                                                  "verified_name": None, "verified_phone": None},
-                        "receiver": {"address": "121042882-38381234567890123", "amount_charged": 0,
-                                     "amount_received": 0, "amount_returned": 0, "refund_attributes_method": "email",
-                                     "refund_attributes_status": "missing"}, "statement_descriptor": None,
-                        "status": "chargeable", "type": "ach_credit_transfer", "usage": "reusable",
-                        "ach_credit_transfer": {"account_number": "test_52796e3294dc", "routing_number": "110000000",
-                                                "fingerprint": "ecpwEzmBOSMOqQTL", "bank_name": "TEST BANK",
-                                                "swift_code": "TSTEZ122"}}}}
-
-mock_charge_succeeded_webhook_request = copy.deepcopy(mocked_source_chargeable_webhook_request)
-mock_charge_succeeded_webhook_request['type'] = 'charge.succeeded'
-
-mock_source_failed_webhook_request = copy.deepcopy(mocked_source_chargeable_webhook_request)
-mock_charge_succeeded_webhook_request['type'] = 'source.failed'
-
-mocked_source = {
-    "id": "src_1CGAzALz2oBaUePUcDLqBlys",
-    "object": "source",
-    "amount": None,
-    "currency": None,
-    "status": "chargeable",
-    "type": "card",
-    "usage": "reusable",
-    "card": {
-        "exp_month": 4,
-        "exp_year": 2024,
-        "brand": "Visa",
-        "three_d_secure": "not required"
+mock_payment_intent = {
+  "id": "pi_Aabcxyz01aDfoo",
+  "object": "payment_intent",
+  "amount": 1000,
+  "amount_capturable": 1000,
+  "amount_received": 0,
+  "application": None,
+  "application_fee_amount": None,
+  "canceled_at": None,
+  "cancellation_reason": None,
+  "capture_method": "automatic",
+  "charges": {
+    "object": "list",
+    "data": [],
+    "has_more": False,
+    "total_count": 0,
+    "url": "/v1/charges?payment_intent=pi_Aabcxyz01aDfoo"
+  },
+  "client_secret": None,
+  "confirmation_method": "publishable",
+  "created": 123456789,
+  "currency": "usd",
+  "customer": None,
+  "description": "PaymentIntent Description",
+  "last_payment_error": None,
+  "livemode": False,
+  "metadata": {
+    "order_id": "123456789"
+  },
+  "next_action": None,
+  "on_behalf_of": None,
+  "payment_method_types": [
+    "card"
+  ],
+  "receipt_email": "jenny@example.com",
+  "review": None,
+  "shipping": {
+    "address": {
+      "city": "SF",
+      "country": "US",
+      "line1": "123 Main st",
+      "line2": "",
+      "postal_code": "94703",
+      "state": "CA"
     },
-    "livemode": False
+    "carrier": None,
+    "name": "Adrienne Dreyfus",
+    "phone": "+16507047927",
+    "tracking_number": None
+  },
+  "source": "src_1E8u7Q2eZvKYlo2CRRE5r3oQ",
+  "statement_descriptor": "PaymentIntent Statement Descriptor",
+  "status": "succeeded",
+  "transfer_data": None,
+  "transfer_group": None
 }
 
-mocked_charge = {"status": "succeeded"}
-mocked_failed_charge = {"status": "failed"}
-
-mocked_source_chargable_webhook_event = {
-    "created": 1326853478,
-    "livemode": False,
-    "id": "evt_00000000000000",
-    "type": "source.chargeable",
-    "object": "event",
-    "request": None,
-    "pending_webhooks": 1,
-    "api_version": "2018-02-28",
-    "data": {
-        "object": {
-            "id": "src_00000000000000",
-            "object": "source",
-            "amount": None,
-            "client_secret": "src_client_secret_CfYJiBYgEmB9s4Tri7RUWcOa", "created": 1523569400,
-            "currency": "usd", "flow": "receiver", "livemode": False,
-            "owner": {
-                "address": None, "email": "jenny.rosen@example.com", "name": None, "phone": None,
-                "verified_address": None, "verified_email": None, "verified_name": None, "verified_phone": None
-            },
-            "receiver": {
-                "address": "121042882-38381234567890123", "amount_charged": 0,
-                "amount_received": 0, "amount_returned": 0, "refund_attributes_method": "email",
-                "refund_attributes_status": "missing"
-            },
-            "statement_descriptor": None,
-            "status": "chargeable",
-            "type": "ach_credit_transfer",
-            "usage": "reusable",
-            "ach_credit_transfer": {
-                "account_number": "test_52796e3294dc", "routing_number": "110000000", "fingerprint": "ecpwEzmBOSMOqQTL",
-                "bank_name": "TEST BANK", "swift_code": "TSTEZ122"
-            },
-            "metadata": {"order": mocked_created_order}
-        }
-    }
-}
-
-mocked_charge_suceeded_webhook_event = copy.deepcopy(mocked_source_chargable_webhook_event)
-mocked_charge_suceeded_webhook_event['data']['object']['object'] = 'charge'
-mocked_charge_suceeded_webhook_event['data']['object']['status'] = 'succeeded'
-mocked_charge_suceeded_webhook_event['data']['object']['source'] = {'metadata': {"order": mocked_created_order["id"]}}
-
-mocked_source_failed_webhook_event = copy.deepcopy(mocked_source_chargable_webhook_event)
-mocked_source_failed_webhook_event['data']['object']['status'] = 'failed'
-mocked_source_failed_webhook_event['data']['object']['source'] = {'metadata': {"order": mocked_created_order}}

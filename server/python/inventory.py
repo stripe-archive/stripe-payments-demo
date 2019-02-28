@@ -18,12 +18,15 @@ load_dotenv(find_dotenv())
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 stripe.api_version = '2019-02-11'
 
+# For product retrieval and listing set API version to 2018-02-28 so that skus are returned.
+product_api_stripe_version = '2018-02-28'
+
 
 class Inventory:
     @staticmethod
     def calculate_payment_amount(items: list) -> int:
         product_list = stripe.Product.list(
-            limit=3, stripe_version='2018-02-28')
+            limit=3, stripe_version=product_api_stripe_version)
         product_list_data = product_list['data']
         total = 0
         for item in items:
@@ -40,11 +43,11 @@ class Inventory:
 
     @staticmethod
     def list_products() -> [Product]:
-        return stripe.Product.list(limit=3, stripe_version='2018-02-28')
+        return stripe.Product.list(limit=3, stripe_version=product_api_stripe_version)
 
     @staticmethod
     def retrieve_product(product_id) -> Product:
-        return stripe.Product.retrieve(product_id, stripe_version='2018-02-28')
+        return stripe.Product.retrieve(product_id, stripe_version=product_api_stripe_version)
 
     @staticmethod
     def products_exist(product_list: [Product]) -> bool:

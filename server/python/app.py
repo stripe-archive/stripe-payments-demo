@@ -54,7 +54,7 @@ def get_config():
         'stripeCountry': os.getenv('STRIPE_ACCOUNT_COUNTRY') or 'US',
         'country': 'US',
         'currency': 'eur',
-        'paymentMethods': os.getenv('PAYMENT_METHODS').split(', ') or ['card']
+        'paymentMethods': os.getenv('PAYMENT_METHODS').split(', ') if os.getenv('PAYMENT_METHODS') else ['card']
     })
 
 
@@ -84,7 +84,8 @@ def make_payment_intent():
             amount=Inventory.calculate_payment_amount(items=data['items']),
             currency=data['currency'],
             payment_method_types=os.getenv(
-                'PAYMENT_METHODS').split(', ') or ['card']
+                'PAYMENT_METHODS').split(', ') if os.getenv(
+                'PAYMENT_METHODS') else ['card']
         )
 
         return jsonify({'paymentIntent': payment_intent})

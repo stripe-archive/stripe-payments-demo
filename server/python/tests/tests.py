@@ -11,7 +11,7 @@ import os
 from unittest import mock, TestCase, main
 from dotenv import load_dotenv, find_dotenv
 from test_data import *
-from stripe import CardError
+from stripe.error import CardError
 
 import sys
 
@@ -32,128 +32,29 @@ class AppTestCase(TestCase):
     def test_config(self):
         response = self.app.get('/config')
         self.assertListEqual(list(json.loads(response.data).keys()),
-                             ['country', 'currency', 'stripeCountry', 'stripePublishableKey'])
+                             ['country', 'currency', 'paymentMethods', 'stripeCountry', 'stripePublishableKey'])
         self.assertEqual(response.status_code, 200)
 
-    def test_pay_pending_order(self):
+    def test_create_payment_intent(self):
         """
-        We should not be able to create a Charge for an Order that's already pending.
+        We should be able to create a PaymentIntent with the amount calculated by calculate_payment_amount.
         """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_pending_order)
-        response = self.app.post(f'orders/{mocked_failed_order["id"]}/pay', data=json.dumps({'source': mocked_source}))
-        self.assertEqual(response.status_code, 403)
-
-    def test_pay_paid_order(self):
-        """
-        We should not be able to create a Charge for an Order that's already paid.
-        """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_paid_order)
-        response = self.app.post(f'orders/{mocked_failed_order["id"]}/pay', data=json.dumps({'source': mocked_source}))
-        self.assertEqual(response.status_code, 403)
-
-    def test_pay_created_order(self):
-        """
-        Mark the Order as paid if we successful charge the Source in the payment flow.
-        """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_created_order)
-        stripe.Charge.create = mock.MagicMock(return_value=mocked_charge)
-        Inventory.update_order = mock.MagicMock(return_value=mocked_created_order)
-
-        response = self.app.post(f'orders/{mocked_failed_order["id"]}/pay', data=json.dumps({'source': mocked_source}))
-        Inventory.update_order.assert_called_once_with(properties={'metadata': {'status': 'paid'}},
-                                                           order=mocked_created_order)
-
+        Inventory.calculate_payment_amount = mock.MagicMock(return_value=500)
+        response = self.app.post(f'payment_intents', data=json.dumps({'items': [], 'currency': 'eur'}))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.data)['paymentIntent']['amount'], 500)
 
-    def test_pay_order_failed_to_charge(self):
+    def test_payment_intent_updated_on_shipping(self):
         """
-        Mark the Order as failed to pay if we fail to create a Charge in the payment flow.
+        We should not be able to update a PaymentIntent with new shipping amount.
         """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_created_order)
-        stripe.Charge.create = mock.MagicMock(return_value=mocked_failed_charge)
-        Inventory.update_order = mock.MagicMock(return_value=mocked_created_order)
-
-        response = self.app.post(f'orders/{mocked_failed_order["id"]}/pay', data=json.dumps({'source': mocked_source}))
-        Inventory.update_order.assert_called_once_with(properties={'metadata': {'status': 'failed'}},
-                                                           order=mocked_created_order)
-
+        order_amount = 500
+        shipping_amount = 500
+        Inventory.calculate_payment_amount = mock.MagicMock(return_value=order_amount)
+        stripe.PaymentIntent.modify = mock.MagicMock(return_value={})
+        response = self.app.post(f'payment_intents/pi_1234/shipping_change', data=json.dumps({'items': [], 'shippingOption': { 'id': 'express' }}))
+        stripe.PaymentIntent.modify.assert_called_once_with('pi_1234', amount=order_amount + shipping_amount)
         self.assertEqual(response.status_code, 200)
-
-    def test_source_chargeable_webhook(self):
-        """
-        We should be able to receive the 'source.chargeable' webhook event and create a Charge.
-        """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_created_order)
-        stripe.Charge.create = mock.MagicMock(return_value=mocked_charge)
-        Inventory.update_order = mock.MagicMock(return_value=mocked_created_order)
-        stripe.Webhook.construct_event = mock.MagicMock(return_value=mocked_source_chargable_webhook_event)
-
-        response = self.app.post(f'webhook', data=json.dumps(mocked_source_chargeable_webhook_request),
-                                 headers={'stripe-signature': os.getenv('STRIPE_WEBHOOK_SECRET')})
-
-        self.assertEqual(response.status_code, 200)
-
-        Inventory.update_order.assert_called_once_with(properties={'metadata': {'status': 'paid'}},
-                                                           order=mocked_created_order)
-
-    def test_charge_succeeded_webhook(self):
-        """
-        We should be able to receive the 'charge.suceeded' webhook event and update the Order status to paid.
-        """
-        Inventory.update_order = mock.MagicMock(return_value=mocked_paid_order)
-        stripe.Webhook.construct_event = mock.MagicMock(return_value=mocked_charge_suceeded_webhook_event)
-
-        response = self.app.post(f'webhook', data=json.dumps(mock_charge_succeeded_webhook_request),
-                                 headers={'stripe-signature': os.getenv('STRIPE_WEBHOOK_SECRET')})
-
-        self.assertEqual(response.status_code, 200)
-
-        Inventory.update_order.assert_called_once_with(properties={'metadata': {'status': 'paid'}},
-                                                           order_id=mocked_paid_order['id'])
-
-    def test_source_chargeable_webhook_with_already_pending_payment(self):
-        """
-        If our Source is chargeable but the Order has a status of pending instead of created, send a 403.
-        """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_pending_order)
-        stripe.Charge.create = mock.MagicMock(return_value=mocked_charge)
-        Inventory.update_order = mock.MagicMock(return_value=mocked_pending_order)
-        stripe.Webhook.construct_event = mock.MagicMock(return_value=mocked_source_chargable_webhook_event)
-
-        response = self.app.post(f'webhook', data=json.dumps(mocked_source_chargeable_webhook_request),
-                                 headers={'stripe-signature': os.getenv('STRIPE_WEBHOOK_SECRET')})
-        self.assertEqual(response.status_code, 403)
-
-    def test_source_chargeable_webhook_throws_exception_bad_charge(self):
-        """
-        If our Source is chargeable and something happens when create the Charge we throw an Exception.
-        """
-        Inventory.retrieve_order = mock.MagicMock(return_value=mocked_created_order)
-        stripe.Charge.create = mock.MagicMock(side_effect=CardError('Test card error message', '', ''))
-        Inventory.update_order = mock.MagicMock(return_value=mocked_created_order)
-        stripe.Webhook.construct_event = mock.MagicMock(return_value=mocked_source_chargable_webhook_event)
-
-        response = self.app.post(f'webhook', data=json.dumps(mocked_source_chargeable_webhook_request),
-                                 headers={'stripe-signature': os.getenv('STRIPE_WEBHOOK_SECRET')})
-        self.assertEqual(response.status_code, 200)
-
-        Inventory.update_order.assert_called_once_with(properties={'metadata': {'status': 'failed'}},
-                                                           order=mocked_created_order)
-
-    def test_source_failed_webhook(self):
-        """
-        We should updated our Order status to failed for our 'source.canceled' and 'charge.failed' webhook events.
-        """
-        Inventory.update_order = mock.MagicMock(return_value=mocked_paid_order)
-        stripe.Webhook.construct_event = mock.MagicMock(return_value=mocked_source_failed_webhook_event)
-
-        response = self.app.post(f'webhook', data=json.dumps(mock_charge_succeeded_webhook_request),
-                                 headers={'stripe-signature': os.getenv('STRIPE_WEBHOOK_SECRET')})
-
-        self.assertEqual(response.status_code, 200)
-
-        Inventory.update_order.assert_called_once_with(properties={'metadata': {'status': 'failed'}},
-                                                           order_id=mocked_paid_order['id'])
 
 
 if __name__ == '__main__':
