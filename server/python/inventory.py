@@ -38,6 +38,7 @@ class Inventory:
 
     @staticmethod
     def get_shipping_cost(id) -> int:
+        # This would be a lookup in your database to get the shipping prices
         shipping_cost = {'free': 0, 'express': 500}
         return shipping_cost[id]
 
