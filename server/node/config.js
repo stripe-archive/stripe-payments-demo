@@ -21,7 +21,7 @@ module.exports = {
   // Make sure to check the docs: https://stripe.com/docs/sources
   paymentMethods: [
     // 'ach_credit_transfer', // usd (ACH Credit Transfer payments must be in U.S. Dollars)
-    'alipay', // Can be aud, cad, eur, gbp, hkd, jpy, nzd, sgd, or usd.
+    'alipay', // aud, cad, eur, gbp, hkd, jpy, nzd, sgd, or usd.
     'bancontact', // eur (Bancontact must always use Euros)
     'card', // many (https://stripe.com/docs/currencies#presentment-currencies)
     'eps', // eur (EPS must always use Euros)
@@ -30,7 +30,7 @@ module.exports = {
     'multibanco', // eur (Multibanco must always use Euros)
     // 'sepa_debit', // Restricted. See docs for activation details: https://stripe.com/docs/sources/sepa-debit
     'sofort', // eur (SOFORT must always use Euros)
-    'wechat', // Can be aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
+    'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
   ],
 
   // Configuration for Stripe.
@@ -51,6 +51,22 @@ module.exports = {
     // After creating a webhook, click to reveal details and find your signing secret.
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
   },
+
+  // Shipping options for the Payment Request API.
+  shippingOptions: [
+    {
+      id: 'free',
+      label: 'Free Shipping',
+      detail: 'Delivery within 5 days',
+      amount: 0,
+    },
+    {
+      id: 'express',
+      label: 'Express Shipping',
+      detail: 'Next day delivery',
+      amount: 500,
+    },
+  ],
 
   // Server port.
   port: process.env.PORT || 8000,

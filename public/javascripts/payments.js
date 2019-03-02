@@ -148,20 +148,7 @@
     },
     requestShipping: true,
     requestPayerEmail: true,
-    shippingOptions: [
-      {
-        id: 'free',
-        label: 'Free Shipping',
-        detail: 'Delivery within 5 days',
-        amount: 0,
-      },
-      {
-        id: 'express',
-        label: 'Express Shipping',
-        detail: 'Next day delivery',
-        amount: 500,
-      },
-    ],
+    shippingOptions: config.shippingOptions,
   });
 
   // Callback when a source is created.
@@ -211,6 +198,11 @@
       },
       status: 'success',
     });
+    const amount = store.formatPrice(
+      response.paymentIntent.amount,
+      config.currency
+    );
+    submitButton.innerText = `Pay ${amount}`;
   });
 
   // Create the Payment Request Button.

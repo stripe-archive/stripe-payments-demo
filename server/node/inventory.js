@@ -37,13 +37,11 @@ const productsExist = productList => {
   }, !!productList.data.length);
 };
 
-// Shipping cost.
-const getShippingCost = id => {
-  const shippingCost = {
-    free: 0,
-    express: 500,
-  };
-  return shippingCost[id];
+// Get shipping cost from config based on selected shipping option.
+const getShippingCost = shippingOption => {
+  return config.shippingOptions.filter(
+    option => option.id === shippingOption
+  )[0].amount;
 };
 
 exports.products = {

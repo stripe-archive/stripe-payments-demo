@@ -36,10 +36,14 @@ router.get('/', (req, res) => {
 // Calculate total payment amount based on items in basket.
 const calculatePaymentAmount = async items => {
   const productList = await products.list();
-  const skus = productList.data.reduce((a, c) => [...a, ...c.skus.data], []);
-  const total = items.reduce((a, c) => {
-    const sku = skus.filter(sku => sku.id === c.parent)[0];
-    return a + sku.price * c.quantity;
+  // Look up sku for the item so we can get the current price.
+  const skus = productList.data.reduce(
+    (a, product) => [...a, ...product.skus.data],
+    []
+  );
+  const total = items.reduce((a, item) => {
+    const sku = skus.filter(sku => sku.id === item.parent)[0];
+    return a + sku.price * item.quantity;
   }, 0);
   return total;
 };
@@ -176,6 +180,7 @@ router.get('/config', (req, res) => {
     country: config.country,
     currency: config.currency,
     paymentMethods: config.paymentMethods,
+    shippingOptions: config.shippingOptions,
   });
 });
 

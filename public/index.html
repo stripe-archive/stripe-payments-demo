@@ -221,13 +221,20 @@
       <div class="line-item demo">
         <div id="demo">
           <p class="label">Demo in test mode</p>
-          <p class="note">This app is running in test mode. You will
-            <em>not</em> be charged.</p>
-          <p class="note"> Feel free to test payments using a real card or any
-            <a href="https://stripe.com/docs/testing#cards" target="_blank">Stripe test card</a>. Non-card payments will redirect to test pages.
-          </p>
-          <p class="note">Run this app locally in live mode with your Stripe account to create real payments and see redirects to banking
-            sites.
+          <p class="note">You can copy and paste the following test cards to trigger different scenarios:</p>
+          <table class="note">
+            <tr>
+              <td>Default US card:</td>
+              <td class="card-number">4242<span></span>4242<span></span>4242<span></span>4242</td>
+            </tr>
+            <tr>
+              <td><a href="https://stripe.com/guides/strong-customer-authentication" target="_blank">3D Secure auth</a> required:</td>
+              <td class="card-number">4000<span></span>0000<span></span>0000<span></span>3063</td>
+            </tr>
+            </table>
+          <p class="note"> 
+            See the <a href="https://stripe.com/docs/testing#cards" target="_blank">docs</a> for a full list of test cards. 
+            Non-card payments will redirect to test pages.
           </p>
         </div>
       </div>

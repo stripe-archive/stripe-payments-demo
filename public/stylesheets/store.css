@@ -664,7 +664,7 @@ button:active {
   color: #666ee8;
 }
 
-#demo p.note {
+#demo .note {
   display: block;
   margin: 10px 0 0;
   font-size: 14px;
@@ -677,6 +677,15 @@ button:active {
 
 #demo p.note a:hover {
   text-decoration: none;
+}
+
+.card-number {
+  font-weight: bold;
+}
+
+.card-number span {
+  display: inline-block;
+  width: 8px;
 }
 
 /* Order Confirmation */
