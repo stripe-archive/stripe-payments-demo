@@ -54,7 +54,21 @@ def get_config():
         'stripeCountry': os.getenv('STRIPE_ACCOUNT_COUNTRY') or 'US',
         'country': 'US',
         'currency': 'eur',
-        'paymentMethods': os.getenv('PAYMENT_METHODS').split(', ') if os.getenv('PAYMENT_METHODS') else ['card']
+        'paymentMethods': os.getenv('PAYMENT_METHODS').split(', ') if os.getenv('PAYMENT_METHODS') else ['card'],
+        'shippingOptions': [
+        {
+            'id': 'free',
+            'label': 'Free Shipping',
+            'detail': 'Delivery within 5 days',
+            'amount': 0,
+        },
+        {
+            'id': 'express',
+            'label': 'Express Shipping',
+            'detail': 'Next day delivery',
+            'amount': 500,
+        }
+        ]
     })
 
 
