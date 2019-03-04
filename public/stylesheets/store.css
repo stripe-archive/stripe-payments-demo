@@ -680,7 +680,11 @@ button:active {
 }
 
 .card-number {
-  font-weight: bold;
+  padding-left: 8px;
+  white-space: nowrap;
+  font-family: Source Code Pro, monospace;
+  color: #0d2b3e;
+  font-weight: 500;
 }
 
 .card-number span {
