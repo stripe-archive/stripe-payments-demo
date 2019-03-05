@@ -23,53 +23,54 @@ module.exports = {
       this.promise = new Promise(async resolve => {
         // Create a few products and SKUs assuming they don't already exist.
         try {
-          // Increment Magazine.
-          const increment = await stripe.products.create({
-            id: 'increment',
+          // Highgrowth Handbook.
+          await stripe.products.create({
+            id: 'highgrowth',
             type: 'good',
-            name: 'Increment Magazine',
+            name: 'High Growth Handbook',
             attributes: ['issue'],
           });
           await stripe.skus.create({
-            id: 'increment-03',
-            product: 'increment',
-            attributes: {issue: 'Issue #3 “Development”'},
-            price: 399,
+            id: 'highgrowth-hardcover',
+            product: 'highgrowth',
+            attributes: {issue: 'Hardcover — Elad Gil'},
+            price: 1249,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
 
-          // Stripe Shirt.
-          const shirt = await stripe.products.create({
-            id: 'shirt',
+          // The Dream Machine.
+          await stripe.products.create({
+            id: 'dreammachine',
             type: 'good',
-            name: 'Stripe Shirt',
-            attributes: ['size', 'gender'],
+            name: 'The Dream Machine',
+            attributes: ['issue'],
           });
           await stripe.skus.create({
-            id: 'shirt-small-woman',
-            product: 'shirt',
-            attributes: {size: 'Small Standard', gender: 'Woman'},
-            price: 999,
+            id: 'dreammachine-hardcover',
+            product: 'dreammachine',
+            attributes: {issue: 'Hardcover — Mitchell Waldrop'},
+            price: 1099,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
 
-          // Stripe Pins.
-          const pins = await stripe.products.create({
-            id: 'pins',
+          // Stubborn Attachments.
+          await stripe.products.create({
+            id: 'stubborn',
             type: 'good',
-            name: 'Stripe Pins',
-            attributes: ['set'],
+            name: 'Stubborn Attachments',
+            attributes: ['issue'],
           });
           await stripe.skus.create({
-            id: 'pins-collector',
-            product: 'pins',
-            attributes: {set: 'Collector Set'},
-            price: 799,
+            id: 'stubborn-hardcover',
+            product: 'stubborn',
+            attributes: {issue: 'Hardcover — Tyler Cowen'},
+            price: 749,
             currency: config.currency,
-            inventory: {type: 'finite', quantity: 500},
+            inventory: {type: 'infinite'},
           });
+          
           console.log('Setup complete.');
           resolve();
           this.running = false;
