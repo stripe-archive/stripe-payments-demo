@@ -4,11 +4,11 @@ This demo uses a simple [Flask](http://flask.pocoo.org/) application as the serv
 
 ## Payments Integration
 
-- [`app.py`](app.py) contains the routes that interface with Stripe to create charges and receive webhook events.
+- [`app.py`](app.py) contains the routes that interface with Stripe to create PaymentIntents and receive webhook events.
 - [`setup.py`](setup.py) a simple setup script to make some fake Products and SKUs for our Stripe store.
 - [`tests/tests.py`](tests/tests.py) some unit tests that test the logic of our heavier APIs like `/webhook`.
 - [`test_data.py`](tests/tests.py) contains some hardcoded mocked responses to test with.
-- [`inventory_manager.py`](stripe_lib.py) a minimal wrapper over the Stripe Python SDK that handles creating/fetching products and caluclating payment amounts from SKUs. You can override this class with your own product and order management system code.
+- [`inventory.py`](stripe_lib.py) a minimal wrapper over the Stripe Python SDK that handles creating/fetching products and caluclating payment amounts. You can override this class with your own product and order management system code.
 
 ## Requirements
 
