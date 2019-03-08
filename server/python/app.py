@@ -5,7 +5,7 @@ app.py
 Stripe Payments Demo. Created by Adrienne Dreyfus (@adrind).
 
 This is our Flask server that handles requests from our Stripe checkout flow.
-It has all the endpoints you need to accept payments and manage orders.
+It has all the endpoints you need to accept payments.
 
 Python 3.6 or newer required.
 """
@@ -16,7 +16,7 @@ import setup
 import os
 
 from inventory import Inventory
-from stripe_types import Source, Order
+from stripe_types import Source
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from dotenv import load_dotenv, find_dotenv
 
@@ -53,7 +53,22 @@ def get_config():
         'stripePublishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY'),
         'stripeCountry': os.getenv('STRIPE_ACCOUNT_COUNTRY') or 'US',
         'country': 'US',
-        'currency': 'eur'
+        'currency': 'eur',
+        'paymentMethods': os.getenv('PAYMENT_METHODS').split(', ') if os.getenv('PAYMENT_METHODS') else ['card'],
+        'shippingOptions': [
+        {
+            'id': 'free',
+            'label': 'Free Shipping',
+            'detail': 'Delivery within 5 days',
+            'amount': 0,
+        },
+        {
+            'id': 'express',
+            'label': 'Express Shipping',
+            'detail': 'Next day delivery',
+            'amount': 500,
+        }
+        ]
     })
 
 
@@ -74,51 +89,38 @@ def retrieve_product(product_id):
     return jsonify(Inventory.retrieve_product(product_id))
 
 
-@app.route('/orders', methods=['POST'])
-def make_order():
-    # Creates a new Order with items that the user selected.
+@app.route('/payment_intents', methods=['POST'])
+def make_payment_intent():
+    # Creates a new PaymentIntent with items from the cart.
     data = json.loads(request.data)
     try:
-        order = Inventory.create_order(currency=data['currency'], items=data['items'], email=data['email'],
-                                       shipping=data['shipping'], create_intent=data['createIntent'])
+        payment_intent = stripe.PaymentIntent.create(
+            amount=Inventory.calculate_payment_amount(items=data['items']),
+            currency=data['currency'],
+            payment_method_types=os.getenv(
+                'PAYMENT_METHODS').split(', ') if os.getenv(
+                'PAYMENT_METHODS') else ['card']
+        )
 
-        return jsonify({'order': order})
+        return jsonify({'paymentIntent': payment_intent})
     except Exception as e:
         return jsonify(e), 403
 
 
-@app.route('/orders/<string:order_id>/pay', methods=['POST'])
-def pay_order(order_id):
-    """
-    Creates a Charge for an Order using a payment Source provided by the user.
-    """
-
+@app.route('/payment_intents/<string:id>/shipping_change', methods=['POST'])
+def update_payment_intent(id):
     data = json.loads(request.data)
-    source = data['source']
+    amount = Inventory.calculate_payment_amount(items=data['items'])
+    amount += Inventory.get_shipping_cost(data['shippingOption']['id'])
+    try:
+        payment_intent = stripe.PaymentIntent.modify(
+            id,
+            amount=amount
+        )
 
-    order = Inventory.retrieve_order(order_id)
-
-    if order['metadata']['status'] == 'pending' or order['metadata']['status'] == 'paid':
-        # Somehow this Order has already been paid for -- abandon request.
-        return jsonify({'source': source, 'order': order}), 403
-
-    if source['status'] == 'chargeable':
-        # Yay! Our user gave us a valid payment Source we can charge.
-        charge = stripe.Charge.create(source=source['id'], amount=order['amount'], currency=order['currency'],
-                                      receipt_email=order['email'], idempotency_key=order['id'])
-
-        if charge and charge['status'] == 'succeeded':
-            status = 'paid'
-        elif charge and 'status' in charge:
-            status = charge['status']
-        else:
-            status = 'failed'
-
-        # Update the Order with a new status based on what happened with the Charge.
-        Inventory.update_order(
-            properties={'metadata': {'status': status}}, order=order)
-
-    return jsonify({'order': order, 'source': source})
+        return jsonify({'paymentIntent': payment_intent})
+    except Exception as e:
+        return jsonify(e), 403
 
 
 @app.route('/webhook', methods=['POST'])
@@ -146,9 +148,8 @@ def webhook_received():
 
     # PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents
     # Monitor payment_intent.succeeded & payment_intent.payment_failed events.
-    if data_object['object'] == 'payment_intent' and 'order' in data_object['metadata']:
+    if data_object['object'] == 'payment_intent':
         payment_intent = data_object
-        order = stripe.Order.retrieve(payment_intent['metadata']['order'])
 
         if event_type == 'payment_intent.succeeded':
             print('🔔  Webhook received! Payment for PaymentIntent ' +
@@ -160,61 +161,40 @@ def webhook_received():
     # Monitor `source.chargeable` events.
     if data_object['object'] == 'source' \
             and data_object['status'] == 'chargeable' \
-            and 'order' in data_object['metadata']:
+            and 'paymentIntent' in data_object['metadata']:
         source = data_object
-        print(f'Webhook received! The source {source["id"]} is chargeable')
+        print(f'🔔  Webhook received! The source {source["id"]} is chargeable')
 
-        # Find the corresponding Order this Source is for by looking in its metadata.
-        order = Inventory.retrieve_order(source['metadata']['order'])
+        # Find the corresponding PaymentIntent this Source is for by looking in its metadata.
+        payment_intent = stripe.PaymentIntent.retrieve(
+            source['metadata']['paymentIntent'])
 
-        # Verify that this Order actually needs to be paid.
-        order_status = order['metadata']['status']
-        if order_status in ['pending', 'paid', 'failed']:
-            return jsonify({'error': f'Order already has a status of {order_status}'}), 403
+        # Verify that this PaymentIntent actually needs to be paid.
+        if payment_intent['status'] != 'requires_payment_method':
+            return jsonify({'error': f'PaymentIntent already has a status of {payment_intent["status"]}'}), 403
 
-        # Create a Charge to pay the Order using the Source we just received.
-        try:
-            charge = stripe.Charge.create(source=source['id'], amount=order['amount'], currency=order['currency'],
-                                          receipt_email=order['email'], idempotency_key=order['id'])
+        # Confirm the PaymentIntent with the chargeable source.
+        payment_intent.confirm(source=source['id'])
 
-            if charge and charge['status'] == 'succeeded':
-                status = 'paid'
-            elif charge:
-                status = charge['status']
-            else:
-                status = 'failed'
-
-        except stripe.error.CardError:
-            # This is where you handle declines and errors.
-            # For the demo, we simply set the status to mark the Order as failed.
-            status = 'failed'
-
-        Inventory.update_order(
-            properties={'metadata': {'status': status}}, order=order)
-
-    # Monitor `charge.succeeded` events.
-    if data_object['object'] == 'charge' \
-            and data_object['status'] == 'succeeded' \
-            and 'order' in data_object['source']['metadata']:
-        charge = data_object
-        print(f'Webhook received! The charge {charge["id"]} succeeded.')
-        Inventory.update_order(properties={'metadata': {'status': 'paid'}},
-                               order_id=charge['source']['metadata']['order'])
-
-    # Monitor `source.failed`, `source.canceled`, and `charge.failed` events.
-    if data_object['object'] in ['source', 'charge'] and data_object['status'] in ['failed', 'canceled']:
-        source = data_object['source'] if data_object['source'] else data_object
-        print(f'Webhook received! Failure for {data_object["id"]}.`')
-
-        if source['metadata']['order']:
-            Inventory.update_order(properties={'metadata': {'status': 'failed'}},
-                                   order_id=source['metadata']['order']['id'])
+    # Monitor `source.failed` and `source.canceled` events.
+    if data_object['object'] == 'source' and data_object['status'] in ['failed', 'canceled']:
+        # Cancel the PaymentIntent.
+        source = data_object
+        intent = stripe.PaymentIntent.retrieve(
+            source['metadata']['paymentIntent'])
+        intent.cancel()
 
     return jsonify({'status': 'success'})
+
+
+@app.route('/payment_intents/<string:id>/status', methods=['GET'])
+def retrieve_payment_intent_status(id):
+    payment_intent = stripe.PaymentIntent.retrieve(id)
+    return jsonify({'paymentIntent': {'status': payment_intent["status"]}})
 
 
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
     stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-    stripe.api_version = '2018-02-06'
+    stripe.api_version = '2019-02-11'
     app.run()
