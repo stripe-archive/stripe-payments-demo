@@ -60,9 +60,5 @@ ngrok will display a UI in your terminal telling you the new forwarding address 
 
 Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `http://75795038.ngrok.io/webhook`.
 
-## Tests
-
-TODO
-
 ## Credits
 - Code: [Mike Shaw](https://www.linkedin.com/in/mandshaw/)
