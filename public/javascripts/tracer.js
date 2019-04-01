@@ -15,8 +15,17 @@ class Tracer {
 
       store.updateConfig({'aquarium-id': aquariumId});
     }
+    const demoElement = document.getElementById('testmode-info');
+    demoElement.insertAdjacentHTML('afterend', '\
+      <div id="integration-settings" class="line-item">\
+        <div class="demo">\
+        <p class="label">Integration Settings:</p>\
+        <p><a id="integration-settings-tracer-link" target="_blank" class="tip">Live API Trace</a></p>\
+        </div>\
+      </div>'
+    )
     document.getElementById(
-      'tracer-link'
+      'integration-settings-tracer-link'
     ).href = `https://stripe-tracer.com?aquarium-id=${
       demoConfig['aquarium-id']
     }`;
