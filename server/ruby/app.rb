@@ -109,11 +109,15 @@ post '/payment_intents/:id/shipping_change' do
   amount += Inventory.get_shipping_cost(data['shippingOption']['id'])
 
   payment_intent = Stripe::PaymentIntent.update(
-    params[id],
+    params['id'],
     {
       amount: amount
     }
   )
+  
+  {
+    paymentIntent: payment_intent
+  }.to_json
 end
 
 post '/webhook' do

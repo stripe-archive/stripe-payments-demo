@@ -27,9 +27,9 @@ class Inventory
   def self.get_shipping_cost(id)
     shipping_cost = {
       free: 0,
-      express: 500
+      express: 500,
     }
-    shipping_cost[id]
+    shipping_cost[id.to_sym]
   end
 
   def self.list_products
