@@ -652,30 +652,31 @@ button:active {
   line-height: inherit;
 }
 
-#demo {
+.demo {
   padding: 15px;
   margin: -15px -15px 0;
   background: #f6f9fc;
   border-radius: 5px;
+  min-width: 108%;
 }
 
-#demo p.label {
+.demo p.label {
   margin: 0 0 10px;
   color: #666ee8;
 }
 
-#demo .note {
+.demo .note {
   display: block;
   margin: 10px 0 0;
   font-size: 14px;
 }
 
-#demo p.note a,
-#demo p.note em {
+.demo p.note a,
+.demo p.note em {
   font-size: 14px;
 }
 
-#demo p.note a:hover {
+.demo p.note a:hover {
   text-decoration: none;
 }
 
