@@ -33,6 +33,12 @@
     betas: ['payment_intent_beta_3'],
   });
 
+  // Trace Stripe Calls
+  if (config.enableTracing) {
+    Tracer.SetupTracingConfig(store);
+    Tracer.TraceStripe(stripe);
+  }
+
   // Create an instance of Elements.
   const elements = stripe.elements();
 

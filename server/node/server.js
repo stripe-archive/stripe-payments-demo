@@ -33,6 +33,11 @@ app.use(express.static(path.join(__dirname, '../../public')));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
+if (config.enableTracing) {
+  const tracer = require('./tracer');
+  tracer.traceApp({application: app, webhookPath: '/webhook'});
+}
+
 // Define routes.
 app.use('/', require('./routes'));
 

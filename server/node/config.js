@@ -7,6 +7,7 @@
 'use strict';
 
 // Load environment variables from the `.env` file.
+const stripe = require('stripe');
 require('dotenv').config();
 
 module.exports = {
@@ -32,7 +33,7 @@ module.exports = {
     'sofort', // eur (SOFORT must always use Euros)
     'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
   ],
-
+  enableTracing: process.env.ENABLE_TRACING,
   // Configuration for Stripe.
   // API Keys: https://dashboard.stripe.com/account/apikeys
   // Webhooks: https://dashboard.stripe.com/account/webhooks
@@ -50,6 +51,7 @@ module.exports = {
     // Setting the webhook secret is good practice in order to verify signatures.
     // After creating a webhook, click to reveal details and find your signing secret.
     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    client: stripe(process.env.STRIPE_SECRET_KEY)
   },
 
   // Shipping options for the Payment Request API.

@@ -11,10 +11,32 @@
 
 class Store {
   constructor() {
+    const url_string = window.location.href;
+    const url = new URL(url_string);
+    this.demoConfig = {
+      // destination | direct | none
+      'aquarium-id': url.searchParams.get('aquarium-id'),
+    };
+
     this.lineItems = [];
     this.products = {};
     this.productsFetchPromise = null;
     this.displayPaymentSummary();
+  }
+
+  getDemoConfig() {
+    return this.demoConfig;
+  }
+
+  updateConfig(configDiff) {
+    let config = Object.assign(this.demoConfig, configDiff);
+    const url_string = window.location.href;
+    const url = new URL(url_string);
+    Object.keys(config).forEach(key => {
+      url.searchParams.set(key, config[key]);
+    });
+    window.history.replaceState('', 'Stripe Payments Demo', url.href);
+    this.demoConfig = config;
   }
 
   // Compute the total for the payment based on the line items (SKUs and quantity).

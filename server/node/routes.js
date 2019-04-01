@@ -15,7 +15,7 @@ const setup = require('./setup');
 const {products} = require('./inventory');
 const express = require('express');
 const router = express.Router();
-const stripe = require('stripe')(config.stripe.secretKey);
+const stripe = config.stripe.client;
 stripe.setApiVersion(config.stripe.apiVersion);
 
 // Render the main app HTML.
@@ -176,6 +176,7 @@ router.post('/webhook', async (req, res) => {
 router.get('/config', (req, res) => {
   res.json({
     stripePublishableKey: config.stripe.publishableKey,
+    enableTracing: config.enableTracing,
     stripeCountry: config.stripe.country,
     country: config.country,
     currency: config.currency,
