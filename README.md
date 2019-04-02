@@ -35,7 +35,7 @@ The frontend code for the demo is in the `public/` directory.
 The core logic of the Stripe integration is mostly contained within two files:
 
 1.  [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
-2.  [`server/node/routes.js`](server/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
+2.  [`server/node/routes.js`](server/node/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
 
 ### Card Payments with Stripe Elements
 
