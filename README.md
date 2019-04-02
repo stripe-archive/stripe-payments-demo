@@ -10,7 +10,7 @@ If you’re running a compatible browser, this demo also showcases the [Payment 
 
 ## Overview
 
-<img src="public/images/screenshots/demo-chrome.png" alt="Demo on Google Chrome" width="610"><img src="public/images/screenshots/demo-iphone.png" alt="Demo on Safari iPhone X" width="278">
+<img src="public/images/screenshots/demo-chrome.png" alt="Demo on Google Chrome" width="610"><img src="public/images/screenshots/demo-iphone.png" alt="Demo on Safari iPhone X" width="272">
 
 This demo provides an all-in-one example for integrating with Stripe on the web:
 
