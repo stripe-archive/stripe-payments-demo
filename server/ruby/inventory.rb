@@ -6,20 +6,13 @@ Dotenv.load(File.dirname(__FILE__) + '/../../.env')
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
 Stripe.api_version = '2019-02-11'
 
-# For product retrieval and listing set API version to 2018-02-28 so that skus are returned.
-@@product_api_stripe_version = '2018-02-28'
-
 class Inventory
-  def self.calculate_payment_amount(items)
-    Stripe.api_version = @@product_api_stripe_version
-    product_list = Stripe::Product.list(limit: 3)
-    product_list_data = product_list['data']
 
+  def self.calculate_payment_amount(items)
     total = 0
     items.each do |item|
-      sku_id = item['parent']
-      product = product_list_data.find {|product| product['skus']['data'][0]['id'] == sku_id}
-      total += product['skus']['data'][0]['price'] * item['quantity']
+      sku = Stripe::SKU.retrieve(item['parent'])
+      total += sku.price * item['quantity']
     end
     total
   end
@@ -33,12 +26,17 @@ class Inventory
   end
 
   def self.list_products
-    Stripe.api_version = @@product_api_stripe_version
     Stripe::Product.list(limit: 3)
   end
 
+  def self.list_skus(product_id)
+    Stripe::SKU.list(
+      limit: 3,
+      product: product_id
+      )
+  end
+
   def self.retrieve_product(product_id)
-    Stripe.api_version = @@product_api_stripe_version
     Stripe::Product.retrieve(product_id)
   end
 

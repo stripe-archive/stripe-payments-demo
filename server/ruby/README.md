@@ -30,7 +30,7 @@ Copy the example environment variables file `.env.example` from the root of the 
 cp .env.example .env
 ```
 
-User `bundler` to install the required gems
+User `bundler` to install the required gems by navigating to ./server/ruby and running:
 
 ```
 bundle install
@@ -53,12 +53,12 @@ First [download ngrok](https://ngrok.com) and start your Sinatra application.
 [Run ngrok](https://ngrok.com/docs). Assuming your Sinatra application is running on the default port 4567, you can simply run ngrok in your Terminal in the directory where you downloaded ngrok:
 
 ```
-./ngrok http 4567
+ngrok http 4567
 ```
 
 ngrok will display a UI in your terminal telling you the new forwarding address for your Sinatra app. Use this URL as the URL to be called in your developer [webhooks panel.](https://dashboard.stripe.com/account/webhooks)
 
-Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `http://75795038.ngrok.io/webhook`.
+Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `https://75795038.ngrok.io/webhook`.
 
 ## Credits
 - Code: [Mike Shaw](https://www.linkedin.com/in/mandshaw/)

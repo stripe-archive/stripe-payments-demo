@@ -54,13 +54,34 @@ class Store {
     }
   }
 
+  // Retrieve a SKU for the Product where the API Version is newer and doesn't include them on v1/product
+  async getSKU(product_id) {
+    try {
+      const response = await fetch(`/product/${product_id}/skus`);
+      const skus = await response.json();
+      this.products[product_id].skus = skus;
+    } catch (err) {
+      return {error: err.message};
+    }
+  }
+
   // Load the product details.
   loadProducts() {
     if (!this.productsFetchPromise) {
       this.productsFetchPromise = new Promise(async resolve => {
         const productsResponse = await fetch('/products');
         const products = (await productsResponse.json()).data;
-        products.forEach(product => (this.products[product.id] = product));
+        // For each product I need to check if there are skus and if not
+        // Go get them. This does not load in time. 
+        for (const product of products) {
+          this.products[product.id] = product;
+          if (!product.skus) {
+            await this.getSKU(product.id)
+          }
+        }
+        // products.forEach(async function(product) {
+          
+        // });
         resolve();
       });
     }
