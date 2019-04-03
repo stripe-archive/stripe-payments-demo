@@ -19,5 +19,8 @@ node_modules/
 # Python server
 server/python/
 
+# Ruby server
+server/ruby/
+
 # serverless functions
 serverless/
