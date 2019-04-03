@@ -31,7 +31,7 @@ class Inventory
 
   def self.list_skus(product_id)
     Stripe::SKU.list(
-      limit: 3,
+      limit: 1,
       product: product_id
       )
   end

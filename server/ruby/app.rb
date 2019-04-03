@@ -9,6 +9,7 @@ require_relative 'setup'
 
 Dotenv.load(File.dirname(__FILE__) + '/../../.env')
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
+Stripe.api_version = '2019-02-11'
 
 set :static, true
 set :root, File.dirname(__FILE__)
