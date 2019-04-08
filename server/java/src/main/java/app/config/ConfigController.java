@@ -1,7 +1,6 @@
 package app.config;
 
-import com.google.gson.Gson;
-import app.config.Config;
+import com.google.gson.*;
 import spark.*;
 
 public class ConfigController {
@@ -12,6 +11,8 @@ public class ConfigController {
 
         response.status(200);
         response.type("application/json");
+
+        // Return as camel case as JS is expecting that
         return new Gson().toJson(config);
     };
 }

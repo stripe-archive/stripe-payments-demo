@@ -1,5 +1,6 @@
 package app.fulfillment;
 
+import com.stripe.net.ApiResource;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -11,10 +12,18 @@ public class FulfillmentController {
         String payload = request.body();
         String header = request.headers("Stripe-Signature");
 
-        Fulfillment.fulfill(Fulfillment.verifyAndReturn(payload, header));
+        Integer responseCode = Fulfillment.fulfill(Fulfillment.verifyAndReturn(payload, header));
 
-        response.status(200);
+        String message;
+
+        if (responseCode == 200) {
+            message = "success";
+        } else {
+            message = "failure";
+        }
+
+        response.status(responseCode);
         response.type("application/json");
-        return response;
+        return ApiResource.GSON.toJson(message);
     };
 }
