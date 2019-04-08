@@ -6,7 +6,6 @@ import com.stripe.model.Product;
 import com.stripe.model.Sku;
 import com.stripe.model.ProductCollection;
 import com.stripe.model.SkuCollection;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
@@ -28,8 +27,14 @@ public class Inventory {
         return total;
     }
 
-    public static Integer getShippingCost(String id) {
-        throw new NotImplementedException();
+    public static Long getShippingCost(String id) {
+        if (id.equals("free")) {
+            return 0L;
+        } else if (id.equals("express")) {
+            return 500L;
+        } else {
+            return 0L;
+        }
     }
 
     public static SkuCollection listSkus(String productId) throws StripeException{
@@ -62,9 +67,5 @@ public class Inventory {
         Stripe.apiKey = System.getenv("STRIPE_SECRET_KEY");
 
         return Product.retrieve(id);
-    }
-
-    public static Boolean productsExist(ArrayList<Product> productList) {
-        throw new NotImplementedException();
     }
 }

@@ -2,9 +2,10 @@ package app.product;
 
 import app.inventory.Inventory;
 import app.seed.Seed;
-import com.google.gson.Gson;
+import com.stripe.net.ApiResource;
 import com.stripe.model.ProductCollection;
 import com.stripe.model.SkuCollection;
+import com.stripe.model.Product;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -19,14 +20,24 @@ public class ProductController {
         if (products.getData().size() > 0) {
             response.status(200);
             response.type("application/json");
-            return new Gson().toJson(products);
+            return ApiResource.GSON.toJson(products);
         } else {
             Seed.seed();
             products = Inventory.listProducts();
             response.status(200);
             response.type("application/json");
-            return new Gson().toJson(products);
+            return ApiResource.GSON.toJson(products);
         }
+    };
+
+    public static Route getProduct = (Request request, Response response) -> {
+
+        Product product = Inventory.retrieveProduct(request.params(":id"));
+
+        response.status(200);
+        response.type("application/json");
+        return ApiResource.GSON.toJson(product);
+
     };
 
     public static Route getSKUsForProduct = (Request request, Response response) -> {
@@ -37,7 +48,7 @@ public class ProductController {
 
         response.status(200);
         response.type("application/json");
-        return new Gson().toJson(skus);
+        return ApiResource.GSON.toJson(skus);
 
     };
 }
