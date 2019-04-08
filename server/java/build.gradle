@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
 
 group 'com.stripe'
@@ -9,6 +10,14 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'app.Application'
+        )
+    }
 }
 
 dependencies {
