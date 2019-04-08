@@ -23,7 +23,7 @@ Before getting started check that you have java installed
 java -version
 ```
 
-Set the enviroment variables for the web application. You can copy the environment variables from [here](../../.env/example)
+Set the enviroment variables for the web application. You can copy the environment variables from [here](../../.env.example)
 
 ```
 export STRIPE_PUBLISHABLE_KEY=
