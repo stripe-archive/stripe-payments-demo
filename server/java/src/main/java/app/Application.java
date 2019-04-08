@@ -11,7 +11,7 @@ public class Application {
 
     public static void main(String[] args) {
         port(4567);
-        staticFiles.externalLocation("/Users/mikeshaw/scratch/stripe-payments-demo/public");
+        staticFiles.externalLocation("../../public");
         staticFiles.expireTime(600L);
 
         get("/config", ConfigController.getConfig);
