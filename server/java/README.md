@@ -44,6 +44,12 @@ gradle build
 Use `gradle` to build a "fatjar" including all the apps dependencies.
 
 ```
+gradle shadowJar
+```
+
+This will build a JAR in the `./build/libs` directory. Running this JAR will start the Spark Web Application on port 4567.
+
+```
 java -jar build/libs/salesPaymentDemo-1.0-SNAPSHOT.jar
 ```
 
