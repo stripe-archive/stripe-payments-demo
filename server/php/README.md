@@ -33,7 +33,7 @@ Then update your `settings.php` file with your own [Stripe API keys](https://das
 That's it, you can now run the application by using the PHP built-in server still from the `server/php` directory:
 
 ```
-php -S localhost:8888 -t ./ index.php
+composer start
 ```
 
 You should now see it running on [`http://localhost:8888/`](http://localhost:8888/)
@@ -51,7 +51,7 @@ First [download ngrok](https://ngrok.com) and start your PHP application.
 [Run ngrok](https://ngrok.com/docs). Assuming your PHP application is running on the port 8888, you can simply run ngrok in your Terminal in the directory where you downloaded ngrok:
 
 ```
-./ngrok http 8888
+ngrok http 8888
 ```
 
 ngrok will display a UI in your terminal telling you the new forwarding address for your PHP app. Use this URL as the URL to be called in your developer [webhooks panel.](https://dashboard.stripe.com/account/webhooks)
