@@ -66,8 +66,8 @@ $app->get('/config', function (Request $request, Response $response, array $args
   return $response->withJson([
     'stripePublishableKey' => $config['publishableKey'],
     'stripeCountry' => $config['accountCountry'],
-    'country' => $config['accountCountry'],
-    'currency' => $config['accountCurrency'],
+    'country' => $config['defaultCountry'],
+    'currency' => $config['cartCurrency'],
     'paymentMethods' => implode($config['paymentMethods'], ', '),
     'shippingOptions' => Shipping::getShippingOptions()
   ]);

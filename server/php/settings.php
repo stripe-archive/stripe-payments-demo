@@ -13,7 +13,7 @@ return [
 
         'stripe' => [
           // You shouldn't have to touch this
-          'apiVersion' => '2019-02-11',
+          'apiVersion' => '2019-03-14',
 
           // Update this path if you want to move your public folder
           'staticDir' => __DIR__ . '/../../public/',
@@ -25,9 +25,14 @@ return [
           // Find it at https://dashboard.stripe.com/account/webhooks
           'webhookSecret' => '',
 
-          // Your prefered country and currency
+          // Your account country
           'accountCountry' => 'US',
-          'accountCurrency' => 'usd',
+
+          // Your shop currency
+          'shopCurrency' => 'usd',
+
+          // The default country selected for the billing address
+          'defaultCountry' => 'US',
 
           // Adapt these to match your account payments settings
           // https://dashboard.stripe.com/account/payments/settings
