@@ -133,7 +133,7 @@ $app->post('/webhook', function (Request $request, Response $response, array $ar
   if ($webhookSecret) {
     try {
       $event = \Stripe\Webhook::constructEvent(
-        @file_get_contents('php://input'),
+        $request->getBody(),
         $request->getHeaderLine('stripe-signature'),
         $webhookSecret
       );
