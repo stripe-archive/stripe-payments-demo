@@ -67,7 +67,7 @@ $app->get('/config', function (Request $request, Response $response, array $args
     'stripePublishableKey' => $config['publishableKey'],
     'stripeCountry' => $config['accountCountry'],
     'country' => $config['defaultCountry'],
-    'currency' => $config['cartCurrency'],
+    'currency' => $config['shopCurrency'],
     'paymentMethods' => implode($config['paymentMethods'], ', '),
     'shippingOptions' => Shipping::getShippingOptions()
   ]);
