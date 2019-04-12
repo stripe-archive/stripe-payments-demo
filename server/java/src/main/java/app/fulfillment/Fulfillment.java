@@ -80,7 +80,7 @@ public class Fulfillment {
                 pi = PaymentIntent.retrieve(source.getMetadata().get("paymentIntent"));
 
                 // If the PaymentIntent already has a source, return a 403
-                if (pi.getStatus() != "requires_payment_method") {
+                if (!(pi.getStatus().equals("requires_payment_method"))) {
                     return 403;
                 }
 

@@ -49,12 +49,18 @@ public class PaymentController {
 
         String paymentIntentId = request.params(":id");
 
-        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+        PaymentIntent paymentIntent = Payment.getPaymentIntent(paymentIntentId);
 
         response.status(200);
         response.type("application/json");
 
-        return paymentIntent;
+        Map<String, Object> status = new HashMap<>();
+        status.put("status", paymentIntent.getStatus());
+
+        Map<String, Object> wrapper = new HashMap<String, Object>();
+        wrapper.put("paymentIntent", status);
+
+        return ApiResource.GSON.toJson(wrapper);
 
     };
 }

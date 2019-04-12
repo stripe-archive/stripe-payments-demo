@@ -18,10 +18,12 @@ public class Inventory {
         Stripe.apiKey = System.getenv("STRIPE_SECRET_KEY");
 
         Long total = 0L;
+        Integer quantity = 0;
 
         for (Map product: items) {
             Sku sku = Sku.retrieve(product.get("parent").toString());
-            total += sku.getPrice();
+            quantity = ((Double) product.get("quantity")).intValue();
+            total += sku.getPrice() * quantity;
         }
 
         return total;
