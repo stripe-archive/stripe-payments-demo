@@ -21,7 +21,7 @@
     "ejs": "^2.5.7",
     "express": "^4.15.2",
     "morgan": "^1.8.1",
-    "stripe": "^6.13.0"
+    "stripe": "^6.28.0"
   },
   "devDependencies": {
     "ngrok": "^2.2.9"
