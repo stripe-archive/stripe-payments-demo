@@ -16,7 +16,7 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-stripe.api_version = '2019-02-11'
+stripe.api_version = '2019-03-14'
 
 # For product retrieval and listing set API version to 2018-02-28 so that skus are returned.
 product_api_stripe_version = '2018-02-28'

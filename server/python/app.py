@@ -155,8 +155,12 @@ def webhook_received():
             print('🔔  Webhook received! Payment for PaymentIntent ' +
                   payment_intent['id']+' succeeded')
         elif event_type == 'payment_intent.payment_failed':
-            print('🔔  Webhook received! Payment on source ' + payment_intent['last_payment_error']['source']['id'] +
-                  ' for PaymentIntent ' + payment_intent['id'] + ' failed.')
+            if 'payment_method' in payment_intent['last_payment_error']:
+                payment_source_or_method = payment_intent['last_payment_error']['payment_method']
+            else: 
+                payment_source_or_method = payment_intent['last_payment_error']['source']
+            print('🔔  Webhook received! Payment on ' + payment_source_or_method['object'] + ' ' 
+                  + payment_source_or_method['id'] + ' for PaymentIntent ' + payment_intent['id'] + ' failed.')
 
     # Monitor `source.chargeable` events.
     if data_object['object'] == 'source' \
@@ -196,5 +200,5 @@ def retrieve_payment_intent_status(id):
 if __name__ == '__main__':
     load_dotenv(find_dotenv())
     stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-    stripe.api_version = '2019-02-11'
+    stripe.api_version = '2019-03-14'
     app.run()
