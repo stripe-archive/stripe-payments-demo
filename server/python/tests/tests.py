@@ -32,7 +32,7 @@ class AppTestCase(TestCase):
     def test_config(self):
         response = self.app.get('/config')
         self.assertListEqual(list(json.loads(response.data).keys()),
-                             ['country', 'currency', 'paymentMethods', 'stripeCountry', 'stripePublishableKey'])
+                             ['country', 'currency', 'paymentMethods', 'shippingOptions', 'stripeCountry', 'stripePublishableKey'])
         self.assertEqual(response.status_code, 200)
 
     def test_create_payment_intent(self):
