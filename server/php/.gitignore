@@ -1,3 +1,4 @@
 /vendor/
 /logs/*
 composer.lock
+settings.ini

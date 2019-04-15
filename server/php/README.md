@@ -28,7 +28,7 @@ cd server/php
 composer install
 ```
 
-Then update your `settings.php` file with your own [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details you might want to add.
+Rename `settings.ini.example` to `settings.ini` and update your [Stripe API keys](https://dashboard.stripe.com/account/apikeys) and any other configuration details you might want to add.
 
 That's it, you can now run the application by using the PHP built-in server still from the `server/php` directory:
 

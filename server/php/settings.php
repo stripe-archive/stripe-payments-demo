@@ -1,4 +1,14 @@
 <?php
+$iniFilename = __DIR__ . '/settings.ini';
+if (!is_file($iniFilename)) {
+  die('Missing settings.ini file.');
+}
+
+$settings = parse_ini_file($iniFilename);
+if (!$settings) {
+  die('Unable to read settings.ini file. Please check file format and read access.');
+}
+
 return [
     'settings' => [
         'displayErrorDetails' => true, // set to false in production
@@ -18,22 +28,6 @@ return [
           // Update this path if you want to move your public folder
           'staticDir' => __DIR__ . '/../../public/',
 
-          // Find them at https://dashboard.stripe.com/account/apikeys
-          'publishableKey' => '',
-          'secretKey' => '',
-
-          // Find it at https://dashboard.stripe.com/account/webhooks
-          'webhookSecret' => '',
-
-          // Your account country
-          'accountCountry' => 'US',
-
-          // Your shop currency
-          'shopCurrency' => 'usd',
-
-          // The default country selected for the billing address
-          'defaultCountry' => 'US',
-
           // Adapt these to match your account payments settings
           // https://dashboard.stripe.com/account/payments/settings
           'paymentMethods' => [
@@ -49,6 +43,14 @@ return [
             'sofort', // eur (SOFORT must always use Euros)
             'wechat' // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
           ],
+
+          // See settings.ini
+          'publishableKey' => $settings['publishableKey'],
+          'secretKey' => $settings['secretKey'],
+          'webhookSecret' => $settings['webhookSecret'],
+          'accountCountry' => $settings['accountCountry'],
+          'shopCurrency' => $settings['shopCurrency'],
+          'defaultCountry' => $settings['defaultCountry']
         ]
     ],
 ];
