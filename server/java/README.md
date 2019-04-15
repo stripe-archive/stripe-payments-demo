@@ -63,6 +63,7 @@ Java is a strictly typed language. As such when deserializing objects using the 
 compatible with the API version the Stripe Java SDK you are using. If you are using a new SDK and have an older API Version on your account you may see errors
 when trying to deserialize or use deserialized objects.
 
+You can see which version of the Java SDK Matches which API Version [here](https://github.com/stripe/stripe-java/blob/master/src/main/java/com/stripe/Stripe.java#L13)
 
 If you want to test [receiving webhooks](https://stripe.com/docs/webhooks), we recommend using ngrok to expose your local server.
 
