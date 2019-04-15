@@ -1,6 +1,7 @@
 # Stripe Payments Demo — PHP Server
 
 This demo uses:
+
 - [Slim](http://www.slimframework.com/) as the API framework.
 - [stripe-php](https://github.com/stripe/stripe-php) as the SDK to interact with Stripe's APIs
 - [monolog/monolog](https://github.com/Seldaek/monolog) as the logging interface
@@ -39,6 +40,7 @@ composer start
 You should now see it running on [`http://localhost:8888/`](http://localhost:8888/)
 
 Optionally you can change the directory tree to fit your needs, don't forget to:
+
 - change the path to the `public` directory in `settings.php`
 - uncomment the `RewriteBase` option in [`.htaccess`](.htaccess) and update the value accordingly if needed
 
@@ -56,8 +58,12 @@ ngrok http 8888
 
 ngrok will display a UI in your terminal telling you the new forwarding address for your PHP app. Use this URL as the URL to be called in your developer [webhooks panel.](https://dashboard.stripe.com/account/webhooks)
 
-Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `http://75795038.ngrok.io/webhook`.
+Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `https://75795038.ngrok.io/webhook`.
 
 ## Logging
 
 The application logs webhook events in `server/php/logs`. Make sure your server has write access to that directory.
+
+## Credits
+
+- Code: [Youssef Ben Othman](https://twitter.com/_youbo)

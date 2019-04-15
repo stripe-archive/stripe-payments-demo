@@ -65,6 +65,7 @@ Instructions for running the Node.js server in [`server/node`](/server/node) are
 
 - Java, Spark: [`server/java`](/server/java)
 - Node, Express: [`server/node`](/server/node)
+- PHP, Slim: [`server/php`](/server/php)
 - Python, Flask: [`server/python`](/server/python)
 - Ruby, Sinatra: [`server/ruby`](/server/ruby)
 
