@@ -57,6 +57,13 @@ You should now see it running on [`http://localhost:4567/`](http://localhost:456
 
 ### Testing Webhooks
 
+#### :warning: API Versions
+
+Java is a strictly typed language. As such when deserializing objects using the Stripe Java SDK one should ensure that the API version of their account is
+compatible with the API version the Stripe Java SDK you are using. If you are using a new SDK and have an older API Version on your account you may see errors
+when trying to deserialize or use deserialized objects.
+
+
 If you want to test [receiving webhooks](https://stripe.com/docs/webhooks), we recommend using ngrok to expose your local server.
 
 First [download ngrok](https://ngrok.com) and start your Spark application.
