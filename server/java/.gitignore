@@ -1,0 +1,5 @@
+# Java backend files
+build/*
+.gradle/*
+gradle/*
+out/*

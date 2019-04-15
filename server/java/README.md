@@ -30,7 +30,7 @@ export STRIPE_PUBLISHABLE_KEY=
 export STRIPE_SECRET_KEY=
 export STRIPE_WEBHOOK_SECRET=
 export STRIPE_ACCOUNT_COUNTRY=
-export PAYMENT_METHODS=
+export PAYMENT_METHODS="alipay, bancontact, card, eps, ideal, giropay, multibanco, sofort, wechat"
 export NGROK_SUBDOMAIN=
 export NGROK_AUTHTOKEN=
 ```
@@ -80,4 +80,5 @@ ngrok will display a UI in your terminal telling you the new forwarding address 
 Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `https://75795038.ngrok.io/webhook`.
 
 ## Credits
+
 - Code: [Mike Shaw](https://www.linkedin.com/in/mandshaw/)

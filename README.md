@@ -63,6 +63,7 @@ The [Sources API](https://stripe.com/docs/sources) provides a single integration
 
 Instructions for running the Node.js server in [`server/node`](/server/node) are below. You can find alternative server implementations in the [`server`](/server) directory:
 
+- Java, Spark: [`server/java`](/server/java)
 - Node, Express: [`server/node`](/server/node)
 - Python, Flask: [`server/python`](/server/python)
 - Ruby, Sinatra: [`server/ruby`](/server/ruby)
