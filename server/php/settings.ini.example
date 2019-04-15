@@ -1,0 +1,16 @@
+
+; Find them at https://dashboard.stripe.com/account/apikeys
+publishableKey =
+secretKey =
+
+; Find it at https://dashboard.stripe.com/account/webhooks
+webhookSecret = 
+
+; Your account country
+accountCountry = US
+
+; Your shop currency
+shopCurrency = usd
+
+; The default country selected for the billing address
+defaultCountry = US

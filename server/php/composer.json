@@ -1,0 +1,32 @@
+{
+    "name": "stripe/stripe-payments-demo-php",
+    "description": "A PHP backend for the Stripe Payments demo shop",
+    "keywords": ["stripe", "payments", "demo"],
+    "homepage": "https://github.com/stripe/stripe-payments-demo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Youssef Ben Othman",
+            "email": "youssef@stripe.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "slim/slim": "^3.1",
+        "slim/php-view": "^2.0",
+        "monolog/monolog": "^1.17",
+        "stripe/stripe-php": "^6.31"
+    },
+    "autoload": {
+      "psr-4": {
+          "Store\\": "store/"
+      }
+    },
+    "config": {
+        "process-timeout" : 0
+    },
+    "scripts": {
+        "start": "php -S localhost:8888 index.php"
+    }
+
+}
