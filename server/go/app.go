@@ -32,6 +32,7 @@ func main() {
 		panic(fmt.Sprintf("error loading .env: %v", err))
 	}
 
+	stripe.APIVersion = "2019-03-14"
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 	if stripe.Key == "" {
 		panic("STRIPE_SECRET_KEY must be in environment")
