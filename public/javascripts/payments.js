@@ -29,9 +29,7 @@
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(config.stripePublishableKey, {
-    betas: ['payment_intent_beta_3'],
-  });
+  const stripe = Stripe(config.stripePublishableKey);
 
   // Create an instance of Elements.
   const elements = stripe.elements();
@@ -151,15 +149,24 @@
     shippingOptions: config.shippingOptions,
   });
 
-  // Callback when a source is created.
-  paymentRequest.on('source', async event => {
-    // Confirm the PaymentIntent with the source returned from the payment request.
+  // Callback when a payment method is created.
+  paymentRequest.on('paymentmethod', async event => {
+    // Confirm the PaymentIntent with the payment method returned from the payment request.
     const {error} = await stripe.confirmPaymentIntent(
       paymentIntent.client_secret,
       {
-        source: event.source.id,
-        // We set use_stripe_sdk to true so that we can use Stripe.js for 3D Secure if needed.
-        use_stripe_sdk: true,
+        payment_method: event.paymentMethod.id,
+        shipping: {
+          name: event.shippingAddress.recipient,
+          phone: event.shippingAddress.phone,
+          address: {
+            line1: event.shippingAddress.addressLine[0],
+            city: event.shippingAddress.city,
+            postal_code: event.shippingAddress.postalCode,
+            state: event.shippingAddress.region,
+            country: event.shippingAddress.country,
+          },
+        },
       }
     );
     if (error) {
@@ -271,35 +278,39 @@
         paymentIntent.client_secret,
         card,
         {
-          source_data: {
-            owner: {
+          payment_method_data: {
+            billing_details: {
               name,
             },
           },
+          shipping,
         }
       );
       handlePayment(response);
     } else if (payment === 'sepa_debit') {
       // Confirm the PaymentIntent with the IBAN Element and additional SEPA Debit source data.
-      const response = await stripe.confirmPaymentIntent(
-        paymentIntent.client_secret,
-        iban,
-        {
-          source_data: {
-            type: 'sepa_debit',
-            owner: {
-              name,
-              email,
-            },
-            mandate: {
-              // Automatically send a mandate notification email to your customer
-              // once the source is charged.
-              notification_method: 'email',
-            },
-          },
-        }
-      );
-      handlePayment(response);
+      const {error} = await stripe.createSource(iban, {
+        type: 'sepa_debit',
+        currency: 'eur',
+        owner: {
+          name,
+          email,
+        },
+        mandate: {
+          // Automatically send a mandate notification email to your customer
+          // once the source is charged.
+          notification_method: 'email',
+        },
+        metadata: {
+          paymentIntent: paymentIntent.id,
+        },
+      });
+      if (error) {
+        handlePayment({error});
+        return;
+      }
+      // Poll the PaymentIntent status.
+      pollPaymentIntentStatus(paymentIntent.id);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {

@@ -156,8 +156,7 @@ $app->post('/webhook', function (Request $request, Response $response, array $ar
                 $paymentIntent['id'] . ' succeeded');
       } elseif ($type == 'payment_intent.payment_failed') {
         // Payment intent completed with failure
-        $logger->info('🔔  Webhook received! Payment on source ' . $paymentIntent['last_payment_error']['source']['id'] .
-              ' for PaymentIntent ' . $paymentIntent['id'] . ' failed');
+        $logger->info('🔔  Webhook received! Payment for PaymentIntent ' . $paymentIntent['id'] . ' failed');
       }
       break;
     case 'source':

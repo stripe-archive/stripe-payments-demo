@@ -13,13 +13,13 @@
 .git
 .gitignore
 
-# Node.js dependencies:
+# Node.js dependencies
 node_modules/
 
-# Python server
+# Alternative server implementations
+server/java/
+server/php/
 server/python/
-
-# Ruby server
 server/ruby/
 
 # serverless functions

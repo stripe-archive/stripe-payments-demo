@@ -42,7 +42,7 @@ module.exports = {
     // The two-letter country code of your Stripe account (required for Payment Request).
     country: process.env.STRIPE_ACCOUNT_COUNTRY || 'US',
     // API version to set for this app (Stripe otherwise uses your default account version).
-    apiVersion: '2019-02-11',
+    apiVersion: '2019-03-14',
     // Use your test keys for development and live keys for real charges in production.
     // For non-card payments like iDEAL, live keys will redirect to real banking sites.
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,

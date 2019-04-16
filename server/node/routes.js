@@ -122,13 +122,19 @@ router.post('/webhook', async (req, res) => {
         } succeeded.`
       );
     } else if (eventType === 'payment_intent.payment_failed') {
+      const paymentSourceOrMethod = paymentIntent.last_payment_error
+        .payment_method
+        ? paymentIntent.last_payment_error.payment_method
+        : paymentIntent.last_payment_error.source;
       console.log(
-        `🔔  Webhook received! Payment on source ${
-          paymentIntent.last_payment_error.source.id
-        } for PaymentIntent ${paymentIntent.id} failed.`
+        `🔔  Webhook received! Payment on ${paymentSourceOrMethod.object} ${
+          paymentSourceOrMethod.id
+        } of type ${paymentSourceOrMethod.type} for PaymentIntent ${
+          paymentIntent.id
+        } failed.`
       );
       // Note: you can use the existing PaymentIntent to prompt your customer to try again by attaching a newly created source:
-      // https://stripe.com/docs/payments/payment-intents#lifecycle
+      // https://stripe.com/docs/payments/payment-intents/usage#lifecycle
     }
   }
 

@@ -4,7 +4,7 @@ require 'dotenv'
 Dotenv.load(File.dirname(__FILE__) + '/../../.env')
 
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
-Stripe.api_version = '2019-02-11'
+Stripe.api_version = '2019-03-14'
 
 def create_data
   begin

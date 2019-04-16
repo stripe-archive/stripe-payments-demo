@@ -9,7 +9,7 @@ require_relative 'setup'
 
 Dotenv.load(File.dirname(__FILE__) + '/../../.env')
 Stripe.api_key = ENV['STRIPE_SECRET_KEY']
-Stripe.api_version = '2019-02-11'
+Stripe.api_version = '2019-03-14'
 
 set :static, true
 set :root, File.dirname(__FILE__)
@@ -167,7 +167,12 @@ post '/webhook' do
     if event_type == 'payment_intent.succeeded'
       puts "🔔  Webhook received! Payment for PaymentIntent #{payment_intent['id']} succeeded"
     elsif event_type == 'payment_intent.payment_failed'
-      puts "🔔  Webhook received! Payment on source #{payment_intent['last_payment_error']['source']['id']} for PaymentIntent #{payment_intent['id']} failed."
+      if payment_intent['last_payment_error']['payment_method'].nil?
+        payment_source_or_method = payment_intent['last_payment_error']['source']
+      else 
+        payment_source_or_method = payment_intent['last_payment_error']['payment_method']
+      end
+      puts "🔔  Webhook received! Payment on #{payment_source_or_method['object']} #{payment_source_or_method['id']} for PaymentIntent #{payment_intent['id']} failed."
     end
 
   # Monitor `source.chargeable` events.
