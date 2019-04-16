@@ -156,17 +156,17 @@
       paymentIntent.client_secret,
       {
         payment_method: event.paymentMethod.id,
-        // shipping: {
-        //   name: event.shippingAddress.recipient,
-        //   phone: event.shippingAddress.phone,
-        //   address: {
-        //     line1: event.shippingAddress.addressLine[0],
-        //     city: event.shippingAddress.city,
-        //     postal_code: event.shippingAddress.postalCode,
-        //     state: event.shippingAddress.region,
-        //     country: event.shippingAddress.country,
-        //   },
-        // },
+        shipping: {
+          name: event.shippingAddress.recipient,
+          phone: event.shippingAddress.phone,
+          address: {
+            line1: event.shippingAddress.addressLine[0],
+            city: event.shippingAddress.city,
+            postal_code: event.shippingAddress.postalCode,
+            state: event.shippingAddress.region,
+            country: event.shippingAddress.country,
+          },
+        },
       }
     );
     if (error) {
