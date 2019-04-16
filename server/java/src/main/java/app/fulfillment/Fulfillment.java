@@ -49,12 +49,10 @@ public class Fulfillment {
 
             case "payment_intent.payment_failed":
                 // Get the PaymentIntent out from the event.
-                pi = (PaymentIntent) event.getDataObjectDeserializer().getObject();
+                pi = (PaymentIntent) event.getDataObjectDeserializer().deserializeUnsafe();
 
                 // Print a failure message
-                System.out.println("Webhook received! Payment on source "
-                        + pi.getLastPaymentError().getSource().getId()
-                        + " for PaymentIntent "
+                System.out.println("Webhook received! Payment for PaymentIntent "
                         + pi.getId()
                         + " failed");
                 break;
