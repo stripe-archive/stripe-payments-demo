@@ -39,6 +39,15 @@ func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 	return pi, nil
 }
 
+func RetrieveIntent(paymentIntent string) (*stripe.PaymentIntent, error) {
+	pi, err := paymentintent.Get(paymentIntent, nil)
+	if err != nil {
+		return nil, fmt.Errorf("payments: error fetching payment intent: %v", err)
+	}
+
+	return pi, nil
+}
+
 func UpdateShipping(paymentIntent string, r *IntentShippingChangeRequest) (*stripe.PaymentIntent, error) {
 	amount, err := inventory.CalculatePaymentAmount(r.Items)
 	if err != nil {

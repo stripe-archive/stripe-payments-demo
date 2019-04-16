@@ -134,5 +134,18 @@ func buildEcho(publicDirectory string) *echo.Echo {
 		})
 	})
 
+	e.GET("/payment_intents/:id/status", func(c echo.Context) error {
+		pi, err := payments.RetrieveIntent(c.Param("id"))
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, map[string]map[string]string{
+			"paymentIntent": {
+				"status": string(pi.Status),
+			},
+		})
+	})
+
 	return e
 }
