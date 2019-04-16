@@ -52,6 +52,7 @@ func buildEcho(publicDirectory string) *echo.Echo {
 	e.Logger.SetLevel(log.DEBUG)
 
 	e.File("/", path.Join(publicDirectory, "index.html"))
+	e.File("/.well-known/apple-developer-merchantid-domain-association", path.Join(publicDirectory, ".well-known/apple-developer-merchantid-domain-association"))
 	e.Static("/javascripts", path.Join(publicDirectory, "javascripts"))
 	e.Static("/stylesheets", path.Join(publicDirectory, "stylesheets"))
 	e.Static("/images", path.Join(publicDirectory, "images"))
@@ -107,6 +108,23 @@ func buildEcho(publicDirectory string) *echo.Echo {
 		}
 
 		pi, err := payments.CreateIntent(r)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, map[string]*stripe.PaymentIntent{
+			"paymentIntent": pi,
+		})
+	})
+
+	e.POST("/payment_intents/:id/shipping_change", func(c echo.Context) error {
+		r := new(payments.IntentShippingChangeRequest)
+		err := c.Bind(r)
+		if err != nil {
+			return err
+		}
+
+		pi, err := payments.UpdateShipping(c.Param("id"), r)
 		if err != nil {
 			return err
 		}

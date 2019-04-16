@@ -4,7 +4,7 @@ type ShippingOption struct {
 	ID     string `json:"id"`
 	Label  string `json:"label"`
 	Detail string `json:"detail"`
-	Amount int    `json:"amount"`
+	Amount int64  `json:"amount"`
 }
 
 func ShippingOptions() []ShippingOption {
@@ -22,4 +22,14 @@ func ShippingOptions() []ShippingOption {
 			Amount: 500,
 		},
 	}
+}
+
+func GetShippingCost(optionID string) (int64, bool) {
+	for _, option := range ShippingOptions() {
+		if option.ID == optionID {
+			return option.Amount, true
+		}
+	}
+
+	return 0, false
 }

@@ -15,6 +15,11 @@ type IntentCreationRequest struct {
 	Items    []inventory.Item `json:"items"`
 }
 
+type IntentShippingChangeRequest struct {
+	Items          []inventory.Item         `json:"items"`
+	ShippingOption inventory.ShippingOption `json:"shippingOption"`
+}
+
 func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 	amount, err := inventory.CalculatePaymentAmount(r.Items)
 	if err != nil {
@@ -26,10 +31,32 @@ func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 		Currency:           stripe.String(r.Currency),
 		PaymentMethodTypes: paymentMethodTypes(),
 	}
-
 	pi, err := paymentintent.New(params)
 	if err != nil {
 		return nil, fmt.Errorf("payments: error creating payment intent: %v", err)
+	}
+
+	return pi, nil
+}
+
+func UpdateShipping(paymentIntent string, r *IntentShippingChangeRequest) (*stripe.PaymentIntent, error) {
+	amount, err := inventory.CalculatePaymentAmount(r.Items)
+	if err != nil {
+		return nil, fmt.Errorf("payments: error computing payment amount: %v", err)
+	}
+
+	shippingCost, ok := inventory.GetShippingCost(r.ShippingOption.ID)
+	if !ok {
+		return nil, fmt.Errorf("payments: no cost found for shipping id %q", r.ShippingOption.ID)
+	}
+	amount += shippingCost
+
+	params := &stripe.PaymentIntentParams{
+		Amount: stripe.Int64(amount),
+	}
+	pi, err := paymentintent.Update(paymentIntent, params)
+	if err != nil {
+		return nil, fmt.Errorf("payments: error updating payment intent: %v", err)
 	}
 
 	return pi, nil
