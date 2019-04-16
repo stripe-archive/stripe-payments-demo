@@ -15,6 +15,8 @@ import (
 
 	"github.com/stripe/stripe-payments-demo/config"
 	"github.com/stripe/stripe-payments-demo/inventory"
+	"github.com/stripe/stripe-payments-demo/payments"
+	"github.com/stripe/stripe-payments-demo/setup"
 )
 
 func main() {
@@ -40,6 +42,10 @@ func main() {
 	e.Logger.Fatal(e.Start(":4567"))
 }
 
+type listing struct {
+	Data interface{} `json:"data"`
+}
+
 func buildEcho(publicDirectory string) *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -60,7 +66,19 @@ func buildEcho(publicDirectory string) *echo.Echo {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, products)
+		if !setup.ExpectedProductsExist(products) {
+			err := setup.CreateData()
+			if err != nil {
+				return err
+			}
+
+			products, err = inventory.ListProducts()
+			if err != nil {
+				return err
+			}
+		}
+
+		return c.JSON(http.StatusOK, listing{products})
 	})
 
 	e.GET("/product/:product_id/skus", func(c echo.Context) error {
@@ -69,7 +87,33 @@ func buildEcho(publicDirectory string) *echo.Echo {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, skus)
+		return c.JSON(http.StatusOK, listing{skus})
+	})
+
+	e.GET("/products/:product_id", func(c echo.Context) error {
+		product, err := inventory.RetrieveProduct(c.Param("product_id"))
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, product)
+	})
+
+	e.POST("/payment_intents", func(c echo.Context) error {
+		r := new(payments.IntentCreationRequest)
+		err := c.Bind(r)
+		if err != nil {
+			return err
+		}
+
+		pi, err := payments.CreateIntent(r)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, map[string]*stripe.PaymentIntent{
+			"paymentIntent": pi,
+		})
 	})
 
 	return e

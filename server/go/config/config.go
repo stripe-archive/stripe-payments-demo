@@ -17,18 +17,19 @@ type Config struct {
 	ShippingOptions []inventory.ShippingOption `json:"shippingOptions"`
 }
 
+func PaymentMethods() []string {
+	paymentMethodsString := os.Getenv("PAYMENT_METHODS")
+	if paymentMethodsString == "" {
+		return []string{"card"}
+	} else {
+		return strings.Split(paymentMethodsString, ", ")
+	}
+}
+
 func Default() Config {
 	stripeCountry := os.Getenv("STRIPE_ACCOUNT_COUNTRY")
 	if stripeCountry == "" {
 		stripeCountry = "US"
-	}
-
-	paymentMethodsString := os.Getenv("PAYMENT_METHODS")
-	var paymentMethods []string
-	if paymentMethodsString == "" {
-		paymentMethods = []string{"card"}
-	} else {
-		paymentMethods = strings.Split(paymentMethodsString, ", ")
 	}
 
 	return Config{
@@ -36,7 +37,7 @@ func Default() Config {
 		StripeCountry:        stripeCountry,
 		Country:              "US",
 		Currency:             "eur",
-		PaymentMethods:       paymentMethods,
+		PaymentMethods:       PaymentMethods(),
 		ShippingOptions:      inventory.ShippingOptions(),
 	}
 }
