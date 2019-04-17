@@ -6,6 +6,8 @@ import (
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/product"
 	"github.com/stripe/stripe-go/sku"
+
+	"github.com/stripe/stripe-payments-demo/config"
 )
 
 func CreateData() error {
@@ -14,7 +16,7 @@ func CreateData() error {
 		return fmt.Errorf("setup: error creating products: %v", err)
 	}
 
-	err = createSKUs()
+	err = createSKUs(config.Default().Currency)
 	if err != nil {
 		return fmt.Errorf("setup: error creating products: %v", err)
 	}
@@ -87,7 +89,7 @@ func createProducts() error {
 	return nil
 }
 
-func createSKUs() error {
+func createSKUs(currency string) error {
 	paramses := []*stripe.SKUParams{
 		{
 			ID:      stripe.String("increment-03"),
@@ -96,7 +98,7 @@ func createSKUs() error {
 				"issue": "Issue #3 “Development”",
 			},
 			Price:    stripe.Int64(399),
-			Currency: stripe.String(string(stripe.CurrencyUSD)),
+			Currency: stripe.String(currency),
 			Inventory: &stripe.InventoryParams{
 				Type: stripe.String(string(stripe.SKUInventoryTypeInfinite)),
 			},
@@ -109,7 +111,7 @@ func createSKUs() error {
 				"gender": "Woman",
 			},
 			Price:    stripe.Int64(999),
-			Currency: stripe.String(string(stripe.CurrencyUSD)),
+			Currency: stripe.String(currency),
 			Inventory: &stripe.InventoryParams{
 				Type: stripe.String(string(stripe.SKUInventoryTypeInfinite)),
 			},
@@ -121,7 +123,7 @@ func createSKUs() error {
 				"set": "Collector Set",
 			},
 			Price:    stripe.Int64(799),
-			Currency: stripe.String(string(stripe.CurrencyUSD)),
+			Currency: stripe.String(currency),
 			Inventory: &stripe.InventoryParams{
 				Quantity: stripe.Int64(500),
 				Type:     stripe.String(string(stripe.SKUInventoryTypeFinite)),

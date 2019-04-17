@@ -81,7 +81,7 @@ get '/products' do
   end
 end
 
-get '/product/:product_id/skus' do
+get '/products/:product_id/skus' do
   content_type 'application/json'
   skus = Inventory.list_skus(params['product_id'])
   skus.to_json

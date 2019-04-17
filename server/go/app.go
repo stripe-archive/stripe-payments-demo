@@ -86,7 +86,7 @@ func buildEcho(publicDirectory string) *echo.Echo {
 		return c.JSON(http.StatusOK, listing{products})
 	})
 
-	e.GET("/product/:product_id/skus", func(c echo.Context) error {
+	e.GET("/products/:product_id/skus", func(c echo.Context) error {
 		skus, err := inventory.ListSKUs(c.Param("product_id"))
 		if err != nil {
 			return err

@@ -17,6 +17,7 @@
 node_modules/
 
 # Alternative server implementations
+server/go/
 server/java/
 server/php/
 server/python/

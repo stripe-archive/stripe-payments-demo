@@ -63,6 +63,7 @@ The [Sources API](https://stripe.com/docs/sources) provides a single integration
 
 Instructions for running the Node.js server in [`server/node`](/server/node) are below. You can find alternative server implementations in the [`server`](/server) directory:
 
+- Go, Echo: [`server/go`](/server/java)
 - Java, Spark: [`server/java`](/server/java)
 - Node, Express: [`server/node`](/server/node)
 - PHP, Slim: [`server/php`](/server/php)
