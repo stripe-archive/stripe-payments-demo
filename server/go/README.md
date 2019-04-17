@@ -4,7 +4,7 @@ This demo uses a simple [Echo](https://echo.labstack.com/) application as the se
 
 ## Payments Integration
 
-- [`app.go`](app.go) contains the routes that interface with Stripe to create 
+- [`app.go`](app.go) contains the routes that interface with Stripe to create charges and receive webhook events.
 
 ## Requirements
 
@@ -22,8 +22,7 @@ Copy the example environment variables file `.env.example` from the root of the 
 cp .env.example .env
 ```
 
-
-Run the application from this directory
+Run the application from this directory (after running `cd server/go`):
 
 ```
 go run app.go -root-directory=$(realpath ../..)

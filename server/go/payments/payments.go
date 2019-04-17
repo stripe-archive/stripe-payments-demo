@@ -105,8 +105,8 @@ func paymentMethodTypes() []*string {
 	types := config.PaymentMethods()
 
 	out := make([]*string, len(types))
-	for i, v := range types {
-		out[i] = &v
+	for i := range types {
+		out[i] = &types[i]
 	}
 
 	return out
