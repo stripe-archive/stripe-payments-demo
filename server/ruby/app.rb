@@ -130,16 +130,17 @@ end
 post '/webhook' do
   # You can use webhooks to receive information about asynchronous payment events.
   # For more about our webhook events check out https://stripe.com/docs/webhooks.
-  webhook_secret = ENV['STRIP_WEBHOOK_SECRET']
-  request_data = JSON.parse request.body.read
+  webhook_secret = ENV['STRIPE_WEBHOOK_SECRET']
+  payload = request.body.read
 
-  if webhook_secret
+  if !webhook_secret.empty?
     # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
     sig_header = request.env['HTTP_STRIPE_SIGNATURE']
+    event = nil
 
     begin
       event = Stripe::Webhook.construct_event(
-          payload, sig_header, endpoint_secret
+          payload, sig_header, webhook_secret
       )
     rescue JSON::ParserError => e
         # Invalid payload
@@ -147,16 +148,17 @@ post '/webhook' do
         return
     rescue Stripe::SignatureVerificationError => e
         # Invalid signature
+        puts "⚠️  Webhook signature verification failed."
         status 400
         return
     end
-    # Get the type of webhook event sent - used to check the status of PaymentIntents.    
-    event_type = event['type']
   else
-    data = request_data['data']
-    event_type = request_data['type']
+    data = JSON.parse(payload, symbolize_names: true)
+    event = Stripe::Event.construct_from(data)
   end
-
+  # Get the type of webhook event sent - used to check the status of PaymentIntents.    
+  event_type = event['type']
+  data = event['data']
   data_object = data['object']
 
   # PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents
@@ -176,7 +178,7 @@ post '/webhook' do
     end
 
   # Monitor `source.chargeable` events.
-  elsif data_object['object'] == 'source' && data_object['status'] == 'chargeable' && data_object['metadata'].include?('paymentIntent')
+  elsif data_object['object'] == 'source' && data_object['status'] == 'chargeable' && !data_object['metadata']['paymentIntent'].nil?
     source = data_object
     puts "🔔  Webhook received! The source #{source['id']} is chargeable"
 
@@ -207,6 +209,7 @@ post '/webhook' do
     intent = Stripe::PaymentIntent.retrieve(
       source['metadata']['paymentIntent']
     )
+    puts "🔔  Webhook received! Source #{source['id']} failed or canceled. Cancelling #{intent['id']}."
     intent.cancel
   end
 
