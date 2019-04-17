@@ -48,6 +48,36 @@ func RetrieveIntent(paymentIntent string) (*stripe.PaymentIntent, error) {
 	return pi, nil
 }
 
+func ConfirmIntent(paymentIntent string, source *stripe.Source) error {
+	pi, err := paymentintent.Get(paymentIntent, nil)
+	if err != nil {
+		return fmt.Errorf("payments: error fetching payment intent for confirmation: %v", err)
+	}
+
+	if pi.Status != "requires_payment_method" {
+		return fmt.Errorf("payments: PaymentIntent already has a status of %s", pi.Status)
+	}
+
+	params := &stripe.PaymentIntentConfirmParams{
+		Source: stripe.String(source.ID),
+	}
+	_, err = paymentintent.Confirm(pi.ID, params)
+	if err != nil {
+		return fmt.Errorf("payments: error confirming PaymentIntent: %v", err)
+	}
+
+	return nil
+}
+
+func CancelIntent(paymentIntent string) error {
+	_, err := paymentintent.Cancel(paymentIntent, nil)
+	if err != nil {
+		return fmt.Errorf("payments: error canceling PaymentIntent: %v", err)
+	}
+
+	return nil
+}
+
 func UpdateShipping(paymentIntent string, r *IntentShippingChangeRequest) (*stripe.PaymentIntent, error) {
 	amount, err := inventory.CalculatePaymentAmount(r.Items)
 	if err != nil {

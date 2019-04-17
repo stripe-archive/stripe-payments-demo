@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -12,11 +14,13 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/stripe/stripe-go"
+	"github.com/stripe/stripe-go/webhook"
 
 	"github.com/stripe/stripe-payments-demo/config"
 	"github.com/stripe/stripe-payments-demo/inventory"
 	"github.com/stripe/stripe-payments-demo/payments"
 	"github.com/stripe/stripe-payments-demo/setup"
+	"github.com/stripe/stripe-payments-demo/webhooks"
 )
 
 func main() {
@@ -32,7 +36,6 @@ func main() {
 		panic(fmt.Sprintf("error loading .env: %v", err))
 	}
 
-	stripe.APIVersion = "2019-03-14"
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
 	if stripe.Key == "" {
 		panic("STRIPE_SECRET_KEY must be in environment")
@@ -146,6 +149,61 @@ func buildEcho(publicDirectory string) *echo.Echo {
 				"status": string(pi.Status),
 			},
 		})
+	})
+
+	e.POST("/webhook", func(c echo.Context) error {
+		request := c.Request()
+		payload, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			return err
+		}
+
+		var event stripe.Event
+
+		webhookSecret := os.Getenv("STRIPE_WEBHOOK_SECRET")
+		if webhookSecret != "" {
+			event, err = webhook.ConstructEvent(payload, request.Header.Get("Stripe-Signature"), webhookSecret)
+			if err != nil {
+				return err
+			}
+		} else {
+			err := json.Unmarshal(payload, &event)
+			if err != nil {
+				return err
+			}
+		}
+
+		objectType := event.Data.Object["object"].(string)
+
+		var handled bool
+		switch objectType {
+		case "payment_intent":
+			var pi *stripe.PaymentIntent
+			err = json.Unmarshal(event.Data.Raw, &pi)
+			if err != nil {
+				return err
+			}
+
+			handled, err = webhooks.HandlePaymentIntent(event, pi)
+		case "source":
+			var source *stripe.Source
+			err := json.Unmarshal(event.Data.Raw, &source)
+			if err != nil {
+				return err
+			}
+
+			handled, err = webhooks.HandleSource(event, source)
+		}
+
+		if err != nil {
+			return err
+		}
+
+		if !handled {
+			fmt.Printf("🔔  Webhook received and not handled! %s\n", event.Type)
+		}
+
+		return nil
 	})
 
 	return e
