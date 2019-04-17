@@ -17,7 +17,7 @@ public class Application {
         get("/config", ConfigController.getConfig);
         get("/products", ProductController.getProducts);
         get("/products/:id", ProductController.getProduct);
-        get("/product/:id/skus", ProductController.getSKUsForProduct);
+        get("/products/:id/skus", ProductController.getSKUsForProduct);
         get("/payment_intents/:id/status", PaymentController.getPaymentIntent);
         post("/payment_intents", PaymentController.createPaymentIntent);
         post("/payment_intents/:id/shipping_change", PaymentController.updatePaymentIntent);

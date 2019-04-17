@@ -18,7 +18,7 @@ func HandlePaymentIntent(event stripe.Event, pi *stripe.PaymentIntent) (bool, er
 		if pi.LastPaymentError.PaymentMethod != nil {
 			fmt.Printf(
 				"🔔  Webhook received! Payment on %s %s for PaymentIntent %s failed\n",
-				"payment_intent",
+				"payment_method",
 				pi.LastPaymentError.PaymentMethod.ID,
 				pi.ID,
 			)

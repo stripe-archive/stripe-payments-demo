@@ -57,7 +57,7 @@ class Store {
   // Retrieve a SKU for the Product where the API Version is newer and doesn't include them on v1/product
   async loadSkus(product_id) {
     try {
-      const response = await fetch(`/product/${product_id}/skus`);
+      const response = await fetch(`/products/${product_id}/skus`);
       const skus = await response.json();
       this.products[product_id].skus = skus;
     } catch (err) {
