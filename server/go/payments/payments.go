@@ -29,7 +29,7 @@ func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 	params := &stripe.PaymentIntentParams{
 		Amount:             stripe.Int64(amount),
 		Currency:           stripe.String(r.Currency),
-		PaymentMethodTypes: paymentMethodTypes(),
+		PaymentMethodTypes: stripe.StringSlice(config.PaymentMethods()),
 	}
 	pi, err := paymentintent.New(params)
 	if err != nil {
@@ -99,15 +99,4 @@ func UpdateShipping(paymentIntent string, r *IntentShippingChangeRequest) (*stri
 	}
 
 	return pi, nil
-}
-
-func paymentMethodTypes() []*string {
-	types := config.PaymentMethods()
-
-	out := make([]*string, len(types))
-	for i := range types {
-		out[i] = &types[i]
-	}
-
-	return out
 }
