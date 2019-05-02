@@ -13,7 +13,9 @@
     "node": "8.x"
   },
   "scripts": {
-    "start": "node server/node/server.js"
+    "start": "node server/node/server.js",
+    "setup-products": "node server/node/setup.js",
+    "postinstall": "npm run setup-products"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
