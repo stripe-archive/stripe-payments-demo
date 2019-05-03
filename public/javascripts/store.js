@@ -71,6 +71,11 @@ class Store {
       this.productsFetchPromise = new Promise(async resolve => {
         const productsResponse = await fetch('/products');
         const products = (await productsResponse.json()).data;
+        if (!products.length) {
+          throw new Error(
+            'No products on Stripe account! Make sure the setup script has run properly.'
+          );
+        }
         // Check if we have SKUs on the product, otherwise load them separately.
         for (const product of products) {
           this.products[product.id] = product;

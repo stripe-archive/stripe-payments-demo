@@ -25,18 +25,6 @@ const retrieveProduct = async productId => {
   return await stripe.products.retrieve(productId);
 };
 
-// Validate that products exist.
-const productsExist = productList => {
-  const validProducts = ['increment', 'shirt', 'pins'];
-  return productList.data.reduce((accumulator, currentValue) => {
-    return (
-      accumulator &&
-      productList.data.length === 3 &&
-      validProducts.includes(currentValue.id)
-    );
-  }, !!productList.data.length);
-};
-
 // Get shipping cost from config based on selected shipping option.
 const getShippingCost = shippingOption => {
   return config.shippingOptions.filter(
@@ -47,6 +35,5 @@ const getShippingCost = shippingOption => {
 exports.products = {
   list: listProducts,
   retrieve: retrieveProduct,
-  exist: productsExist,
   getShippingCost,
 };
