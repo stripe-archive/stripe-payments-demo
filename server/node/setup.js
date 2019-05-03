@@ -16,53 +16,59 @@ stripe.setApiVersion(config.stripe.apiVersion);
 // Replace this list with information about your store's products.
 const products = [
   {
+    id: 'increment',
     name: 'Increment Magazine',
     price: 399,
     attributes: {issue: 'Issue #3 “Development”'},
-    metadata: {img_scr: 'increment'},
   },
   {
+    id: 'shirt',
     name: 'Stripe Shirt',
     price: 999,
     attributes: {size: 'Small Standard', gender: 'Woman'},
-    metadata: {img_scr: 'shirt'},
   },
   {
+    id: 'pins',
     name: 'Stripe Pins',
     price: 799,
     attributes: {set: 'Collector Set'},
-    metadata: {img_scr: 'pins'},
   },
 ];
 
 // Creates a collection of Stripe Products and SKUs to use in your storefront
 const createStoreProducts = async () => {
-  const stripeProducts = await Promise.all(
-    products.map(async product => {
-      const stripeProduct = await stripe.products.create({
-        name: product.name,
-        type: 'good',
-        attributes: Object.keys(product.attributes),
-        metadata: product.metadata,
-      });
+  try {
+    const stripeProducts = await Promise.all(
+      products.map(async product => {
+        const stripeProduct = await stripe.products.create({
+          id: product.id,
+          name: product.name,
+          type: 'good',
+          attributes: Object.keys(product.attributes),
+          metadata: product.metadata,
+        });
 
-      const stripeSku = await stripe.skus.create({
-        product: stripeProduct.id,
-        price: product.price,
-        currency: config.currency,
-        attributes: product.attributes,
-        inventory: {type: 'infinite'},
-      });
+        const stripeSku = await stripe.skus.create({
+          product: stripeProduct.id,
+          price: product.price,
+          currency: config.currency,
+          attributes: product.attributes,
+          inventory: {type: 'infinite'},
+        });
 
-      return {stripeProduct, stripeSku};
-    })
-  );
+        return {stripeProduct, stripeSku};
+      })
+    );
 
-  console.log(
-    `🛍️  Successfully created ${
-      stripeProducts.length
-    } products on your Stripe account.`
-  );
+    console.log(
+      `🛍️  Successfully created ${
+        stripeProducts.length
+      } products on your Stripe account.`
+    );
+  } catch (error) {
+    console.log(`⚠️  Error: ${error.message}`);
+    return;
+  }
 };
 
 createStoreProducts();
