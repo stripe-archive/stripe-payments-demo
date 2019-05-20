@@ -1,0 +1,12 @@
+#!/bin/bash
+
+export PORT=
+export STRIPE_PUBLISHABLE_KEY=
+export STRIPE_SECRET_KEY=
+export STRIPE_WEBHOOK_SECRET=
+export STRIPE_ACCOUNT_COUNTRY=US
+export STRIPE_PAYMENT_METHODS=
+export STRIPE_CURRENCY=eur
+export STRIPE_API_VERSION=
+
+dotnet run

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="config.fs" />
+    <Compile Include="utils.fs" />
+    <Compile Include="setup.fs" />
+    <Compile Include="stripe.fs" />
+    <Compile Include="app.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../public/**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FsConfig" Version="2.0.2" />
+    <PackageReference Include="FSharp.Data" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Suave" Version="2.5.4" />
+    <PackageReference Include="TypeShape" Version="5.1.0" />
+  </ItemGroup>
+
+</Project>
