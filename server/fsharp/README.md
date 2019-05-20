@@ -4,11 +4,11 @@ This demo uses a simple [Suave](https://suave.io/) application as the server.
 
 ## Payments Integration
 
-- [`app.fs`](app.go) contains the routes that interface with Stripe to create charges and receive webhook events.
+- [`app.fs`](app.fs) contains the routes that interface with Stripe to create charges and receive webhook events.
 
 ## Requirements
 
-You’ll new the following:
+You’ll need the following:
 
 - [.NET Core SDK](https://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html) >= 2.2.202
 - Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay)
@@ -16,7 +16,7 @@ You’ll new the following:
 
 ## Getting Started
 
-Set the enviroment variables for the web application. You can copy the environment variables from [here](../../.env.example)
+Set the enviroment variables for the web application. You can copy the environment variables from [here](run.sh)
 
 ```
 export PORT=
