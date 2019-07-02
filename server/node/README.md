@@ -6,7 +6,7 @@ This directory contains the main Node implementation of the payments server.
 
 You’ll need the following:
 
-- [Node.js](http://nodejs.org) >= 8.x.
+- [Node.js](http://nodejs.org) >= 10.x.
 - Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
 - Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
 
