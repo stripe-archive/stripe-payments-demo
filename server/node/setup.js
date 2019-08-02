@@ -9,6 +9,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const config = require('./config');
 const stripe = require('stripe')(config.stripe.secretKey);
 stripe.setApiVersion(config.stripe.apiVersion);
@@ -71,4 +72,19 @@ const createStoreProducts = async () => {
   }
 };
 
-createStoreProducts();
+// Set up the Stripe CLI
+const writeCLIConfig = async () => {
+  const stripeCLIConfig = `
+  [stripe-payments-demo]
+    device_name = "stripe-payments-demo"
+    secret_key = "${config.stripe.secretKey}"
+  `;
+
+  fs.appendFileSync(
+    '/Users/thorsten/.config/stripe/config.toml',
+    stripeCLIConfig
+  );
+};
+
+// createStoreProducts();
+writeCLIConfig();

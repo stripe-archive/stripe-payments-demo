@@ -13,8 +13,9 @@
     "node": "10.x"
   },
   "scripts": {
-    "start": "node server/node/server.js",
+    "start": "node server/node/server.js & npm run webhook",
     "setup-products": "node server/node/setup.js",
+    "webhook": "stripe listen --project-name=stripe-payments-demo --forward-to http://localhost:8000/webhook",
     "postinstall": "npm run setup-products"
   },
   "dependencies": {
