@@ -61,19 +61,22 @@ You should now see it running on [`http://127.0.0.1:5000/`](http://127.0.0.1:500
 
 ### Testing Webhooks
 
-If you want to test [receiving webhooks](https://stripe.com/docs/webhooks), we recommend using ngrok to expose your local server.
+We can use the Stripe CLI to forward webhook events to our local development server:
 
-First [download ngrok](https://ngrok.com) and start your Flask application.
-
-[Run ngrok](https://ngrok.com/docs). Assuming your Flask application is running on the default port 5000, you can simply run ngrok in your Terminal in the directory where you downloaded ngrok:
+- [Install](https://github.com/stripe/stripe-cli#installation) the Stripe CLI.
+- Follow the [login steps](https://github.com/stripe/stripe-cli#login) to connect the CLI with your Stripe account.
+- Run the [`listen`](https://github.com/stripe/stripe-cli#listen) command to forward the webhooks to loalhost:
 
 ```
-./ngrok http 5000
+stripe listen --forward-to http://localhost:5000/webhook
 ```
+> **Note:** You do not need to configure any webhook endpoints in your Dashboard to receive webhooks with the CLI.
 
-ngrok will display a UI in your terminal telling you the new forwarding address for your Flask app. Use this URL as the URL to be called in your developer [webhooks panel.](https://dashboard.stripe.com/account/webhooks)
+The Stripe CLI will let you know that webhook forwarding is ready and output your webhook signing secret:
 
-Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `http://75795038.ngrok.io/webhook`.
+    > Ready! Your webhook signing secret is whsec_xxx
+
+Please copy the webhook signing secret (`whsec_xxx`) to your `.env` file.
 
 ## Tests
 

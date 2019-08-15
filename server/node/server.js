@@ -51,7 +51,6 @@ if (ngrok) {
       authtoken: config.ngrok.authtoken,
     })
     .then(url => {
-      console.log(`👩🏻‍💻  Webhook URL for Stripe: ${url}/webhook`);
       console.log(`💳  App URL to see the demo in your browser: ${url}/`);
     })
     .catch(err => {
