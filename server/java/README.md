@@ -12,8 +12,9 @@ You’ll new the following:
 
 - [Java 8](https://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html)
 - [Gradle](https://gradle.org/)
-- Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
+- Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay)
 - Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free!)
+- The [Stripe CLI](https://github.com/stripe/stripe-cli) for local webhook forwarding.
 
 ## Getting Started
 
@@ -65,19 +66,24 @@ when trying to deserialize or use deserialized objects.
 
 You can see which version of the Java SDK Matches which API Version [here](https://github.com/stripe/stripe-java/blob/master/src/main/java/com/stripe/Stripe.java#L13)
 
-If you want to test [receiving webhooks](https://stripe.com/docs/webhooks), we recommend using ngrok to expose your local server.
+We can use the Stripe CLI to forward webhook events to our local development server:
 
-First [download ngrok](https://ngrok.com) and start your Spark application.
-
-[Run ngrok](https://ngrok.com/docs). Assuming your Spark application is running on the default port 4567, you can simply run ngrok in your Terminal in the directory where you downloaded ngrok:
+- [Install](https://github.com/stripe/stripe-cli#installation) the Stripe CLI.
+- Follow the [login steps](https://github.com/stripe/stripe-cli#login) to connect the CLI with your Stripe account.
+- Run the [`listen`](https://github.com/stripe/stripe-cli#listen) command to forward the webhooks to loalhost:
 
 ```
-ngrok http 4567
+stripe listen --forward-to http://localhost:4567/webhook
 ```
+> **Note:** You do not need to configure any webhook endpoints in your Dashboard to receive webhooks with the CLI.
 
-ngrok will display a UI in your terminal telling you the new forwarding address for your Spark app. Use this URL as the URL to be called in your developer [webhooks panel.](https://dashboard.stripe.com/account/webhooks)
+The Stripe CLI will let you know that webhook forwarding is ready and output your webhook signing secret:
 
-Don't forget to append `/webhook` when you set up your Stripe webhook URL in the Dashboard. Example URL to be called: `https://75795038.ngrok.io/webhook`.
+    > Ready! Your webhook signing secret is whsec_xxx
+
+Export the webhook signing secret as an env variable before starting your local development server:
+
+    export STRIPE_WEBHOOK_SECRET=whsec_xxx
 
 ## Credits
 
