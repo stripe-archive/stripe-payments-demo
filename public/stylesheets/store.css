@@ -39,7 +39,7 @@ body {
 
 /* Header */
 
-header {
+.header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -49,8 +49,8 @@ header {
   border-bottom: 1px solid #f3f3ff;
 }
 
-header a.shop,
-header a.github {
+.header a.shop,
+.header a.github {
   margin: 30px;
   font-size: 13px;
   font-weight: 500;
@@ -60,12 +60,12 @@ header a.github {
   text-decoration: none;
 }
 
-header a.github {
+.header a.github {
   padding-left: 20px;
   background: url(/images/github.svg) left center no-repeat;
 }
 
-header a:hover {
+.header a:hover {
   text-decoration: underline;
 }
 
@@ -558,7 +558,7 @@ button:active {
   right: 0;
 }
 
-#summary header {
+#summary .header {
   background: #fff;
 }
 
@@ -825,12 +825,12 @@ button:active {
 }
 
 @media only screen and (max-width: 500px) {
-  header {
+  .header {
     height: 60px;
     background-size: 40px 40px;
   }
-  header a.shop,
-  header a.github {
+  .header a.shop,
+  .header a.github {
     display: none;
   }
   #payment-request {
