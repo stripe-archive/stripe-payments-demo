@@ -1,4 +1,6 @@
 <html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
   <title>Stripe Payments Demo</title>
@@ -14,8 +16,8 @@
 </head>
 
 <body>
-  <div id="main" class="loading">
-    <header>
+  <main id="main" class="loading">
+    <header class="header">
       <a class="shop" href="/">Stripe Payments Demo</a>
       <a class="github" href="https://github.com/stripe/stripe-payments-demo">View on GitHub</a>
     </header>
@@ -203,11 +205,11 @@
         <p class="error-message"></p>
       </div>
     </div>
-  </div>
-  <div id="summary">
-    <header>
+  </main>
+  <aside id="summary">
+    <div class="header">
       <h1>Order Summary</h1>
-    </header>
+    </div>
     <div id="order-items"></div>
     <div id="order-total">
       <div class="line-item subtotal">
@@ -243,7 +245,7 @@
         <p class="price" data-total></p>
       </div>
     </div>
-  </div>
+  </aside>
   <!-- Stripe.js v3 for Elements -->
   <script src="https://js.stripe.com/v3/"></script>
   <!-- Library to render QR codes -->
