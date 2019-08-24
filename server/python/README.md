@@ -53,7 +53,6 @@ pip install -r requirements.txt
 Export our Flask app and run!
 
 ```
-export FLASK_APP=app.py
 flask run
 ```
 
@@ -70,6 +69,7 @@ We can use the Stripe CLI to forward webhook events to our local development ser
 ```
 stripe listen --forward-to http://localhost:5000/webhook
 ```
+
 > **Note:** You do not need to configure any webhook endpoints in your Dashboard to receive webhooks with the CLI.
 
 The Stripe CLI will let you know that webhook forwarding is ready and output your webhook signing secret:
