@@ -338,86 +338,504 @@ button:active {
   margin-right: 10px;
 }
 
+#country.ad::before {
+  background-position: -10px -10px;
+}
+
+#country.ae::before {
+  background-position: -41px -10px;
+}
+
+#country.ag::before {
+  background-position: -72px -10px;
+}
+
+#country.am::before {
+  background-position: -103px -10px;
+}
+
+#country.ar::before {
+  background-position: -134px -10px;
+}
+
 #country.at::before {
   background-position: -165px -10px;
 }
+
 #country.au::before {
   background-position: -196px -10px;
 }
+
 #country.be::before {
   background-position: -227px -10px;
 }
+
+#country.bf::before {
+  background-position: -258px -10px;
+}
+
+#country.bg::before {
+  background-position: -289px -10px;
+}
+
+#country.bo::before {
+  background-position: -320px -10px;
+}
+
 #country.br::before {
   background-position: -351px -10px;
 }
+
 #country.ca::before {
   background-position: -382px -10px;
 }
+
+#country.cd::before {
+  background-position: -413px -10px;
+}
+
+#country.cg::before {
+  background-position: -444px -10px;
+}
+
 #country.ch::before {
   background-position: -475px -10px;
 }
+
+#country.cl::before {
+  background-position: -506px -10px;
+}
+
+#country.cm::before {
+  background-position: -10px -35px;
+}
+
 #country.cn::before {
   background-position: -41px -35px;
 }
-#country.de::before {
+
+#country.co::before {
+  background-position: -72px -35px;
+}
+
+#country.cr::before {
+  background-position: -103px -35px;
+}
+
+#country.cz::before {
   background-position: -134px -35px;
 }
-#country.dk::before {
+
+#country.de::before {
+  background-position: -165px -35px;
+}
+
+#country.dj::before {
   background-position: -196px -35px;
 }
-#country.es::before {
+
+#country.dk::before {
+  background-position: -227px -35px;
+}
+
+#country.dz::before {
+  background-position: -258px -35px;
+}
+
+#country.ec::before {
+  background-position: -289px -35px;
+}
+
+#country.ee::before {
   background-position: -320px -35px;
 }
-#country.eu::before {
+
+#country.eg::before {
   background-position: -351px -35px;
 }
-#country.fi::before {
+
+#country.es::before {
   background-position: -382px -35px;
 }
-#country.fr::before {
+
+#country.eu::before {
   background-position: -413px -35px;
 }
-#country.gb::before {
+
+#country.fi::before {
+  background-position: -444px -35px;
+}
+
+#country.fo::before {
   background-position: -475px -35px;
 }
-#country.hk::before {
+
+#country.fr::before {
+  background-position: -506px -35px;
+}
+
+#country.ga::before {
+  background-position: -10px -60px;
+}
+
+#country.gb::before {
   background-position: -41px -60px;
 }
-#country.ie::before {
+
+#country.gl::before {
+  background-position: -72px -60px;
+}
+
+#country.gm::before {
+  background-position: -103px -60px;
+}
+
+#country.gr::before {
+  background-position: -134px -60px;
+}
+
+#country.gt::before {
+  background-position: -165px -60px;
+}
+
+#country.gu::before {
   background-position: -196px -60px;
 }
-#country.it::before {
+
+#country.hk::before {
+  background-position: -227px -60px;
+}
+
+#country.hn::before {
+  background-position: -258px -60px;
+}
+
+#country.ht::before {
+  background-position: -289px -60px;
+}
+
+#country.hu::before {
+  background-position: -320px -60px;
+}
+
+#country.id::before {
   background-position: -351px -60px;
 }
-#country.jp::before {
+
+#country.ie::before {
+  background-position: -382px -60px;
+}
+
+#country.il::before {
+  background-position: -413px -60px;
+}
+
+#country.im::before {
   background-position: -444px -60px;
 }
-#country.lu::before {
+
+#country.in::before {
+  background-position: -475px -60px;
+}
+
+#country.iq::before {
+  background-position: -506px -60px;
+}
+
+#country.ir::before {
+  background-position: -10px -85px;
+}
+
+#country.is::before {
+  background-position: -41px -85px;
+}
+
+#country.it::before {
+  background-position: -72px -85px;
+}
+
+#country.je::before {
+  background-position: -103px -85px;
+}
+
+#country.jm::before {
+  background-position: -134px -85px;
+}
+
+#country.jo::before {
+  background-position: -165px -85px;
+}
+
+#country.jp::before {
+  background-position: -196px -85px;
+}
+
+#country.kg::before {
+  background-position: -227px -85px;
+}
+
+#country.kn::before {
   background-position: -258px -85px;
 }
-#country.mx::before {
+
+#country.kp::before {
+  background-position: -289px -85px;
+}
+
+#country.kr::before {
+  background-position: -320px -85px;
+}
+
+#country.kw::before {
+  background-position: -351px -85px;
+}
+
+#country.kz::before {
+  background-position: -382px -85px;
+}
+
+#country.la::before {
+  background-position: -413px -85px;
+}
+
+#country.lb::before {
+  background-position: -444px -85px;
+}
+
+#country.lc::before {
   background-position: -475px -85px;
 }
-#country.nl::before {
+
+#country.ls::before {
+  background-position: -506px -85px;
+}
+
+#country.lt::before {
+  background-position: -10px -110px;
+}
+
+#country.lu::before {
+  background-position: -41px -110px;
+}
+
+#country.lv::before {
+  background-position: -72px -110px;
+}
+
+#country.ma::before {
   background-position: -103px -110px;
 }
-#country.no::before {
+
+#country.mg::before {
   background-position: -134px -110px;
 }
-#country.nz::before {
+
+#country.mk::before {
   background-position: -165px -110px;
 }
-#country.pt::before {
+
+#country.ml::before {
+  background-position: -196px -110px;
+}
+
+#country.mm::before {
+  background-position: -227px -110px;
+}
+
+#country.mt::before {
+  background-position: -258px -110px;
+}
+
+#country.mx::before {
+  background-position: -289px -110px;
+}
+
+#country.my::before {
+  background-position: -320px -110px;
+}
+
+#country.na::before {
+  background-position: -351px -110px;
+}
+
+#country.ne::before {
+  background-position: -382px -110px;
+}
+
+#country.ng::before {
   background-position: -413px -110px;
 }
-#country.se::before {
+
+#country.ni::before {
+  background-position: -444px -110px;
+}
+
+#country.nl::before {
+  background-position: -475px -110px;
+}
+
+#country.no::before {
+  background-position: -506px -110px;
+}
+
+#country.nz::before {
+  background-position: -10px -135px;
+}
+
+#country.om::before {
+  background-position: -41px -135px;
+}
+
+#country.pa::before {
+  background-position: -72px -135px;
+}
+
+#country.pe::before {
   background-position: -103px -135px;
 }
-#country.sg::before {
+
+#country.pg::before {
   background-position: -134px -135px;
 }
-#country.us::before {
+
+#country.ph::before {
+  background-position: -165px -135px;
+}
+
+#country.pk::before {
+  background-position: -196px -135px;
+}
+
+#country.pl::before {
+  background-position: -227px -135px;
+}
+
+#country.pr::before {
+  background-position: -258px -135px;
+}
+
+#country.ps::before {
+  background-position: -289px -135px;
+}
+
+#country.pt::before {
+  background-position: -320px -135px;
+}
+
+#country.py::before {
+  background-position: -351px -135px;
+}
+
+#country.qa::before {
+  background-position: -382px -135px;
+}
+
+#country.ro::before {
+  background-position: -444px -135px;
+}
+
+#country.ru::before {
   background-position: -475px -135px;
+}
+
+#country.rw::before {
+  background-position: -506px -135px;
+}
+
+#country.sa::before {
+  background-position: -10px -160px;
+}
+
+#country.se::before {
+  background-position: -41px -160px;
+}
+
+#country.sg::before {
+  background-position: -72px -160px;
+}
+
+#country.si::before {
+  background-position: -103px -160px;
+}
+
+#country.sk::before {
+  background-position: -134px -160px;
+}
+
+#country.sl::before {
+  background-position: -165px -160px;
+}
+
+#country.sn::before {
+  background-position: -196px -160px;
+}
+
+#country.so::before {
+  background-position: -227px -160px;
+}
+
+#country.sv::before {
+  background-position: -258px -160px;
+}
+
+#country.td::before {
+  background-position: -289px -160px;
+}
+
+#country.th::before {
+  background-position: -320px -160px;
+}
+
+#country.tj::before {
+  background-position: -351px -160px;
+}
+
+#country.tl::before {
+  background-position: -382px -160px;
+}
+
+#country.tr::before {
+  background-position: -413px -160px;
+}
+
+#country.tw::before {
+  background-position: -444px -160px;
+}
+
+#country.tz::before {
+  background-position: -475px -160px;
+}
+
+#country.ua::before {
+  background-position: -506px -160px;
+}
+
+#country.us::before {
+  background-position: -10px -185px;
+}
+
+#country.uy::before {
+  background-position: -41px -185px;
+}
+
+#country.ve::before {
+  background-position: -72px -185px;
+}
+
+#country.vn::before {
+  background-position: -103px -185px;
+}
+
+#country.xx::before {
+  background-position: -134px -185px;
+}
+
+#country.ye::before {
+  background-position: -165px -185px;
+}
+
+#country.za::before {
+  background-position: -196px -185px;
 }
 
 /* Payment Methods */
