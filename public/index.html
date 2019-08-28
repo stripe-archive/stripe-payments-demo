@@ -28,6 +28,7 @@
       <form id="payment-form" method="POST" action="/orders">
         <p class="instruction">Complete your shipping and payment details below</p>
         <section>
+          <button class="generate-button" type="button">Generate</button>
           <h2>Shipping &amp; Billing Information</h2>
           <fieldset class="with-state">
             <label>
@@ -179,7 +180,7 @@
             <p class="notice">Click the button below to generate a QR code for WeChat.</p>
           </div>
         </section>
-        <button type="submit">Pay</button>
+        <button class="payment-button" type="submit">Pay</button>
       </form>
       <div id="card-errors" class="element-errors"></div>
       <div id="iban-errors" class="element-errors"></div>
