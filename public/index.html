@@ -28,7 +28,7 @@
       <form id="payment-form" method="POST" action="/orders">
         <p class="instruction">Complete your shipping and payment details below</p>
         <section>
-          <button class="generate-button" type="button">Generate</button>
+          <button id="generate" class="generate-button" type="button">Generate</button>
           <h2>Shipping &amp; Billing Information</h2>
           <fieldset class="with-state">
             <label>
@@ -255,6 +255,7 @@
   <!-- Library to render QR codes -->
   <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <!-- App -->
+  <script src="/javascripts/generate.js"></script>
   <script src="/javascripts/store.js"></script>
   <script src="/javascripts/payments.js"></script>
 </body>
