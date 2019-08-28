@@ -578,7 +578,7 @@
     alipay: {
       name: 'Alipay',
       flow: 'redirect',
-      countries: ['CN', 'HK', 'SG', 'JP'],
+      countries: ['CN', 'HK', 'SG', 'JP', 'MY'],
       currencies: [
         'aud',
         'cad',
@@ -652,7 +652,7 @@
     wechat: {
       name: 'WeChat',
       flow: 'none',
-      countries: ['CN', 'HK', 'SG', 'JP'],
+      countries: ['CN', 'HK', 'SG', 'JP', 'MY'],
       currencies: [
         'aud',
         'cad',
