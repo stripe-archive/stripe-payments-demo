@@ -202,6 +202,15 @@ p.tip {
   background: url(/images/tip.svg) left center no-repeat;
 }
 
+span#generate {
+  cursor: pointer;
+  color: #525f7f;
+  text-decoration: underline;
+}
+span#generate:hover {
+  text-decoration: none;
+}
+
 .field {
   flex: 1;
   padding: 0 15px;
@@ -296,6 +305,8 @@ button {
   border-radius: 4px;
   border: 0;
   font-weight: 700;
+  width: 100%;
+  height: 40px;
   outline: none;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -313,17 +324,6 @@ button:hover {
 
 button:active {
   background: #43458b;
-}
-
-.payment-button {
-  width: 100%;
-  height: 40px;
-}
-
-.generate-button {
-  width: 50%;
-  align-self: center;
-  padding: 0.5em;
 }
 
 #country {
