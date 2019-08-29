@@ -223,8 +223,7 @@
     // Display the Pay button by mounting the Element in the DOM.
     paymentRequestButton.mount('#payment-request-button');
     // Replace the instruction.
-    document.querySelector('.instruction').innerText =
-      'Or enter your shipping and payment details below';
+    document.querySelector('.instruction span').innerText = 'Or enter';
     // Show the payment request section.
     document.getElementById('payment-request').classList.add('visible');
   }
@@ -779,7 +778,7 @@
   // Select the default country from the config on page load.
   let country = config.country;
   // Override it if a valid country is passed as a URL parameter.
-  var urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(window.location.search);
   let countryParam = urlParams.get('country')
     ? urlParams.get('country').toUpperCase()
     : config.country;
