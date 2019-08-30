@@ -26,7 +26,7 @@
         <div id="payment-request-button"></div>
       </div>
       <form id="payment-form" method="POST" action="/orders">
-        <p class="instruction">Complete your shipping and payment details below</p>
+        <p class="instruction"><span>Complete</span>/<span id="generate">generate</span> your shipping and payment details below</p>
         <section>
           <h2>Shipping &amp; Billing Information</h2>
           <fieldset class="with-state">
@@ -179,7 +179,7 @@
             <p class="notice">Click the button below to generate a QR code for WeChat.</p>
           </div>
         </section>
-        <button type="submit">Pay</button>
+        <button class="payment-button" type="submit">Pay</button>
       </form>
       <div id="card-errors" class="element-errors"></div>
       <div id="iban-errors" class="element-errors"></div>
@@ -250,8 +250,11 @@
   <!-- Stripe.js v3 for Elements -->
   <script src="https://js.stripe.com/v3/"></script>
   <!-- Library to render QR codes -->
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+  <!-- Library for generating fake user information -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js" integrity="sha384-PlFzuf6GOlJNxLuosezJ/jwndIVZ2hWI/AmvYQtBzstOdLtcUe6DPSI4LsqwiN1y" crossorigin="anonymous"></script>
   <!-- App -->
+  <script src="/javascripts/generate.js"></script>
   <script src="/javascripts/store.js"></script>
   <script src="/javascripts/payments.js"></script>
 </body>

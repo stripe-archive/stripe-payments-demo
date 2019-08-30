@@ -202,6 +202,15 @@ p.tip {
   background: url(/images/tip.svg) left center no-repeat;
 }
 
+span#generate {
+  cursor: pointer;
+  color: #525f7f;
+  text-decoration: underline;
+}
+span#generate:hover {
+  text-decoration: none;
+}
+
 .field {
   flex: 1;
   padding: 0 15px;
