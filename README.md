@@ -6,7 +6,7 @@ If you’re running a compatible browser, this demo also showcases the [Payment 
 
 **You can see this demo app running in test mode on [stripe-payments-demo.appspot.com](https://stripe-payments-demo.appspot.com).**
 
-️⚠️ [️PaymentIntents](https://stripe.com/docs/payments/payment-intents) is the recommended integration path for 3D Secure authentication. It lets you benefit from [dynamic authentication](https://stripe.com/docs/payments/dynamic-3ds) to maximize conversion and comply with the [Strong Customer Authentication](https://stripe.com/guides/strong-customer-authentication) regulation in Europe.
+️⚠️ [️PaymentIntents](https://stripe.com/docs/payments/payment-intents) is the recommended integration path for 3D Secure authentication. It lets you benefit from [dynamic authentication](https://stripe.com/docs/payments/3d-secure) to maximize conversion and prepare for regulations like [Strong Customer Authentication](https://stripe.com/guides/strong-customer-authentication) in Europe.
 
 ## Overview
 
