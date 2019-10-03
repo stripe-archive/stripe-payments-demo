@@ -63,3 +63,10 @@ typings/
 # serverless
 serverless/
 .vscode/settings.json
+
+## Hide other servers
+go/
+java/
+php/
+python/
+ruby/
