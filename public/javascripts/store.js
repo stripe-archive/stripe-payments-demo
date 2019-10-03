@@ -44,10 +44,10 @@ class Store {
     try {
       const response = await fetch('/config');
       const config = await response.json();
-      if (config.stripePublishableKey.includes('live')) {
-        // Hide the demo notice if the publishable key is in live mode.
-        document.querySelector('#order-total .demo').style.display = 'none';
-      }
+      // if (config.stripePublishableKey.includes('live')) {
+      //   // Hide the demo notice if the publishable key is in live mode.
+      //   document.querySelector('#order-total .demo').style.display = 'none';
+      // }
       return config;
     } catch (err) {
       return {error: err.message};
@@ -121,7 +121,7 @@ class Store {
   // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
   formatPrice(amount, currency) {
     let price = (amount / 100).toFixed(2);
-    let numberFormat = new Intl.NumberFormat(['en-US'], {
+    let numberFormat = new Intl.NumberFormat(['en-SG'], {
       style: 'currency',
       currency: currency,
       currencyDisplay: 'symbol',
