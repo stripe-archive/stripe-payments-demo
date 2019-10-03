@@ -29,7 +29,7 @@
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(config.stripePublishableKey);
+  const stripe = Stripe(config.stripePublishableKey, {betas: ['fpx_bank_beta_1']});
 
   // Create an instance of Elements.
   const elements = stripe.elements();
@@ -111,6 +111,21 @@
   });
 
   /**
+   * Add a FPX Bank selection Element that matches the look-and-feel of the app.
+   *
+   * This allows you to send the customer directly to their FPX enabled bank.
+   */
+
+   // Create a FPX Bank Element and pass the style options, along with an extra `padding` property.
+   const fpxBank = elements.create('fpxBank', {
+    style: {base: Object.assign({padding: '10px 15px'}, style.base)},
+    accountHolderType: 'individual',
+  });
+
+  // Mount the FPX Bank Element on the page.
+  fpxBank.mount('#fpx-bank-element');
+
+  /**
    * Add an iDEAL Bank selection Element that matches the look-and-feel of the app.
    *
    * This allows you to send the customer directly to their iDEAL enabled bank.
@@ -178,10 +193,24 @@
       // it to close the browser payment method collection interface.
       event.complete('success');
       // Let Stripe.js handle the rest of the payment flow, including 3D Secure if needed.
-      const response = await stripe.handleCardPayment(
-        paymentIntent.client_secret
-      );
-      handlePayment(response);
+      switch (event.paymentMethod.type) {
+        case 'fpx':
+          const response = await stripe.handleFpxPayment(
+            paymentIntent.client_secret,
+            fpxBank,
+            {
+              return_url: window.location.href,
+            },
+          );
+          handlePayment(response);
+          break;
+        default:
+          response = await stripe.handleCardPayment(
+            paymentIntent.client_secret
+          );
+          handlePayment(response);
+          break;
+      }
     }
   });
 
@@ -310,6 +339,21 @@
       }
       // Poll the PaymentIntent status.
       pollPaymentIntentStatus(paymentIntent.id);
+    } else if (payment === 'fpx') {
+      const response = await stripe.handleFpxPayment(
+        paymentIntent.client_secret,
+        fpxBank,
+        {
+          payment_method_data: {
+            billing_details: {
+              name,
+            },
+          },
+          return_url: window.location.href + 'success',
+          shipping,
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -373,6 +417,7 @@
       // Success! Payment is confirmed. Update the interface to display the confirmation screen.
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
+      mainElement.classList.remove('checkout');
       // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
       confirmationElement.querySelector('.note').innerText =
         'We just sent your receipt to your email address, and your items will be on their way shortly.';
@@ -384,6 +429,11 @@
       confirmationElement.querySelector('.note').innerText =
         'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
       mainElement.classList.add('success');
+    } else if (paymentIntent.status === 'requires_action') {
+      const next_action = paymentIntent.next_action;
+      if (next_action && next_action.type === 'redirect_to_url') {
+        window.location.replace(next_action.redirect_to_url.url);
+      }
     } else {
       // Payment has failed.
       mainElement.classList.remove('success');
@@ -606,6 +656,12 @@
       countries: ['AT'],
       currencies: ['eur'],
     },
+    fpx: {
+      name: 'FPX',
+      flow: 'redirect',
+      countries: ['MY'],
+      currencies: ['myr'],
+    },
     ideal: {
       name: 'iDEAL',
       flow: 'redirect',
@@ -733,6 +789,7 @@
     // Check the first payment option again.
     paymentInputs[0].checked = 'checked';
     form.querySelector('.payment-info.card').classList.add('visible');
+    form.querySelector('.payment-info.fpx').classList.remove('visible');
     form.querySelector('.payment-info.ideal').classList.remove('visible');
     form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
@@ -754,6 +811,9 @@
       form
         .querySelector('.payment-info.card')
         .classList.toggle('visible', payment === 'card');
+      form
+        .querySelector('.payment-info.fpx')
+        .classList.toggle('visible', payment === 'fpx');
       form
         .querySelector('.payment-info.ideal')
         .classList.toggle('visible', payment === 'ideal');

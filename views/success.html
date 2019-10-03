@@ -1,0 +1,41 @@
+<html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Stripe Payments Demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@stripe">
+  <meta name="twitter:title" content="Stripe Payments Demo">
+  <meta name="twitter:description" content="Sample store accepting universal payments on the web with Stripe Elements, Payment Request, Apple Pay, Google Pay, and the Sources API.">
+  <meta name="twitter:image" content="https://stripe-payments-demo.appspot.com/images/twitter.png">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/store.css">
+  <link rel="icon" type="image/png" sizes="104x80" href="/images/logo.png">
+</head>
+
+<body>
+  <main id="main" class="success">
+    <header class="header">
+      <a class="shop" href="/">Stripe Payments Demo</a>
+      <a class="github" href="https://github.com/stripe/stripe-payments-demo">View on GitHub</a>
+    </header>
+    <div id="confirmation">
+      <div class="status success visible">
+        <h1>Thanks for your order!</h1>
+        <p>Woot! You successfully made a payment with Stripe.</p>
+        <p class="note">We just sent your receipt to your email address, and your items will be on their way shortly.</p>
+      </div>
+    </div>
+  </main>
+  <!-- Stripe.js v3 for Elements -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <!-- Library to render QR codes -->
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js" integrity="sha384-3zSEDfvllQohrq0PHL1fOXJuC/jSOO34H46t6UQfobFOmxE5BpjjaIJY5F2/bMnU" crossorigin="anonymous"></script>
+  <!-- Library for generating fake user information -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js" integrity="sha384-PlFzuf6GOlJNxLuosezJ/jwndIVZ2hWI/AmvYQtBzstOdLtcUe6DPSI4LsqwiN1y" crossorigin="anonymous"></script>
+  <!-- App -->
+</body>
+
+</html>

@@ -11,10 +11,10 @@ require('dotenv').config();
 
 module.exports = {
   // Default country for the checkout form.
-  country: 'US',
+  country: 'MY',
 
   // Store currency.
-  currency: 'eur',
+  currency: 'myr',
 
   // Supported payment methods for the store.
   // Some payment methods support only a subset of currencies.
@@ -25,6 +25,7 @@ module.exports = {
     'bancontact', // eur (Bancontact must always use Euros)
     'card', // many (https://stripe.com/docs/currencies#presentment-currencies)
     'eps', // eur (EPS must always use Euros)
+    'fpx', // myr (FPX must always use Ringgit)
     'ideal', // eur (iDEAL must always use Euros)
     'giropay', // eur (Giropay must always use Euros)
     'multibanco', // eur (Multibanco must always use Euros)

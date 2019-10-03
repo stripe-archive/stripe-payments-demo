@@ -293,6 +293,10 @@ select:-webkit-autofill {
   margin-top: -1px;
 }
 
+#fpx-bank-element {
+  padding: 0;
+}
+
 #ideal-bank-element {
   padding: 0;
 }
@@ -916,6 +920,10 @@ button:active {
 
 .payment-info:not(.card) {
   margin-bottom: 15px;
+}
+
+.payment-info.fpx {
+  margin-bottom: 0;
 }
 
 .payment-info.ideal {

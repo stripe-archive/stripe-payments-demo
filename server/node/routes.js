@@ -22,6 +22,10 @@ router.get('/', (req, res) => {
   res.render('index.html');
 });
 
+router.get('/success', (req, res) => {
+  res.render('success.html');
+});
+
 /**
  * Stripe integration to accept all types of payments with 3 POST endpoints.
  *
@@ -56,7 +60,8 @@ router.post('/payment_intents', async (req, res, next) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: config.paymentMethods,
+      // payment_method_types: config.paymentMethods,
+      payment_method_types: ['card', 'fpx'],
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {

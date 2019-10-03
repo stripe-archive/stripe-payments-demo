@@ -116,6 +116,10 @@
                 <label for="payment-eps">EPS</label>
               </li>
               <li>
+                <input type="radio" name="payment" id="payment-fpx" value="fpx">
+                <label for="payment-fpx">FPX</label>
+              </li>
+              <li>
                 <input type="radio" name="payment" id="payment-ideal" value="ideal">
                 <label for="payment-ideal">iDEAL</label>
               </li>
@@ -159,6 +163,14 @@
             <p class="notice">By providing your IBAN and confirming this payment, you’re authorizing Payments Demo and Stripe, our payment
               provider, to send instructions to your bank to debit your account. You’re entitled to a refund under the terms
               and conditions of your agreement with your bank.</p>
+          </div>
+          <div class="payment-info fpx">
+            <fieldset>
+              <label>
+                <span>FPX Bank</span>
+                <div id="fpx-bank-element" class="field"></div>
+              </label>
+            </fieldset>
           </div>
           <div class="payment-info ideal">
             <fieldset>
