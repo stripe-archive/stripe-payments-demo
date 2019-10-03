@@ -18,10 +18,10 @@ class Store {
   }
 
   // Compute the total for the payment based on the line items (SKUs and quantity).
-  getPaymentTotal() {
+  getPaymentTotal(factor = 1) {
     return Object.values(this.lineItems).reduce(
       (total, {product, sku, quantity}) =>
-        total + quantity * this.products[product].skus.data[0].price,
+        total + factor * quantity * this.products[product].skus.data[0].price,
       0
     );
   }
@@ -132,26 +132,30 @@ class Store {
   // Manipulate the DOM to display the payment summary on the right panel.
   // Note: For simplicity, we're just using template strings to inject data in the DOM,
   // but in production you would typically use a library like React to manage this effectively.
-  async displayPaymentSummary() {
+  async displayPaymentSummary(currencyOverwrite, factor = 1) {
     // Fetch the products from the store to get all the details (name, price, etc.).
     await this.loadProducts();
     const orderItems = document.getElementById('order-items');
     const orderTotal = document.getElementById('order-total');
-    let currency;
-    // Build and append the line items to the payment summary.
-    for (let [id, product] of Object.entries(this.products)) {
-      const randomQuantity = (min, max) => {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-      };
-      const quantity = randomQuantity(1, 2);
-      let sku = product.skus.data[0];
-      let skuPrice = this.formatPrice(sku.price, sku.currency);
-      let lineItemPrice = this.formatPrice(sku.price * quantity, sku.currency);
-      let lineItem = document.createElement('div');
-      lineItem.classList.add('line-item');
-      lineItem.innerHTML = `
+    let currency = currencyOverwrite;
+    if (!currencyOverwrite) {
+      // Build and append the line items to the payment summary.
+      for (let [id, product] of Object.entries(this.products)) {
+        const randomQuantity = (min, max) => {
+          min = Math.ceil(min);
+          max = Math.floor(max);
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+        const quantity = randomQuantity(1, 2);
+        let sku = product.skus.data[0];
+        let skuPrice = this.formatPrice(sku.price, sku.currency);
+        let lineItemPrice = this.formatPrice(
+          sku.price * quantity,
+          sku.currency
+        );
+        let lineItem = document.createElement('div');
+        lineItem.classList.add('line-item');
+        lineItem.innerHTML = `
         <img class="image" src="/images/products/${product.id}.jpg">
         <div class="label">
           <p class="product">${product.name}</p>
@@ -159,16 +163,17 @@ class Store {
         </div>
         <p class="count">${quantity} x ${skuPrice}</p>
         <p class="price">${lineItemPrice}</p>`;
-      orderItems.appendChild(lineItem);
-      currency = sku.currency;
-      this.lineItems.push({
-        product: product.id,
-        sku: sku.id,
-        quantity,
-      });
+        orderItems.appendChild(lineItem);
+        currency = sku.currency;
+        this.lineItems.push({
+          product: product.id,
+          sku: sku.id,
+          quantity,
+        });
+      }
     }
     // Add the subtotal and total to the payment summary.
-    const total = this.formatPrice(this.getPaymentTotal(), currency);
+    const total = this.formatPrice(this.getPaymentTotal(factor), currency);
     orderTotal.querySelector('[data-subtotal]').innerText = total;
     orderTotal.querySelector('[data-total]').innerText = total;
   }

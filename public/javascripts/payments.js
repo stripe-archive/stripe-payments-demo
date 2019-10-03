@@ -673,8 +673,16 @@
   };
 
   // Update the main button to reflect the payment method being selected.
-  const updateButtonLabel = (paymentMethod, bankName) => {
-    let amount = store.formatPrice(store.getPaymentTotal(), config.currency);
+  const updateButtonLabel = (
+    paymentMethod,
+    bankName,
+    currencyOverwrite,
+    factor = 1
+  ) => {
+    let amount = store.formatPrice(
+      store.getPaymentTotal(factor),
+      currencyOverwrite ? currencyOverwrite : config.currency
+    );
     let name = paymentMethods[paymentMethod].name;
     let label = `Pay ${amount}`;
     if (paymentMethod !== 'card') {
@@ -761,6 +769,14 @@
       form
         .querySelector('.payment-info.fpx')
         .classList.toggle('visible', payment === 'fpx');
+      if (payment === 'fpx') {
+        // update currency to myr
+        store.displayPaymentSummary('myr', 3.03);
+        updateButtonLabel(payment, null, 'myr', 3.03);
+      } else {
+        store.displayPaymentSummary(config.currency);
+        updateButtonLabel(payment, null, config.currency);
+      }
       form
         .querySelector('.payment-info.ideal')
         .classList.toggle('visible', payment === 'ideal');
