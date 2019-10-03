@@ -30,7 +30,7 @@
 
   // Create a Stripe client.
   const stripe = Stripe(config.stripePublishableKey, {
-    betas: ['payment_intent_beta_3'],
+    betas: ['fpx_bank_beta_1'],
   });
 
   // Create an instance of Elements.
@@ -111,6 +111,16 @@
     // Re-enable the Pay button.
     submitButton.disabled = false;
   });
+
+  // FPX
+  // Create an instance of the fpxBank Element.
+  const fpxBank = elements.create('fpxBank', {
+    style: {base: Object.assign({padding: '10px 15px'}, style.base)},
+    accountHolderType: 'individual',
+  });
+
+  // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+  fpxBank.mount('#fpx-bank-element');
 
   /**
    * Add an iDEAL Bank selection Element that matches the look-and-feel of the app.
@@ -596,6 +606,12 @@
       countries: ['AT'],
       currencies: ['eur'],
     },
+    fpx: {
+      name: 'FPX',
+      flow: 'redirect',
+      countries: ['MY'],
+      currencies: ['myr', 'sgd'],
+    },
     ideal: {
       name: 'iDEAL',
       flow: 'redirect',
@@ -704,13 +720,10 @@
     const paymentInputs = form.querySelectorAll('input[name=payment]');
     for (let i = 0; i < paymentInputs.length; i++) {
       let input = paymentInputs[i];
-      input.parentElement.classList.toggle(
-        'visible',
+      const condition =
         input.value === 'card' ||
-          (config.paymentMethods.includes(input.value) &&
-            paymentMethods[input.value].countries.includes(country) &&
-            paymentMethods[input.value].currencies.includes(config.currency))
-      );
+        paymentMethods[input.value].countries.includes(country);
+      input.parentElement.classList.toggle('visible', condition);
     }
 
     // Hide the tabs if card is the only available option.
@@ -724,6 +737,7 @@
     paymentInputs[0].checked = 'checked';
     form.querySelector('.payment-info.card').classList.add('visible');
     form.querySelector('.payment-info.ideal').classList.remove('visible');
+    form.querySelector('.payment-info.fpx').classList.remove('visible');
     form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
     form.querySelector('.payment-info.redirect').classList.remove('visible');
@@ -744,6 +758,9 @@
       form
         .querySelector('.payment-info.card')
         .classList.toggle('visible', payment === 'card');
+      form
+        .querySelector('.payment-info.fpx')
+        .classList.toggle('visible', payment === 'fpx');
       form
         .querySelector('.payment-info.ideal')
         .classList.toggle('visible', payment === 'ideal');

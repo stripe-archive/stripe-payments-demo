@@ -171,6 +171,15 @@
                   <input
                     type="radio"
                     name="payment"
+                    id="payment-fpx"
+                    value="fpx"
+                  />
+                  <label for="payment-fpx">FPX</label>
+                </li>
+                <li>
+                  <input
+                    type="radio"
+                    name="payment"
                     id="payment-ideal"
                     value="ideal"
                   />
@@ -245,6 +254,14 @@
                 entitled to a refund under the terms and conditions of your
                 agreement with your bank.
               </p>
+            </div>
+            <div class="payment-info fpx">
+              <fieldset>
+                <label>
+                  <span>FPX Bank</span>
+                  <div id="fpx-bank-element" class="field"></div>
+                </label>
+              </fieldset>
             </div>
             <div class="payment-info ideal">
               <fieldset>
