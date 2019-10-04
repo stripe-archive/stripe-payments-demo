@@ -25,52 +25,52 @@ module.exports = {
         try {
           // Highgrowth Handbook.
           await stripe.products.create({
-            id: 'highgrowth',
+            id: 'get-together',
             type: 'good',
-            name: 'High Growth Handbook',
+            name: 'Get Together',
             attributes: ['issue'],
           });
           await stripe.skus.create({
-            id: 'highgrowth-hardcover',
-            product: 'highgrowth',
-            attributes: {issue: 'Hardcover — Elad Gil'},
-            price: 1249,
+            id: 'get-together-hardcover',
+            product: 'get-together',
+            attributes: {issue: 'Hardcover — Richardson, Huynh, Sotto'},
+            price: 2300,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
 
           // The Dream Machine.
           await stripe.products.create({
-            id: 'dreammachine',
+            id: 'elegant-puzzle',
             type: 'good',
-            name: 'The Dream Machine',
+            name: 'An Elegant Puzzle',
             attributes: ['issue'],
           });
           await stripe.skus.create({
-            id: 'dreammachine-hardcover',
-            product: 'dreammachine',
-            attributes: {issue: 'Hardcover — Mitchell Waldrop'},
-            price: 1099,
+            id: 'elegant-puzzle-hardcover',
+            product: 'elegant-puzzle',
+            attributes: {issue: 'Hardcover — Will Larson'},
+            price: 2200,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
 
           // Stubborn Attachments.
           await stripe.products.create({
-            id: 'stubborn',
+            id: 'revolt_public',
             type: 'good',
-            name: 'Stubborn Attachments',
+            name: 'The Revolt of the Public',
             attributes: ['issue'],
           });
           await stripe.skus.create({
-            id: 'stubborn-hardcover',
-            product: 'stubborn',
-            attributes: {issue: 'Hardcover — Tyler Cowen'},
-            price: 749,
+            id: 'revolt_public-hardcover',
+            product: 'revolt_public',
+            attributes: {issue: 'Hardcover — Martin Gurri'},
+            price: 2000,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
-          
+
           console.log('Setup complete.');
           resolve();
           this.running = false;
