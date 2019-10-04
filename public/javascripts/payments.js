@@ -310,6 +310,26 @@
         }
       );
       handlePayment(response);
+    } else if (payment === 'fpx') {
+      const response = await stripe.confirmPaymentIntent(
+        paymentIntent.client_secret,
+        {
+          payment_method_data: {
+            type: 'fpx',
+            fpx: {bank: 'sbi_bank_a'},
+            billing_details: {
+              name,
+            },
+          },
+          return_url: window.location.href,
+          shipping,
+        }
+      );
+      if (response.paymentIntent.next_action) {
+        window.location.assign(
+          response.paymentIntent.next_action.redirect_to_url.url
+        );
+      }
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -548,6 +568,9 @@
 
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(source.metadata.paymentIntent);
+  } else if (url.searchParams.get('payment_intent')) {
+    // Poll the PaymentIntent status.
+    pollPaymentIntentStatus(url.searchParams.get('payment_intent'));
   } else {
     // Update the interface to display the checkout form.
     mainElement.classList.add('checkout');
