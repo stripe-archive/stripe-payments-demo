@@ -184,7 +184,7 @@ router.get('/config', (req, res) => {
 router.get('/products', async (req, res) => {
   const productList = await products.list();
   // Check if products exist on Stripe Account.
-  if (true) {
+  if (productList.data.length) {
     res.json(productList);
   } else {
     // We need to set up the products.
