@@ -29,6 +29,8 @@ body {
 #main {
   width: 100%;
   height: 100vh;
+  height: 100vh;
+  padding: 0 0 0 3vw;
   text-align: center;
   transition: width 0.3s ease-in-out;
 }
@@ -39,33 +41,44 @@ body {
 
 /* Header */
 
-.header {
+#stripe-press-logo {
+  position: absolute;
+  width: 60px;
+  height: 140px;
+  margin-top: 34px;
+  background: url(/images/stripe-press.svg) 5px top no-repeat;
+  background-size: 51px 123px;
+}
+
+.AuthorizeWithUrlApp-modalContainer {
+  height: 390px !important;
+}
+
+header {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  height: 80px;
-  background: #fff url(/images/logo.svg) center center no-repeat;
-  border-bottom: 1px solid #f3f3ff;
+  height: 42px;
 }
 
-.header a.shop,
-.header a.github {
+header a.shop,
+header a.github {
   margin: 30px;
   font-size: 13px;
   font-weight: 500;
-  color: #666ee8;
+  color: #6772e5;
   letter-spacing: 0.3px;
   text-transform: uppercase;
   text-decoration: none;
 }
 
-.header a.github {
+header a.github {
   padding-left: 20px;
   background: url(/images/github.svg) left center no-repeat;
 }
 
-.header a:hover {
+header a:hover {
   text-decoration: underline;
 }
 
@@ -74,7 +87,7 @@ body {
 #checkout {
   max-width: 480px;
   margin: 0 auto;
-  padding: 30px 0;
+  padding: 0;
   visibility: hidden;
   opacity: 0;
   transition: visibility 0s, opacity 0.5s linear 0.5s;
@@ -112,8 +125,8 @@ h2 {
 #payment-request {
   visibility: hidden;
   opacity: 0;
-  min-height: 100px;
-  padding: 20px 0;
+  min-height: 80px;
+  padding: 0 0 20px 0;
   transition: visibility 0s, opacity 0.3s ease-in;
 }
 
@@ -127,6 +140,17 @@ h2 {
   padding: 20px 30px 30px;
   border-radius: 4px;
   border: 1px solid #e8e8fb;
+}
+
+.gpay-button.long {
+  width: 100% !important;
+}
+
+.gpay-button.long.focus {
+  background-origin: content-box;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 /* Form */
@@ -202,15 +226,6 @@ p.tip {
   background: url(/images/tip.svg) left center no-repeat;
 }
 
-span#generate {
-  cursor: pointer;
-  color: #525f7f;
-  text-decoration: underline;
-}
-span#generate:hover {
-  text-decoration: none;
-}
-
 .field {
   flex: 1;
   padding: 0 15px;
@@ -264,7 +279,7 @@ select {
 }
 
 select:focus {
-  color: #666ee8;
+  color: #6772e5;
 }
 
 ::-webkit-input-placeholder {
@@ -280,7 +295,7 @@ select:focus {
 
 input:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-text-fill-color: #666ee8;
+  -webkit-text-fill-color: #6772e5;
   transition: background-color 100000000s;
   -webkit-animation: 1ms void-animation-out 1s;
 }
@@ -293,16 +308,13 @@ select:-webkit-autofill {
   margin-top: -1px;
 }
 
-#fpx-bank-element {
-  padding: 0;
-}
 #ideal-bank-element {
   padding: 0;
 }
 
 button {
   display: block;
-  background: #666ee8;
+  background: #6772e5;
   color: #fff;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
   border-radius: 4px;
@@ -921,9 +933,6 @@ button:active {
   margin-bottom: 15px;
 }
 
-.payment-info.fpx {
-  margin-bottom: 0;
-}
 .payment-info.ideal {
   margin-bottom: 0;
 }
@@ -991,7 +1000,7 @@ button:active {
   right: 0;
 }
 
-#summary .header {
+#summary header {
   background: #fff;
 }
 
@@ -999,6 +1008,10 @@ button:active {
   margin: 0 30px;
   line-height: 80px;
   font-weight: 400;
+}
+
+#summary #order-items {
+  margin-top: 12px;
 }
 
 #summary p {
@@ -1022,8 +1035,11 @@ button:active {
   width: 80px;
   height: 80px;
   margin-right: 15px;
-  background: #f6f9fc;
-  border-radius: 3px;
+  background-color: #f6f9fc;
+  background-size: 160px 100px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-radius: 4px;
 }
 
 #summary .line-item .label {
@@ -1033,6 +1049,7 @@ button:active {
 
 #summary .line-item .product {
   color: #424770;
+  font-weight: 500;
 }
 
 #summary .line-item .sku {
@@ -1043,7 +1060,7 @@ button:active {
 #summary .line-item .count,
 #summary .line-item .price {
   font-size: 14px;
-  padding-left: 10px;
+  padding-left: 6px;
   align-self: right;
   text-align: right;
   line-height: 24px;
@@ -1054,8 +1071,8 @@ button:active {
 }
 
 #summary .line-item .price {
-  color: #8ba4fe;
-  font-weight: bold;
+  color: #424770;
+  font-weight: 500;
 }
 
 #summary .line-item.subtotal {
@@ -1094,10 +1111,10 @@ button:active {
 
 #demo p.label {
   margin: 0 0 10px;
-  color: #666ee8;
+  color: #6772e5;
 }
 
-#demo .note {
+#demo p.note {
   display: block;
   margin: 10px 0 0;
   font-size: 14px;
@@ -1112,26 +1129,13 @@ button:active {
   text-decoration: none;
 }
 
-.card-number {
-  padding-left: 8px;
-  white-space: nowrap;
-  font-family: Source Code Pro, monospace;
-  color: #0d2b3e;
-  font-weight: 500;
-}
-
-.card-number span {
-  display: inline-block;
-  width: 8px;
-}
-
 /* Order Confirmation */
 
 #confirmation {
   display: flex;
   align-items: center;
   position: absolute;
-  top: 80px;
+  top: 0;
   left: 0;
   right: 0;
   bottom: 0;
@@ -1157,9 +1161,9 @@ button:active {
 }
 
 #confirmation h1 {
-  font-size: 42px;
-  font-weight: 300;
-  color: #6863d8;
+  font-size: 36px;
+  font-weight: 500;
+  color: #424770; /*#3c424d*/
   letter-spacing: 0.3px;
   margin-bottom: 30px;
 }
@@ -1168,13 +1172,14 @@ button:active {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 75px 0 275px;
+  padding: 0 75px 0 200px;
   max-width: 75%;
-  height: 350px;
+  height: 250px;
   margin: 100px auto;
-  background: #fff url(/images/order.svg) 75px center no-repeat;
+  background: #fff url(/images/stripe-press.svg) 75px center no-repeat;
   box-shadow: 0 1px 3px 0 rgba(50, 50, 93, 0.15);
   border-radius: 6px;
+  background-size: 60px 150px;
 }
 
 #confirmation .status.error {
@@ -1217,8 +1222,19 @@ button:active {
 /* Media Queries */
 
 @media only screen and (max-width: 1024px) {
+  #stripe-press-logo {
+    position: absolute;
+    width: 40px;
+    height: 94px;
+    margin-top: 34px;
+    background: url(/images/stripe-press.svg) 5px top no-repeat;
+    background-size: 34px 82px;
+  }
   #main.checkout:not(.success):not(.error) {
     width: calc(100% - 320px);
+  }
+  #main {
+    padding: 0 0 0 2vw;
   }
   #summary {
     width: 320px;
@@ -1258,12 +1274,21 @@ button:active {
 }
 
 @media only screen and (max-width: 500px) {
-  .header {
-    height: 60px;
-    background-size: 40px 40px;
+  #main {
+    padding: 0;
   }
-  .header a.shop,
-  .header a.github {
+  #stripe-press-logo {
+    display: none;
+  }
+  header {
+    height: 34px;
+    background: #fff url(/images/stripe-press.svg) center center no-repeat;
+    border-bottom: 1px solid #f3f3ff;
+    background-size: 40px 40px;
+    margin-bottom: 20px;
+  }
+  header a.shop,
+  header a.github {
     display: none;
   }
   #payment-request {
@@ -1307,10 +1332,10 @@ button:active {
     width: auto;
     height: auto;
     padding: 120px 15px 15px;
-    background: #fff url(/images/order.svg) center 15px no-repeat;
-    background-size: 68px 86px;
+    background: #fff url(/images/stripe-press.svg) 40px center no-repeat;
     box-shadow: 0 1px 3px 0 rgba(50, 50, 93, 0.15);
     border-radius: 6px;
+    background-size: 200px 160px;
   }
   #confirmation h1 {
     text-align: center;
