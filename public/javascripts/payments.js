@@ -281,8 +281,8 @@
         paymentIntent.client_secret,
         card,
         {
-          source_data: {
-            owner: {
+          payment_method_data: {
+            billing_details: {
               name,
             },
           },
