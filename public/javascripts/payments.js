@@ -771,8 +771,8 @@
         .classList.toggle('visible', payment === 'fpx');
       if (payment === 'fpx') {
         // update currency to myr
-        store.displayPaymentSummary('myr', 3.03);
-        updateButtonLabel(payment, null, 'myr', 3.03);
+        store.displayPaymentSummary('myr', 3);
+        updateButtonLabel(payment, null, 'myr', 3);
       } else {
         store.displayPaymentSummary(config.currency);
         updateButtonLabel(payment, null, config.currency);

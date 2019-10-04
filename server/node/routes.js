@@ -55,9 +55,9 @@ router.post('/payment_intents', async (req, res, next) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      payment_method_types: config.paymentMethods,
+      amount: amount * 3,
+      currency: 'myr',
+      payment_method_types: ['card', 'fpx'],
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {
@@ -117,15 +117,11 @@ router.post('/webhook', async (req, res) => {
     const paymentIntent = object;
     if (eventType === 'payment_intent.succeeded') {
       console.log(
-        `🔔  Webhook received! Payment for PaymentIntent ${
-          paymentIntent.id
-        } succeeded.`
+        `🔔  Webhook received! Payment for PaymentIntent ${paymentIntent.id} succeeded.`
       );
     } else if (eventType === 'payment_intent.payment_failed') {
       console.log(
-        `🔔  Webhook received! Payment on source ${
-          paymentIntent.last_payment_error.source.id
-        } for PaymentIntent ${paymentIntent.id} failed.`
+        `🔔  Webhook received! Payment on source ${paymentIntent.last_payment_error.source.id} for PaymentIntent ${paymentIntent.id} failed.`
       );
       // Note: you can use the existing PaymentIntent to prompt your customer to try again by attaching a newly created source:
       // https://stripe.com/docs/payments/payment-intents#lifecycle
@@ -188,7 +184,7 @@ router.get('/config', (req, res) => {
 router.get('/products', async (req, res) => {
   const productList = await products.list();
   // Check if products exist on Stripe Account.
-  if (products.exist(productList)) {
+  if (true) {
     res.json(productList);
   } else {
     // We need to set up the products.
