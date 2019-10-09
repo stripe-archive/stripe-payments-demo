@@ -15,3 +15,13 @@
 
 # Node.js dependencies:
 node_modules/
+
+# Alternative server implementations
+server/go/
+server/java/
+server/php/
+server/python/
+server/ruby/
+
+# serverless functions
+serverless/
