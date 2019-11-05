@@ -29,7 +29,9 @@
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(config.stripePublishableKey);
+  const stripe = Stripe(config.stripePublishableKey, {
+    betas: ['sepa_pm_beta_1', 'ideal_pm_beta_1', 'payment_intent_beta_3'], // TODO: remove
+  });
 
   // Create an instance of Elements.
   const elements = stripe.elements();
@@ -288,29 +290,20 @@
       );
       handlePayment(response);
     } else if (payment === 'sepa_debit') {
-      // Confirm the PaymentIntent with the IBAN Element and additional SEPA Debit source data.
-      const {error} = await stripe.createSource(iban, {
-        type: 'sepa_debit',
-        currency: 'eur',
-        owner: {
-          name,
-          email,
-        },
-        mandate: {
-          // Automatically send a mandate notification email to your customer
-          // once the source is charged.
-          notification_method: 'email',
-        },
-        metadata: {
-          paymentIntent: paymentIntent.id,
-        },
-      });
-      if (error) {
-        handlePayment({error});
-        return;
-      }
-      // Poll the PaymentIntent status.
-      pollPaymentIntentStatus(paymentIntent.id);
+      // Confirm the PaymentIntent with the IBAN Element.
+      const response = await stripe.confirmSepaDebitPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            sepa_debit: iban,
+            billing_details: {
+              name,
+              email,
+            },
+          },
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -333,9 +326,14 @@
       // Add extra source information which are specific to a payment method.
       switch (payment) {
         case 'ideal':
-          // iDEAL: Add the selected Bank from the iDEAL Bank Element.
-          const {source} = await stripe.createSource(idealBank, sourceData);
-          handleSourceActiviation(source);
+          // Confirm the PaymentIntent with the iDEAL bank Element.
+          // This will redirect to the banking site.
+          stripe.confirmIdealPayment(paymentIntent.client_secret, {
+            payment_method: {
+              ideal: idealBank,
+            },
+            return_url: window.location.href,
+          });
           return;
           break;
         case 'sofort':
@@ -510,7 +508,12 @@
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = ['succeeded', 'processing', 'canceled'];
+    const endStates = [
+      'succeeded',
+      'processing',
+      'requires_payment_method',
+      'canceled',
+    ];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
@@ -549,6 +552,9 @@
 
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(source.metadata.paymentIntent);
+  } else if (url.searchParams.get('payment_intent')) {
+    // Poll the PaymentIntent status.
+    pollPaymentIntentStatus(url.searchParams.get('payment_intent'));
   } else {
     // Update the interface to display the checkout form.
     mainElement.classList.add('checkout');
