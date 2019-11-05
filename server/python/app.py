@@ -146,7 +146,6 @@ def webhook_received():
         event_type = request_data['type']
     data_object = data['object']
 
-    # PaymentIntent Beta, see https://stripe.com/docs/payments/payment-intents
     # Monitor payment_intent.succeeded & payment_intent.payment_failed events.
     if data_object['object'] == 'payment_intent':
         payment_intent = data_object
