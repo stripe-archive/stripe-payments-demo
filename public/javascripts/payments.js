@@ -152,7 +152,7 @@
   // Callback when a payment method is created.
   paymentRequest.on('paymentmethod', async event => {
     // Confirm the PaymentIntent with the payment method returned from the payment request.
-    const {error} = await stripe.confirmPaymentIntent(
+    const {error} = await stripe.confirmCardPayment(
       paymentIntent.client_secret,
       {
         payment_method: event.paymentMethod.id,
@@ -167,7 +167,8 @@
             country: event.shippingAddress.country,
           },
         },
-      }
+      },
+      {handleActions: false}
     );
     if (error) {
       // Report to the browser that the payment failed.
@@ -178,7 +179,7 @@
       // it to close the browser payment method collection interface.
       event.complete('success');
       // Let Stripe.js handle the rest of the payment flow, including 3D Secure if needed.
-      const response = await stripe.handleCardPayment(
+      const response = await stripe.confirmCardPayment(
         paymentIntent.client_secret
       );
       handlePayment(response);
@@ -273,11 +274,11 @@
 
     if (payment === 'card') {
       // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
-      const response = await stripe.handleCardPayment(
+      const response = await stripe.confirmCardPayment(
         paymentIntent.client_secret,
-        card,
         {
-          payment_method_data: {
+          payment_method: {
+            card,
             billing_details: {
               name,
             },
@@ -287,29 +288,20 @@
       );
       handlePayment(response);
     } else if (payment === 'sepa_debit') {
-      // Confirm the PaymentIntent with the IBAN Element and additional SEPA Debit source data.
-      const {error} = await stripe.createSource(iban, {
-        type: 'sepa_debit',
-        currency: 'eur',
-        owner: {
-          name,
-          email,
-        },
-        mandate: {
-          // Automatically send a mandate notification email to your customer
-          // once the source is charged.
-          notification_method: 'email',
-        },
-        metadata: {
-          paymentIntent: paymentIntent.id,
-        },
-      });
-      if (error) {
-        handlePayment({error});
-        return;
-      }
-      // Poll the PaymentIntent status.
-      pollPaymentIntentStatus(paymentIntent.id);
+      // Confirm the PaymentIntent with the IBAN Element.
+      const response = await stripe.confirmSepaDebitPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            sepa_debit: iban,
+            billing_details: {
+              name,
+              email,
+            },
+          },
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -332,9 +324,14 @@
       // Add extra source information which are specific to a payment method.
       switch (payment) {
         case 'ideal':
-          // iDEAL: Add the selected Bank from the iDEAL Bank Element.
-          const {source} = await stripe.createSource(idealBank, sourceData);
-          handleSourceActiviation(source);
+          // Confirm the PaymentIntent with the iDEAL bank Element.
+          // This will redirect to the banking site.
+          stripe.confirmIdealPayment(paymentIntent.client_secret, {
+            payment_method: {
+              ideal: idealBank,
+            },
+            return_url: window.location.href,
+          });
           return;
           break;
         case 'sofort':
@@ -509,7 +506,12 @@
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = ['succeeded', 'processing', 'canceled'];
+    const endStates = [
+      'succeeded',
+      'processing',
+      'requires_payment_method',
+      'canceled',
+    ];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
@@ -548,6 +550,9 @@
 
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(source.metadata.paymentIntent);
+  } else if (url.searchParams.get('payment_intent')) {
+    // Poll the PaymentIntent status.
+    pollPaymentIntentStatus(url.searchParams.get('payment_intent'));
   } else {
     // Update the interface to display the checkout form.
     mainElement.classList.add('checkout');
