@@ -29,9 +29,7 @@
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(config.stripePublishableKey, {
-    betas: ['sepa_pm_beta_1', 'ideal_pm_beta_1', 'payment_intent_beta_3'], // TODO: remove
-  });
+  const stripe = Stripe(config.stripePublishableKey);
 
   // Create an instance of Elements.
   const elements = stripe.elements();
