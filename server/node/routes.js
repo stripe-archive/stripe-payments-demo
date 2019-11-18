@@ -55,9 +55,9 @@ router.post('/payment_intents', async (req, res, next) => {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount * 3,
-      currency: 'myr',
-      payment_method_types: ['card', 'fpx'],
+      amount: amount,
+      currency: 'aud',
+      payment_method_types: ['card', 'au_becs_debit'],
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {

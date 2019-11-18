@@ -34,7 +34,7 @@ module.exports = {
             id: 'get-together-hardcover',
             product: 'get-together',
             attributes: {issue: 'Hardcover — Richardson, Huynh, Sotto'},
-            price: 2300,
+            price: 3400,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
@@ -50,7 +50,7 @@ module.exports = {
             id: 'elegant-puzzle-hardcover',
             product: 'elegant-puzzle',
             attributes: {issue: 'Hardcover — Will Larson'},
-            price: 2200,
+            price: 3200,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });
@@ -66,7 +66,7 @@ module.exports = {
             id: 'revolt_public-hardcover',
             product: 'revolt_public',
             attributes: {issue: 'Hardcover — Martin Gurri'},
-            price: 2000,
+            price: 2900,
             currency: config.currency,
             inventory: {type: 'infinite'},
           });

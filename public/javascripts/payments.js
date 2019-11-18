@@ -30,7 +30,7 @@
 
   // Create a Stripe client.
   const stripe = Stripe(config.stripePublishableKey, {
-    betas: ['fpx_bank_beta_1'],
+    betas: ['au_bank_account_beta_2'],
   });
 
   // Create an instance of Elements.
@@ -81,31 +81,31 @@
   });
 
   /**
-   * Implement a Stripe IBAN Element that matches the look-and-feel of the app.
+   * Implement a Stripe auBankAccount Element that matches the look-and-feel of the app.
    *
    * This makes it easy to collect bank account information.
    */
 
-  // Create a IBAN Element and pass the right options for styles and supported countries.
-  const ibanOptions = {
+  // Create a auBankAccount Element and pass the right options for styles and supported countries.
+  const auBankAccountOptions = {
     style,
-    supportedCountries: ['SEPA'],
+    // supportedCountries: ['SEPA'],
   };
-  const iban = elements.create('iban', ibanOptions);
+  const auBankAccount = elements.create('auBankAccount', auBankAccountOptions);
 
-  // Mount the IBAN Element on the page.
-  iban.mount('#iban-element');
+  // Mount the auBankAccount Element on the page.
+  auBankAccount.mount('#auBankAccount-element');
 
-  // Monitor change events on the IBAN Element to display any errors.
-  iban.on('change', ({error, bankName}) => {
-    const ibanErrors = document.getElementById('iban-errors');
+  // Monitor change events on the auBankAccount Element to display any errors.
+  auBankAccount.on('change', ({error, bankName}) => {
+    const auBankAccountErrors = document.getElementById('auBankAccount-errors');
     if (error) {
-      ibanErrors.textContent = error.message;
-      ibanErrors.classList.add('visible');
+      auBankAccountErrors.textContent = error.message;
+      auBankAccountErrors.classList.add('visible');
     } else {
-      ibanErrors.classList.remove('visible');
+      auBankAccountErrors.classList.remove('visible');
       if (bankName) {
-        updateButtonLabel('sepa_debit', bankName);
+        updateButtonLabel('au_becs_debit', bankName);
       }
     }
     // Re-enable the Pay button.
@@ -113,14 +113,14 @@
   });
 
   // FPX
-  // Create an instance of the fpxBank Element.
-  const fpxBank = elements.create('fpxBank', {
-    style: {base: Object.assign({padding: '10px 15px'}, style.base)},
-    accountHolderType: 'individual',
-  });
+  // // Create an instance of the fpxBank Element.
+  // const fpxBank = elements.create('fpxBank', {
+  //   style: {base: Object.assign({padding: '10px 15px'}, style.base)},
+  //   accountHolderType: 'individual',
+  // });
 
-  // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
-  fpxBank.mount('#fpx-bank-element');
+  // // Add an instance of the fpxBank Element into the container with id `fpx-bank-element`.
+  // fpxBank.mount('#fpx-bank-element');
 
   /**
    * Add an iDEAL Bank selection Element that matches the look-and-feel of the app.
@@ -289,22 +289,16 @@
         }
       );
       handlePayment(response);
-    } else if (payment === 'sepa_debit') {
-      // Confirm the PaymentIntent with the IBAN Element and additional SEPA Debit source data.
-      const response = await stripe.confirmPaymentIntent(
+    } else if (payment === 'au_becs_debit') {
+      // Confirm the PaymentIntent with the auBankAccount Element and additional SEPA Debit source data.
+      const response = await stripe.confirmAuBecsDebitPayment(
         paymentIntent.client_secret,
-        iban,
         {
-          source_data: {
-            type: 'sepa_debit',
-            owner: {
+          payment_method: {
+            au_becs_debit: auBankAccount,
+            billing_details: {
               name,
               email,
-            },
-            mandate: {
-              // Automatically send a mandate notification email to your customer
-              // once the source is charged.
-              notification_method: 'email',
             },
           },
         }
@@ -653,23 +647,11 @@
       countries: ['PT'],
       currencies: ['eur'],
     },
-    sepa_debit: {
-      name: 'SEPA Direct Debit',
+    au_becs_debit: {
+      name: 'BECS Direct Debit',
       flow: 'none',
-      countries: [
-        'FR',
-        'DE',
-        'ES',
-        'BE',
-        'NL',
-        'LU',
-        'IT',
-        'PT',
-        'AT',
-        'IE',
-        'FI',
-      ],
-      currencies: ['eur'],
+      countries: ['AU'],
+      currencies: ['aud'],
     },
     sofort: {
       name: 'SOFORT',
@@ -714,7 +696,7 @@
     if (paymentMethod === 'wechat') {
       label = `Generate QR code to pay ${amount} with ${name}`;
     }
-    if (paymentMethod === 'sepa_debit' && bankName) {
+    if (paymentMethod === 'au_becs_debit' && bankName) {
       label = `Debit ${amount} from ${bankName}`;
     }
     submitButton.innerText = label;
@@ -739,8 +721,39 @@
     // Only show the state input for the United States.
     zipLabel.parentElement.classList.toggle('with-state', country === 'US');
     // Update the ZIP label to make it more relevant for each country.
-    form.querySelector('label.zip span').innerText =
-      country === 'US' ? 'ZIP' : country === 'GB' ? 'Postcode' : 'Postal Code';
+    const zipInput = form.querySelector('label.zip input');
+    const zipSpan = form.querySelector('label.zip span');
+    switch (country) {
+      case 'US':
+        zipSpan.innerText = 'ZIP';
+        zipInput.placeholder = '94103';
+        break;
+      case 'GB':
+        zipSpan.innerText = 'Postcode';
+        break;
+      case 'AU':
+        zipSpan.innerText = 'Postcode';
+        zipInput.placeholder = '3000';
+        break;
+      default:
+        zipSpan.innerText = 'Postal Code';
+        zipInput.placeholder = '94103';
+        break;
+    }
+
+    // Update the 'City' to appropriate name
+    const cityInput = form.querySelector('label.city input');
+    const citySpan = form.querySelector('label.city span');
+    switch (country) {
+      case 'AU':
+        citySpan.innerText = 'City / Suburb';
+        cityInput.placeholder = 'Melbourne';
+        break;
+      default:
+        citySpan.innerText = 'City';
+        cityInput.placeholder = 'San Francisco';
+        break;
+    }
   };
 
   // Show only the payment methods that are relevant to the selected country.
@@ -769,7 +782,9 @@
     form.querySelector('.payment-info.card').classList.add('visible');
     form.querySelector('.payment-info.ideal').classList.remove('visible');
     form.querySelector('.payment-info.fpx').classList.remove('visible');
-    form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
+    form
+      .querySelector('.payment-info.au_becs_debit')
+      .classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
     form.querySelector('.payment-info.redirect').classList.remove('visible');
     updateButtonLabel(paymentInputs[0].value);
@@ -804,8 +819,8 @@
         .querySelector('.payment-info.ideal')
         .classList.toggle('visible', payment === 'ideal');
       form
-        .querySelector('.payment-info.sepa_debit')
-        .classList.toggle('visible', payment === 'sepa_debit');
+        .querySelector('.payment-info.au_becs_debit')
+        .classList.toggle('visible', payment === 'au_becs_debit');
       form
         .querySelector('.payment-info.wechat')
         .classList.toggle('visible', payment === 'wechat');

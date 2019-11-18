@@ -13,7 +13,8 @@
     "node": "10.x"
   },
   "scripts": {
-    "start": "node server/node/server.js"
+    "start": "node server/node/server.js",
+    "deploy": "gcloud app deploy --project stripe-au"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
