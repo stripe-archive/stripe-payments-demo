@@ -10,7 +10,6 @@
 
 const config = require('./config');
 const express = require('express');
-const logger = require('morgan');
 const bodyParser = require('body-parser');
 const path = require('path');
 const ngrok = config.ngrok.enabled ? require('ngrok') : null;
