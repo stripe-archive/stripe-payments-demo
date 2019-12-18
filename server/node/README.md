@@ -32,7 +32,7 @@ Next, follow [these installation steps](https://github.com/stripe/stripe-cli#ins
 
 After the installation has finished, authenticate the CLI with your Stripe account:
 
-    stripe login  --project-name=stripe-payments-demo
+    stripe login --project-name=stripe-payments-demo
 
 To start the webhook forwarding run:
 
