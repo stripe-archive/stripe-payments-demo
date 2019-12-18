@@ -6,7 +6,7 @@ This directory contains the main Node implementation of the payments server.
 
 You’ll need the following:
 
-- [Node.js](http://nodejs.org) >= 10.x.
+- [Node.js](http://nodejs.org) >=10.0.0
 - Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
 - Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
 
@@ -38,7 +38,7 @@ To start the webhook forwarding run:
 
     stripe listen --project-name=stripe-payments-demo --forward-to http://localhost:8000/webhook
 
-Alternatively you can use the following shorthand command:
+Alternatively, you can use the following shorthand command:
 
     npm run webhook
 
@@ -57,8 +57,6 @@ Lastly, you will see the ngrok URL to serve our app via HTTPS. For example:
     https://<example>.ngrok.io
 
 Use this URL in your browser to start the demo.
-
-To start the demo without local webhook forwarding run `npm run start` instead. This command is also used if you deploy this demo to [Glitch](https://glitch.com/) or
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 

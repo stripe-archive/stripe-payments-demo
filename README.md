@@ -47,7 +47,7 @@ This demo uses both the [Card Element](https://stripe.com/docs/elements) and the
 
 ![Payment Request on Chrome](public/images/screenshots/demo-payment-request.png)
 
-### Beyond Cards: Payments Sources for Europe and Asia
+### Beyond Cards: Payment Methods for Europe and Asia
 
 This demo also shows how to reach customers in Europe and Asia by supporting their preferred way to pay online. It supports payment methods such as [ACH credit transfers](https://stripe.com/payments/payment-methods-guide#ach-credit-transfers), [Alipay](https://stripe.com/payments/payment-methods-guide#alipay), [Bancontact](https://stripe.com/payments/payment-methods-guide#bancontact), [iDEAL](https://stripe.com/payments/payment-methods-guide#ideal), [Giropay](https://stripe.com/payments/payment-methods-guide#giropay), [SEPA Direct Debit](https://stripe.com/payments/payment-methods-guide#sepa), [SOFORT](https://stripe.com/payments/payment-methods-guide#sofort), and [WeChat Pay](https://stripe.com/payments/payment-methods-guide#wechat).
 
@@ -72,7 +72,7 @@ All servers have the same endpoints to handle requests from the frontend and int
 
 You’ll need the following:
 
-- [Node.js](http://nodejs.org) >= 10.x.
+- [Node.js](http://nodejs.org) >=10.0.0
 - Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
 - Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
 
@@ -104,7 +104,7 @@ To start the webhook forwarding run:
 
     stripe listen --project-name=stripe-payments-demo --forward-to http://localhost:8000/webhook
 
-Alternatively you can use the following shorthand command:
+Alternatively, you can use the following shorthand command:
 
     npm run webhook
 
@@ -123,8 +123,6 @@ Lastly, you will see the ngrok URL to serve our app via HTTPS. For example:
     https://<example>.ngrok.io
 
 Use this URL in your browser to start the demo.
-
-To start the demo without local webhook forwarding run `npm run start` instead. This command is also used if you deploy this demo to [Glitch](https://glitch.com/) or
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
