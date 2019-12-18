@@ -10,14 +10,14 @@
     "url": "https://github.com/stripe/stripe-payments-demo.git"
   },
   "engines": {
-    "node": ">=10.x"
+    "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "node server/node/server.js",
-    "dev": "node server/node/server.js & npm run webhook",
+    "postinstall": "npm run setup-products",
     "setup-products": "node server/node/setup.js",
+    "setup-cli": "stripe login  --project-name=stripe-payments-demo",
     "webhook": "stripe listen --project-name=stripe-payments-demo --forward-to http://localhost:8000/webhook",
-    "postinstall": "npm run setup-products && brew install stripe/stripe-cli/stripe"
+    "start": "node server/node/server.js"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
@@ -28,6 +28,6 @@
   },
   "devDependencies": {
     "@types/faker": "^4.1.5",
-    "ngrok": "^3.2.3"
+    "ngrok": "^3.2.7"
   }
 }

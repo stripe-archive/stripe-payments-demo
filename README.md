@@ -47,7 +47,7 @@ This demo uses both the [Card Element](https://stripe.com/docs/elements) and the
 
 ![Payment Request on Chrome](public/images/screenshots/demo-payment-request.png)
 
-### Beyond Cards: Payments Sources for Europe and Asia
+### Beyond Cards: Payment Methods for Europe and Asia
 
 This demo also shows how to reach customers in Europe and Asia by supporting their preferred way to pay online. It supports payment methods such as [ACH credit transfers](https://stripe.com/payments/payment-methods-guide#ach-credit-transfers), [Alipay](https://stripe.com/payments/payment-methods-guide#alipay), [Bancontact](https://stripe.com/payments/payment-methods-guide#bancontact), [iDEAL](https://stripe.com/payments/payment-methods-guide#ideal), [Giropay](https://stripe.com/payments/payment-methods-guide#giropay), [SEPA Direct Debit](https://stripe.com/payments/payment-methods-guide#sepa), [SOFORT](https://stripe.com/payments/payment-methods-guide#sofort), and [WeChat Pay](https://stripe.com/payments/payment-methods-guide#wechat).
 
@@ -72,7 +72,7 @@ All servers have the same endpoints to handle requests from the frontend and int
 
 You’ll need the following:
 
-- [Node.js](http://nodejs.org) >= 10.x.
+- [Node.js](http://nodejs.org) >=10.0.0
 - Modern browser that supports ES6 (Chrome to see the Payment Request, and Safari to see Apple Pay).
 - Stripe account to accept payments ([sign up](https://dashboard.stripe.com/register) for free).
 
@@ -92,13 +92,21 @@ Install dependencies using npm:
 
     npm install
 
-This demo uses the Stripe API as a datastore for products and SKUs, but you can always choose to use your own datastore instead. When starting the app for the first time, the initial loading can take a couple of seconds as it will automatically set up the products and SKUs within Stripe.
+This demo uses the Stripe API as a datastore for products and SKUs, but you can always choose to use your own datastore instead. After `npm install` has finished the `setup` script will run to create the product records on your Stripe account.
 
-If you're seeing any errors regarding the installation of the Stripe CLI, please follow [these installation steps](https://github.com/stripe/stripe-cli#installation).
+Next, follow [these installation steps](https://github.com/stripe/stripe-cli#installation) to install the Stripe CLI which we'll use for webhook testing.
 
-Run the app locally and start the webhook forwarding:
+After the installation has finished, authenticate the CLI with your Stripe account:
 
-    npm run dev
+    stripe login  --project-name=stripe-payments-demo
+
+To start the webhook forwarding run:
+
+    stripe listen --project-name=stripe-payments-demo --forward-to http://localhost:8000/webhook
+
+Alternatively, you can use the following shorthand command:
+
+    npm run webhook
 
 The Stripe CLI will let you know that webhook forwarding is ready and output your webhook signing secret:
 
@@ -106,13 +114,15 @@ The Stripe CLI will let you know that webhook forwarding is ready and output you
 
 Please copy the webhook signing secret (`whsec_xxx`) to your `.env` file.
 
+In a separate terminal window, start the local server:
+
+    npm run start
+
 Lastly, you will see the ngrok URL to serve our app via HTTPS. For example:
 
     https://<example>.ngrok.io
 
 Use this URL in your browser to start the demo.
-
-To start the demo without local webhook forwarding run `npm run start` instead. This command is also used if you deploy this demo to [Glitch](https://glitch.com/) or 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
