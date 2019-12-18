@@ -9,7 +9,6 @@
 
 'use strict';
 
-const fs = require('fs');
 const config = require('./config');
 const stripe = require('stripe')(config.stripe.secretKey);
 stripe.setApiVersion(config.stripe.apiVersion);
@@ -62,9 +61,7 @@ const createStoreProducts = async () => {
     );
 
     console.log(
-      `🛍️  Successfully created ${
-        stripeProducts.length
-      } products on your Stripe account.`
+      `🛍️  Successfully created ${stripeProducts.length} products on your Stripe account.`
     );
   } catch (error) {
     console.log(`⚠️  Error: ${error.message}`);
@@ -72,27 +69,4 @@ const createStoreProducts = async () => {
   }
 };
 
-// Set up the Stripe CLI.
-// https://github.com/stripe/stripe-cli
-const writeCLIConfig = async () => {
-  const configFilePath = `${process.env.HOME}/.config/stripe`;
-  const stripeCLIConfig = `
-[stripe-payments-demo]
-  device_name = "stripe-payments-demo"
-  secret_key = "${config.stripe.secretKey}"
-`;
-
-  if (!fs.existsSync(configFilePath)) {
-    fs.mkdirSync(configFilePath);
-  }
-
-  fs.readFile(`${configFilePath}/config.toml`, function(err, data) {
-    if (err || !data.includes('stripe-payments-demo')) {
-      fs.appendFileSync(`${configFilePath}/config.toml`, stripeCLIConfig);
-      console.log(`Stripe CLI configuration set up.`);
-    }
-  });
-};
-
-writeCLIConfig();
 createStoreProducts();
