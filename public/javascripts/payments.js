@@ -506,12 +506,7 @@
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = [
-      'succeeded',
-      'processing',
-      'requires_payment_method',
-      'canceled',
-    ];
+    const endStates = ['succeeded', 'processing', 'canceled'];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
