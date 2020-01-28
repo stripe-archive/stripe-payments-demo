@@ -21,7 +21,7 @@ class Store {
   getPaymentTotal() {
     return Object.values(this.lineItems).reduce(
       (total, {product, sku, quantity}) =>
-        total + quantity * this.products[product].skus.data[0].price,
+        total + quantity * this.products[product].skus.data[0].price * 1000,
       0
     );
   }
@@ -89,6 +89,26 @@ class Store {
     return this.productsFetchPromise;
   }
 
+  async createSource(options) {
+    try {
+      const response = await fetch('/sources', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          ...options
+        }),
+      });
+      const data = await response.json();
+      if (data.error) {
+        return {error: data.error};
+      } else {
+        return data;
+      }
+    } catch (err) {
+      return {error: err.message};
+    }
+  }
+
   // Create the PaymentIntent with the cart details.
   async createPaymentIntent(currency, items) {
     try {
@@ -143,7 +163,8 @@ class Store {
   // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
   formatPrice(amount, currency) {
     let price = (amount / 100).toFixed(2);
-    let numberFormat = new Intl.NumberFormat(['en-US'], {
+    let numberLocale = 'in-ID' || 'en-US';
+    let numberFormat = new Intl.NumberFormat([numberLocale], {
       style: 'currency',
       currency: currency,
       currencyDisplay: 'symbol',
@@ -159,7 +180,7 @@ class Store {
     await this.loadProducts();
     const orderItems = document.getElementById('order-items');
     const orderTotal = document.getElementById('order-total');
-    let currency;
+    let currency = `idr`;
     // Build and append the line items to the payment summary.
     for (let [id, product] of Object.entries(this.products)) {
       const randomQuantity = (min, max) => {
@@ -169,8 +190,8 @@ class Store {
       };
       const quantity = randomQuantity(1, 2);
       let sku = product.skus.data[0];
-      let skuPrice = this.formatPrice(sku.price, sku.currency);
-      let lineItemPrice = this.formatPrice(sku.price * quantity, sku.currency);
+      let skuPrice = this.formatPrice(sku.price * 1000, currency || sku.currency);
+      let lineItemPrice = this.formatPrice(sku.price * quantity * 1000, currency || sku.currency);
       let lineItem = document.createElement('div');
       lineItem.classList.add('line-item');
       lineItem.innerHTML = `
@@ -182,7 +203,7 @@ class Store {
         <p class="count">${quantity} x ${skuPrice}</p>
         <p class="price">${lineItemPrice}</p>`;
       orderItems.appendChild(lineItem);
-      currency = sku.currency;
+      currency = currency || sku.currency;
       this.lineItems.push({
         product: product.id,
         sku: sku.id,

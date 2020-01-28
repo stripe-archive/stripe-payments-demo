@@ -3,7 +3,7 @@
  */
 const faker = window.faker;
 const generateInputTrigger = document.getElementById('generate');
-
+faker.locale = 'id_ID';
 const {name, address, internet} = faker;
 
 generateInputTrigger.addEventListener('click', () => {

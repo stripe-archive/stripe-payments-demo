@@ -69,6 +69,7 @@
                   <option value="FR">France</option>
                   <option value="DE">Germany</option>
                   <option value="HK">Hong Kong</option>
+                  <option value="ID" selected="selected">Indonesia</option>
                   <option value="IE">Ireland</option>
                   <option value="IT">Italy</option>
                   <option value="JP">Japan</option>
@@ -84,7 +85,7 @@
                   <option value="SE">Sweden</option>
                   <option value="CH">Switzerland</option>
                   <option value="GB">United Kingdom</option>
-                  <option value="US" selected="selected">United States</option>
+                  <option value="US">United States</option>
                 </select>
               </div>
             </label>
@@ -139,6 +140,10 @@
                 <input type="radio" name="payment" id="payment-wechat" value="wechat">
                 <label for="payment-wechat">WeChat Pay</label>
               </li>
+              <li>
+                <input type="radio" name="payment" id="payment-id_credit_transfer" value="id_credit_transfer">
+                <label for="payment-id_credit_transfer">Ind Credit Transfer</label>
+              </li>
             </ul>
           </nav>
           <div class="payment-info card visible">
@@ -159,6 +164,19 @@
             <p class="notice">By providing your IBAN and confirming this payment, you’re authorizing Payments Demo and Stripe, our payment
               provider, to send instructions to your bank to debit your account. You’re entitled to a refund under the terms
               and conditions of your agreement with your bank.</p>
+          </div>
+          <div class="payment-info id_credit_transfer">
+            <fieldset>
+              <label>
+                <span>Select Bank</span>
+                <div class="field">
+                  <select id="id-ct-element" class="bni">
+                    <option value="bni" class="Icon SelectListItemIcon">Bank Negara Indonesia</option>
+                    <option value="bca" class="Icon SelectListItemIcon">Bank Central Asia</option>
+                  </select>
+                </div>
+              </label>
+            </fieldset>
           </div>
           <div class="payment-info ideal">
             <fieldset>

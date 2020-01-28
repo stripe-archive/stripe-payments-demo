@@ -938,6 +938,28 @@ button:active {
   text-align: left;
 }
 
+select#id-ct-element {
+  width: 100%;
+  /* background: #fff url(/images/bca.png) left bottom no-repeat; */
+  height: 32px;
+  padding-left: 40px;
+}
+
+select#id-ct-element.bca {
+  background: #fff url(/images/bca.png) left bottom no-repeat;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
+}
+select#id-ct-element.bni {
+  background: #fff url(/images/bni.png) left bottom no-repeat;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
+}
+
 #wechat-qrcode img {
   margin: 0 auto;
 }

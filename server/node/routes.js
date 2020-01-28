@@ -12,6 +12,7 @@
 
 const config = require('./config');
 const {products} = require('./inventory');
+const {getSupportedPaymentMethods} = require('./utils');
 const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(config.stripe.secretKey);
@@ -52,13 +53,47 @@ router.post('/payment_intents', async (req, res, next) => {
   let {currency, items} = req.body;
   const amount = await calculatePaymentAmount(items);
 
+  let supportedPmTypes = getSupportedPaymentMethods(config.country);
+
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: config.paymentMethods,
+      payment_method_types: supportedPmTypes,
     });
     return res.status(200).json({paymentIntent});
+  } catch (err) {
+    return res.status(500).json({error: err.message});
+  }
+});
+
+// Create source in server side, for IND CT 
+router.post('/sources', async (req,res) => {
+  const {
+    bank='bni',  //  bca or bni
+    account_number_suffix ='10000091', 
+    name='Shengwei',
+    currency='idr',
+    type='id_credit_transfer',
+  } = req.body;
+
+  try {
+    const source = await stripe.sources.create({
+      type,
+      currency,
+      id_credit_transfer: {
+        bank,
+        // account_number_suffix, // not supported yet
+        // account_number: account_number_suffix,
+        // expires_after: new Date("2020-02-01").valueOf(),
+      },
+      owner: {
+        name,
+      },
+      usage: "reusable"
+    });
+
+    return res.status(200).json({source});
   } catch (err) {
     return res.status(500).json({error: err.message});
   }

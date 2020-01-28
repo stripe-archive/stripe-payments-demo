@@ -138,8 +138,8 @@
 
   // Create the payment request.
   const paymentRequest = stripe.paymentRequest({
-    country: config.stripeCountry,
-    currency: config.currency,
+    country: config.stripeCountry === 'ID' ? 'US' : config.stripeCountry,
+    currency: config.currency === 'idr' ? 'usd' : config.currency,
     total: {
       label: 'Total',
       amount: store.getPaymentTotal(),
@@ -345,10 +345,31 @@
           // In test mode, we can set the funds to be received via the owner email.
           sourceData.owner.email = `amount_${paymentIntent.amount}@example.com`;
           break;
+        case 'id_credit_transfer':
+          let bank = form.querySelector('select[id=id-ct-element] option:checked')
+      .value;
+          sourceData.id_credit_transfer = {
+            bank: bank
+          }
+          sourceData.owner.email = `amount_${paymentIntent.amount}@example.com`;
+
+          const {source} = await store.createSource({
+            currency: config.currency,
+            items: store.getLineItems()
+          });
+          
+          console.log('Creating ID credit transfer from server side', source);
+          handleSourceActiviation(source);
+          return;
+
+        default:
+          break;
       }
 
       // Create a Stripe source with the common data and extra information.
       const {source} = await stripe.createSource(sourceData);
+
+      // For indonesia credit transfer, we need to creat source in server side
       handleSourceActiviation(source);
     }
   });
@@ -431,6 +452,7 @@
         break;
       case 'receiver':
         // Display the receiver address to send the funds to.
+        mainElement.classList.remove('checkout');
         mainElement.classList.add('success', 'receiver');
         const receiverInfo = confirmationElement.querySelector(
           '.receiver .info'
@@ -457,6 +479,33 @@
                 <li>
                   Routing Number:
                   <strong>${ach.routing_number}</strong>
+                </li>
+              </ul>`;
+            break;
+          case 'id_credit_transfer':
+            amount = store.formatPrice(
+              store.getPaymentTotal(),
+              config.currency
+            );
+            // Display the Indonesia Bank Transfer information to the user.
+            const idct = source.id_credit_transfer;
+            receiverInfo.innerHTML = `
+              <ul>
+                <li>
+                  Amount:
+                  <strong>${amount}</strong>
+                </li>
+                <li>
+                  Bank Name:
+                  <strong>${idct.bank}</strong>
+                </li>
+                <li>
+                  Account Number:
+                  <strong>${idct.account_number}</strong>
+                </li>
+                <li>
+                  Routing Number:
+                  <strong>${idct.routing_number}</strong>
                 </li>
               </ul>`;
             break;
@@ -664,6 +713,14 @@
         'usd',
       ],
     },
+    id_credit_transfer: {
+      name: 'Indonesia Credit Transfer',
+      flow: 'receiver',
+      countries: ['ID',],
+      currencies: [
+        'idr',
+      ],
+    }
   };
 
   // Update the main button to reflect the payment method being selected.
@@ -683,6 +740,19 @@
     submitButton.innerText = label;
   };
 
+  const selectBank = bank => {
+    const selector = document.getElementById('id-ct-element');
+    selector.querySelector(`option[value=${bank}]`).selected = 'selected';
+    selector.className = `${bank}`;
+  }
+
+  form
+    .querySelector('select[id=id-ct-element]')
+    .addEventListener('change', event => {
+      event.preventDefault();
+      selectBank(event.target.value);
+    });
+
   const selectCountry = country => {
     const selector = document.getElementById('country');
     selector.querySelector(`option[value=${country}]`).selected = 'selected';
@@ -700,7 +770,7 @@
     }
     const zipLabel = form.querySelector('label.zip');
     // Only show the state input for the United States.
-    zipLabel.parentElement.classList.toggle('with-state', country === 'US');
+    zipLabel.parentElement.classList.toggle('with-state', ['US', 'ID'].includes(country));
     // Update the ZIP label to make it more relevant for each country.
     form.querySelector('label.zip span').innerText =
       country === 'US' ? 'ZIP' : country === 'GB' ? 'Postcode' : 'Postal Code';
@@ -737,6 +807,7 @@
     form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
     form.querySelector('.payment-info.redirect').classList.remove('visible');
+    form.querySelector('.payment-info.id_credit_transfer').classList.remove('visible');
     updateButtonLabel(paymentInputs[0].value);
   };
 
@@ -763,6 +834,9 @@
       form
         .querySelector('.payment-info.wechat')
         .classList.toggle('visible', payment === 'wechat');
+      form
+        .querySelector('.payment-info.id_credit_transfer')
+        .classList.toggle('visible', payment === 'id_credit_transfer');
       form
         .querySelector('.payment-info.redirect')
         .classList.toggle('visible', flow === 'redirect');

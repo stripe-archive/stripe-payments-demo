@@ -11,10 +11,10 @@ require('dotenv').config();
 
 module.exports = {
   // Default country for the checkout form.
-  country: 'US',
+  country: 'ID',
 
   // Store currency.
-  currency: 'eur',
+  currency: 'idr',  // For indonesia CT 
 
   // Supported payment methods for the store.
   // Some payment methods support only a subset of currencies.
@@ -31,7 +31,115 @@ module.exports = {
     // 'sepa_debit', // Restricted. See docs for activation details: https://stripe.com/docs/sources/sepa-debit
     'sofort', // eur (SOFORT must always use Euros)
     'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
+    'id_credit_transfer', // idr 
   ],
+
+  paymentMethodsAvailability: {
+    ach_credit_transfer: {
+      name: 'Bank Transfer',
+      flow: 'receiver',
+      countries: ['US'],
+      currencies: ['usd'],
+    },
+    alipay: {
+      name: 'Alipay',
+      flow: 'redirect',
+      countries: ['CN', 'HK', 'SG', 'JP'],
+      currencies: [
+        'aud',
+        'cad',
+        'eur',
+        'gbp',
+        'hkd',
+        'jpy',
+        'nzd',
+        'sgd',
+        'usd',
+      ],
+    },
+    bancontact: {
+      name: 'Bancontact',
+      flow: 'redirect',
+      countries: ['BE'],
+      currencies: ['eur'],
+    },
+    card: {
+      name: 'Card',
+      flow: 'none',
+    },
+    eps: {
+      name: 'EPS',
+      flow: 'redirect',
+      countries: ['AT'],
+      currencies: ['eur'],
+    },
+    ideal: {
+      name: 'iDEAL',
+      flow: 'redirect',
+      countries: ['NL'],
+      currencies: ['eur'],
+    },
+    giropay: {
+      name: 'Giropay',
+      flow: 'redirect',
+      countries: ['DE'],
+      currencies: ['eur'],
+    },
+    multibanco: {
+      name: 'Multibanco',
+      flow: 'receiver',
+      countries: ['PT'],
+      currencies: ['eur'],
+    },
+    sepa_debit: {
+      name: 'SEPA Direct Debit',
+      flow: 'none',
+      countries: [
+        'FR',
+        'DE',
+        'ES',
+        'BE',
+        'NL',
+        'LU',
+        'IT',
+        'PT',
+        'AT',
+        'IE',
+        'FI',
+      ],
+      currencies: ['eur'],
+    },
+    sofort: {
+      name: 'SOFORT',
+      flow: 'redirect',
+      countries: ['DE', 'AT'],
+      currencies: ['eur'],
+    },
+    wechat: {
+      name: 'WeChat',
+      flow: 'none',
+      countries: ['CN', 'HK', 'SG', 'JP'],
+      currencies: [
+        'aud',
+        'cad',
+        'eur',
+        'gbp',
+        'hkd',
+        'jpy',
+        'nzd',
+        'sgd',
+        'usd',
+      ],
+    },
+    id_credit_transfer: {
+      name: 'Indonesia Credit Transfer',
+      flow: 'receiver',
+      countries: ['ID',],
+      currencies: [
+        'idr',
+      ],
+    }
+  },
 
   // Configuration for Stripe.
   // API Keys: https://dashboard.stripe.com/account/apikeys
