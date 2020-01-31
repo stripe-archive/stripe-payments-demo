@@ -848,32 +848,34 @@ button:active {
 }
 
 /* Payment Methods */
-
+#payment-guides,
 #payment-methods {
   margin: 0 0 20px;
   border-bottom: 2px solid #e8e8fb;
 }
 
+#payment-guides li,
 #payment-methods li {
   display: none;
 }
-
+#payment-guides li.visible,
 #payment-methods li.visible {
   display: inline-block;
   margin: 0 20px 0 0;
   list-style: none;
 }
-
+#payment-guides input,
 #payment-methods input {
   display: none;
 }
 
+#payment-guides label,
 #payment-methods label {
   display: flex;
   flex: 1;
   cursor: pointer;
 }
-
+#payment-guides input + label,
 #payment-methods input + label {
   position: relative;
   padding: 5px 0;
@@ -882,6 +884,7 @@ button:active {
   font-size: 13px;
 }
 
+#payment-guides label::before,
 #payment-methods label::before {
   content: '';
   position: absolute;
@@ -894,21 +897,27 @@ button:active {
   transition: all 0.25s ease-in-out;
 }
 
+#payment-guides label:hover,
 #payment-methods label:hover {
   color: #6772e5;
   cursor: pointer;
 }
 
+#payment-guides input:checked + label,
 #payment-methods input:checked + label {
   color: #6772e5;
 }
 
+#payment-guides label:hover::before,
+#payment-guides input:checked + label::before,
 #payment-methods label:hover::before,
 #payment-methods input:checked + label::before {
   opacity: 1;
   transform: scaleX(1);
 }
 
+#payment-guides,
+.guide-info,
 #payment-methods,
 .payment-info {
   display: none;
@@ -922,6 +931,8 @@ button:active {
   margin-bottom: 0;
 }
 
+#payment-guides.visible,
+.guide-info.visible,
 #payment-methods.visible,
 .payment-info.visible {
   display: block;
@@ -936,6 +947,12 @@ button:active {
   font-size: 14px;
   color: #8898aa;
   text-align: left;
+}
+
+.payment-info p.notice.instructions {
+  color: #525f7f;
+  padding: 5px 10px;
+  background: aliceblue;
 }
 
 select#id-ct-element {
@@ -954,6 +971,13 @@ select#id-ct-element.bca {
 }
 select#id-ct-element.bni {
   background: #fff url(/images/bni.png) left bottom no-repeat;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
+}
+select#id-ct-element.mandiri {
+  background: #fff url(/images/mandiri.png) left bottom no-repeat;
   -webkit-background-size: contain;
   -moz-background-size: contain;
   -o-background-size: contain;
@@ -1186,11 +1210,12 @@ select#id-ct-element.bni {
   justify-content: center;
   padding: 0 75px 0 275px;
   max-width: 75%;
-  height: 350px;
+  min-height: 350px;
   margin: 100px auto;
   background: #fff url(/images/order.svg) 75px center no-repeat;
   box-shadow: 0 1px 3px 0 rgba(50, 50, 93, 0.15);
   border-radius: 6px;
+  text-align: center;
 }
 
 #confirmation .status.error {
@@ -1229,6 +1254,43 @@ select#id-ct-element.bni {
 #main.error #confirmation .error-message {
   font-family: monospace;
 }
+
+#confirmation .info {
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+
+div.info-payment-guide {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+div.info-payment-guide div.guide-info.guide {
+  padding: 5px;
+  background: #f6f9fc;
+  border-radius: 5px;
+  max-width: 500px;
+  min-height: 80px;
+  text-align: left;
+}
+
+div.info-payment-guide div.guide-info.guide ol {
+  padding-left: 24px;
+  padding-right: 10px;
+}
+
+.info-header span {
+  color: #666ee8;
+  font-weight: 400;
+}
+
+#confirmation p#count-down {
+  font-size: 32px;
+  margin: 20px;
+  color: #fc8403;
+}
+
+
 
 /* Media Queries */
 
@@ -1270,6 +1332,7 @@ select#id-ct-element.bni {
     width: auto;
     height: auto;
     margin: 30px;
+    text-align: center;
   }
 }
 
@@ -1327,8 +1390,10 @@ select#id-ct-element.bni {
     background-size: 68px 86px;
     box-shadow: 0 1px 3px 0 rgba(50, 50, 93, 0.15);
     border-radius: 6px;
+    text-align: center;
   }
   #confirmation h1 {
     text-align: center;
   }
+
 }

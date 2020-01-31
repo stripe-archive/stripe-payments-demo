@@ -78,7 +78,7 @@ router.post('/sources', async (req,res) => {
   } = req.body;
 
   try {
-    const source = await stripe.sources.create({
+    let source = await stripe.sources.create({
       type,
       currency,
       id_credit_transfer: {
@@ -92,6 +92,10 @@ router.post('/sources', async (req,res) => {
       },
       usage: "reusable"
     });
+
+    // Mocking IND Credit Transfer source for demo
+    source.expires_after = new Date().getTime() / 1000 + 60*60; // Set expiry to one hour ahead
+    source.account_number_suffix = 'AAAAA';
 
     return res.status(200).json({source});
   } catch (err) {

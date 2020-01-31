@@ -142,7 +142,7 @@
               </li>
               <li>
                 <input type="radio" name="payment" id="payment-id_credit_transfer" value="id_credit_transfer">
-                <label for="payment-id_credit_transfer">Ind Credit Transfer</label>
+                <label for="payment-id_credit_transfer">Bank Transfer</label>
               </li>
             </ul>
           </nav>
@@ -171,12 +171,19 @@
                 <span>Select Bank</span>
                 <div class="field">
                   <select id="id-ct-element" class="bni">
-                    <option value="bni" class="Icon SelectListItemIcon">Bank Negara Indonesia</option>
-                    <option value="bca" class="Icon SelectListItemIcon">Bank Central Asia</option>
+                    <option value="bni" class="Icon SelectListItemIcon">BNI (Bank Negara Indonesia)</option>
+                    <option value="bca" class="Icon SelectListItemIcon">BCA (Bank Central Asia)</option>
+                    <option value="mandiri" class="Icon SelectListItemIcon">Mandiri</option>
                   </select>
                 </div>
               </label>
             </fieldset>
+            <p class="notice instructions">
+              Payment can be made via ATM, Internet and Mobile Banking from local indonesian bank
+            </p>
+            <p class="notice instructions">
+              The payment will only be valid for 1 hours or the order will be canceled
+            </p>
           </div>
           <div class="payment-info ideal">
             <fieldset>
@@ -214,7 +221,7 @@
         <p class="note">We just sent your receipt to your email address, and your items will be on their way shortly.</p>
       </div>
       <div class="status receiver">
-        <h1>Thanks! One last step!</h1>
+        <h1>Waiting for payment</h1>
         <p>Please make a payment using the details below to complete your order.</p>
         <div class="info"></div>
       </div>
