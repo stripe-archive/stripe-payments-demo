@@ -70,32 +70,38 @@ router.post('/payment_intents', async (req, res, next) => {
 // Create source in server side, for IND CT 
 router.post('/sources', async (req,res) => {
   const {
-    bank='bni',  //  bca or bni
-    account_number_suffix ='10000091', 
-    name='Shengwei',
-    currency='idr',
     type='id_credit_transfer',
+    amount,
+    currency='idr',  
+    account_number_suffix ='10000091', 
+    owner = {},
+    statement_descriptor = 'IND statement',
+    metadata = {},
+    id_credit_transfer: {
+      bank = "bni", // bca or bni supported for source only
+    },
+    usage = "reusable",
+    items,
   } = req.body;
 
   try {
     let source = await stripe.sources.create({
       type,
       currency,
+      amount,
       id_credit_transfer: {
         bank,
-        // account_number_suffix, // not supported yet
-        // account_number: account_number_suffix,
-        // expires_after: new Date("2020-02-01").valueOf(),
       },
-      owner: {
-        name,
-      },
-      usage: "reusable"
+      owner,
+      statement_descriptor,
+      metadata,
+      usage,
     });
 
     // Mocking IND Credit Transfer source for demo
-    source.expires_after = new Date().getTime() / 1000 + 60*60; // Set expiry to one hour ahead
-    source.account_number_suffix = 'AAAAA';
+    source.id_credit_transfer.expires_after = source.id_credit_transfer.expires_after || 
+                        (new Date().getTime() / 1000 + 60*60); // Set expiry to one hour ahead
+    source.id_credit_transfer.account_number_suffix = 'ACT_NUM_SUFFIX';
 
     return res.status(200).json({source});
   } catch (err) {

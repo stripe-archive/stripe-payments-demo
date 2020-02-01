@@ -311,6 +311,7 @@
         owner: {
           name,
           email,
+          address: shipping.address,
         },
         redirect: {
           return_url: window.location.href,
@@ -348,14 +349,15 @@
         case 'id_credit_transfer':
           let bank = form.querySelector('select[id=id-ct-element] option:checked')
       .value;
-          sourceData.id_credit_transfer = {
-            bank: bank
-          }
-          sourceData.owner.email = `amount_${paymentIntent.amount}@example.com`;
+          sourceData.id_credit_transfer = {bank: bank};
+          sourceData.amount = sourceData.amount * 1000;
+          sourceData.owner.email = `transfer_amount_${sourceData.amount}@example.com`;
+          sourceData.usage = 'single_use';
+          // sourceData.usage = 'reusable';
 
           const {source} = await store.createSource({
-            currency: config.currency,
-            items: store.getLineItems()
+            items: store.getLineItems(),
+            ...sourceData,
           });
           
           console.log('Creating ID credit transfer from server side', source);
@@ -518,8 +520,8 @@
         }
         // Poll the PaymentIntent status.
         let timeout = 60000; // pull for one minute
-        if (source.expires_after) {
-          timeout = (new Date(source.expires_after * 1000)).getTime() - Date.now()
+        if (source[source.type].expires_after) {
+          timeout = (new Date(source[source.type].expires_after * 1000)).getTime() - Date.now()
         }
         pollPaymentIntentStatus(paymentIntent.id, timeout);
         break;
@@ -548,7 +550,7 @@
     <div class="info-header">
       Order ID ${source.id}
       <p id="count-down">00:00:00</p>
-      <p>Complete payment before <span>${formatDateTime(new Date(source.expires_after * 1000))}</span></p>
+      <p>Complete payment before <span>${formatDateTime(new Date(idct.expires_after * 1000))}</span></p>
       
     </div>
 
@@ -578,11 +580,11 @@
       <nav id="payment-guides" class="visible">
         <ul>
           <li class="visible">
-            <input type="radio" name="guides" id="guide-atm" value="atm" checked>
+            <input type="radio" name="guides" id="guide-atm" value="atm">
             <label for="guide-atm">ATM</label>
           </li>
           <li class="visible">
-            <input type="radio" name="guides" id="guide-ib" value="ib">
+            <input type="radio" name="guides" id="guide-ib" value="ib" checked>
             <label for="guide-ib">Internet Banking</label>
           </li>
           <li class="visible">
@@ -596,43 +598,46 @@
         </ul>
       </nav>
 
-      <div class="guide-info guide atm visible" id="guide-info-atm">
+      <div class="guide-info guide atm" id="guide-info-atm">
         <ol>
-          <li>1. Select the "other" menu - Transfer - Saving Account</li>
+          <li>1. Select the "other" menu &gt; Transfer &gt; Saving Account</li>
           <li>2. Enter the bank account number above (${idct.account_number})</li>
           <li>3. Enter the amount shown above (${amount})</li>
           <li>4. Enter news (optional)</li>
           <li>5. Confirm Payment</li>
           <li>6. Other ATMs</li>
-          <li>7. Select Transfers - Transfer to another Bank</li>
-          <li>8. Enter (${idct.routing_number}) as the BNI code</li>
-          <li>9. Enter paymetout - Select Confirmation</li>
+          <li>7. Select Transfers &gt; Transfer to another Bank</li>
+          <li>8. Enter (${idct.routing_number}) as the ${idct.bank.toUpperCase()} code</li>
+          <li>9. Enter paymetout &gt; Select Confirmation</li>
         </ol>
         <p>
         </p>
       </div>
-      <div class="guide-info guide ib" id="guide-info-ib">
+      <div class="guide-info guide ib visible" id="guide-info-ib">
         <ol>
-          <li>1. Log in to BNI internet banking: https://ibank.bni.co.id</li>
-          <li>2. Select Transactions - Virtual Billing Account </li>
-          <li>3. Enter BNI Virtual Account - Select account Number - Continue</li>
-          <li>4. Enter the normal and the BNI M-Secure Code - Process</li>
+          <li>1. Log in to ${idct.bank.toUpperCase()} internet banking: https://ibank.${idct.bank}.co.id</li>
+          <li>2. Select Transactions &gt; Virtual Billing Account </li>
+          <li>3. Enter ${idct.bank.toUpperCase()} Virtual Account &gt; Select account Number &gt; Continue</li>
+          <li>4. Enter the normal and the BNI M-Secure Code &gt; Process</li>
         </ol>
       </div>
       <div class="guide-info guide mb" id="guide-info-mb">
         <ol>
-          <li>1. Log in to BNI internet banking: https://ibank.bni.co.id</li>
-          <li>2. Select Transactions - Virtual Billing Account </li>
-          <li>3. Enter BNI Virtual Account - Select account Number - Continue</li>
-          <li>4. Enter the normal and the BNI M-Secure Code - Process</li>
+          <li>1. Log in to ${idct.bank.toUpperCase()} mobile appliation</li>
+          <li>2. Select 'm-${idct.bank.toUpperCase()}', Enter access code. Then click 'Login' </li>
+          <li>3. Select 'm-Transfer'</li>
+          <li>4. Select '${idct.bank.toUpperCase()} Virtual Account'</li>
+          <li>5. Enter ${idct.bank.toUpperCase()} Virtual Account, press 'OK'</li>
+          <li>6. Press 'SEND'</li>
+          <li>7. Enter 'm-${idct.bank.toUpperCase()}' pin, enter 'OK'</li>
         </ol>
       </div>
       <div class="guide-info guide branch" id="guide-info-branch">
         <ol>
-          <li>1. Log in to BNI internet banking: https://ibank.bni.co.id</li>
-          <li>2. Select Transactions - Virtual Billing Account </li>
-          <li>3. Enter BNI Virtual Account - Select account Number - Continue</li>
-          <li>4. Enter the normal and the BNI M-Secure Code - Process</li>
+          <li>1. ${idct.bank.toUpperCase()} Virtual Account Number: ${idct.account_number}</li>
+          <li>2. Fill in your name, fill in the date, select Rupiah </li>
+          <li>3. Hand over money and cash deposit slip to the counter</li>
+          <li>4. Save a copy of the cash deposit slip as proof of order payment</li>
         </ol>
       </div>
       `;
