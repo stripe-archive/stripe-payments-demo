@@ -26,7 +26,7 @@ return [
           'apiVersion' => '2019-03-14',
 
           // Update this path if you want to move your public folder
-          'staticDir' => __DIR__ . '/../../public/',
+          'staticDir' => __DIR__ . '/../../client/vanilla/',
 
           // Adapt these to match your account payments settings
           // https://dashboard.stripe.com/account/payments/settings

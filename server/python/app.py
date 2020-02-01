@@ -20,7 +20,7 @@ from stripe_types import Source
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from dotenv import load_dotenv, find_dotenv
 
-static_dir = f'{os.path.abspath(os.path.join(__file__ ,"../../.."))}/public'
+static_dir = f'{os.path.abspath(os.path.join(__file__ ,"../../.."))}/client/vanilla'
 app = Flask(__name__, static_folder=static_dir)
 
 

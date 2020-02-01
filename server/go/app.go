@@ -41,7 +41,7 @@ func main() {
 		panic("STRIPE_SECRET_KEY must be in environment")
 	}
 
-	publicDirectory := path.Join(*rootDirectory, "public")
+	publicDirectory := path.Join(*rootDirectory, "client/vanilla")
 	e := buildEcho(publicDirectory)
 	e.Logger.Fatal(e.Start(":4567"))
 }

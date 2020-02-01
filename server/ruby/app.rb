@@ -13,7 +13,7 @@ Stripe.api_version = '2019-03-14'
 
 set :static, true
 set :root, File.dirname(__FILE__)
-set :public_folder, Dir.chdir(Dir.pwd + '/../../public')
+set :public_folder, Dir.chdir(Dir.pwd + '/../../client/vanilla')
 
 
 get '/javascripts/:path' do

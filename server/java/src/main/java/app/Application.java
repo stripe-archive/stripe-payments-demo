@@ -11,7 +11,7 @@ public class Application {
 
     public static void main(String[] args) {
         port(4567);
-        staticFiles.externalLocation("../../public");
+        staticFiles.externalLocation("../../client/vanilla");
         staticFiles.expireTime(600L);
 
         get("/config", ConfigController.getConfig);

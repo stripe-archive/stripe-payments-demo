@@ -11,3 +11,5 @@ require (
 	github.com/valyala/fasttemplate v1.0.1 // indirect
 	golang.org/x/crypto v0.0.0-20190411191339-88737f569e3a // indirect
 )
+
+go 1.13
