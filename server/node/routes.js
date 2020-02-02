@@ -45,7 +45,8 @@ const calculatePaymentAmount = async items => {
     const sku = skus.filter(sku => sku.id === item.parent)[0];
     return a + sku.price * item.quantity;
   }, 0);
-  return total;
+
+  return config.country === 'ID' ? total * 1000 : total;
 };
 
 // Create the PaymentIntent on the backend.

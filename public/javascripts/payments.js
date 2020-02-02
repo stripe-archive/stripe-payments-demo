@@ -350,8 +350,7 @@
           let bank = form.querySelector('select[id=id-ct-element] option:checked')
       .value;
           sourceData.id_credit_transfer = {bank: bank};
-          sourceData.amount = sourceData.amount * 1000;
-          sourceData.owner.email = `transfer_amount_${sourceData.amount}@example.com`;
+          sourceData.owner.email = `amount_${sourceData.amount}@example.com`;
           sourceData.usage = 'single_use';
           // sourceData.usage = 'reusable';
 
