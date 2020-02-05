@@ -1290,7 +1290,10 @@ div.info-payment-guide div.guide-info.guide ol {
   color: #fc8403;
 }
 
-
+#confirmation #confirmation-custom span {
+  color: #fc8403;
+  font-weight: 500;
+}
 
 /* Media Queries */
 

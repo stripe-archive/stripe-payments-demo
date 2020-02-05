@@ -102,7 +102,9 @@ router.post('/sources', async (req,res) => {
     // Mocking IND Credit Transfer source for demo
     source.id_credit_transfer.expires_after = source.id_credit_transfer.expires_after || 
                         (new Date().getTime() / 1000 + 60*60); // Set expiry to one hour ahead
-    source.id_credit_transfer.account_number_suffix = 'ACT_NUM_SUFFIX';
+    
+    source.id_credit_transfer.account_number_suffix = owner && owner.phone ?
+      owner.phone.replace('(+62)', '').replace(/\s/g, '') : '_SUFFIX_'; // use the phone number as suffix
 
     return res.status(200).json({source});
   } catch (err) {
@@ -241,7 +243,7 @@ router.get('/products/:id', async (req, res) => {
 // Retrieve the PaymentIntent status.
 router.get('/payment_intents/:id/status', async (req, res) => {
   const paymentIntent = await stripe.paymentIntents.retrieve(req.params.id);
-  res.json({paymentIntent: {status: paymentIntent.status}});
+  res.json({paymentIntent: {status: paymentIntent.status, id: paymentIntent.id}});
 });
 
 module.exports = router;

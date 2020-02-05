@@ -4,13 +4,18 @@
 const faker = window.faker;
 const generateInputTrigger = document.getElementById('generate');
 faker.locale = 'id_ID';
-const {name, address, internet} = faker;
+const {name, address, internet, phone} = faker;
+
+const safeGetElement = (elementName) => 
+  document.getElementsByName(elementName)[0] || {};
+
 
 generateInputTrigger.addEventListener('click', () => {
-  document.getElementsByName('name')[0].value = `${name.firstName()} ${name.lastName()}`;
-  document.getElementsByName('email')[0].value = internet.email();
-  document.getElementsByName('address')[0].value = `${address.streetAddress()}`;
-  document.getElementsByName('city')[0].value = `${address.city()}`;
-  document.getElementsByName('state')[0].value = `${address.state()}`;
-  document.getElementsByName('postal_code')[0].value = `${address.zipCode()}`;
+  safeGetElement('name').value = `${name.firstName()} ${name.lastName()}`;
+  safeGetElement('email').value = internet.email();
+  safeGetElement('address').value = `${address.streetAddress()}`;
+  safeGetElement('city').value = `${address.city()}`;
+  safeGetElement('state').value = `${address.state()}`;
+  safeGetElement('postal_code').value = `${address.zipCode()}`;
+  safeGetElement('phone').value = `${phone.phoneNumber()}`;
 });

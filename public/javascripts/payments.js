@@ -258,6 +258,7 @@
     const country = form.querySelector('select[name=country] option:checked')
       .value;
     const email = form.querySelector('input[name=email]').value;
+    const phone = form.querySelector('input[name=phone]').value;
     const shipping = {
       name,
       address: {
@@ -311,6 +312,7 @@
         owner: {
           name,
           email,
+          phone,
           address: shipping.address,
         },
         redirect: {
@@ -393,6 +395,8 @@
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
       // Update the note about receipt and shipping (the payment has been fully confirmed by the bank).
+      confirmationElement.querySelector('#confirmation-custom').innerHTML = 
+        `Order reference number is <span>${paymentIntent.id}</span>`;
       confirmationElement.querySelector('.note').innerText =
         'We just sent your receipt to your email address, and your items will be on their way shortly.';
       mainElement.classList.add('success');
@@ -531,6 +535,9 @@
     }
   };
 
+  const monthNames = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"];
+
   const formatDateTime = (date) => {
     var hours = date.getHours();
     var minutes = date.getMinutes();
@@ -539,7 +546,7 @@
     hours = hours ? hours : 12; // the hour '0' should be '12'
     minutes = minutes < 10 ? '0'+minutes : minutes;
     var strTime = hours + ':' + minutes + ' ' + ampm;
-    return date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
+    return `${date.getDate()} ${monthNames[date.getMonth()]} ${date.getFullYear()} ${strTime}`;
   }
 
   const showBankTransferConfirmation = (receiverInfo, source, amount) => {
@@ -594,6 +601,10 @@
             <input type="radio" name="guides" id="guide-branch" value="branch">
             <label for="guide-branch">Branch</label>
           </li>
+          <li class="visible">
+            <input type="radio" name="guides" id="guide-demo" value="demo">
+            <label for="guide-demo">Demo</label>
+          </li>
         </ul>
       </nav>
 
@@ -637,6 +648,16 @@
           <li>2. Fill in your name, fill in the date, select Rupiah </li>
           <li>3. Hand over money and cash deposit slip to the counter</li>
           <li>4. Save a copy of the cash deposit slip as proof of order payment</li>
+        </ol>
+      </div>
+      <div class="guide-info guide demo" id="guide-info-demo">
+        <ol>
+          <li>For demo, please select <strong>BNI &amp; Others</strong> banks.</li>
+          <li>1. Go to BNI <a href="http://dev.bni-ecollection.com/dev/flagging" target="_blank">Payment Simulator</a> page</li>
+          <li>2. Enter <strong>VA Number</strong> ${idct.account_number} and click search</li>
+          <li>3. Enter <strong>Payment Amount*</strong> ${source.amount/100}</li>
+          <li>4. Leave Direction as Credit</li>
+          <li>5. Click <strong style='color: green'>Flag</strong> button</li>
         </ol>
       </div>
       `;
@@ -1009,4 +1030,8 @@
     country = countryParam;
   }
   selectCountry(country);
+
+  // Trigger generate 
+  const generateInputTrigger = document.getElementById('generate');
+  generateInputTrigger.click();
 })();

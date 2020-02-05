@@ -39,6 +39,10 @@
               <input name="email" type="email" class="field" placeholder="jenny@example.com" required>
             </label>
             <label>
+              <span>Phone</span>
+              <input name="phone" class="field" placeholder="jenny@example.com" required>
+            </label>
+            <label>
               <span>Address</span>
               <input name="address" class="field" placeholder="185 Berry Street Suite 550">
             </label>
@@ -171,7 +175,7 @@
                 <span>Select Bank</span>
                 <div class="field">
                   <select id="id-ct-element" class="bni">
-                    <option value="bni" class="Icon SelectListItemIcon">BNI (Bank Negara Indonesia)</option>
+                    <option value="bni" class="Icon SelectListItemIcon">BNI (Bank Negara Indonesia) &amp; Others</option>
                     <option value="bca" class="Icon SelectListItemIcon">BCA (Bank Central Asia)</option>
                     <option value="mandiri" class="Icon SelectListItemIcon">Mandiri</option>
                   </select>
@@ -179,7 +183,7 @@
               </label>
             </fieldset>
             <p class="notice instructions">
-              Payment can be made via ATM, Internet and Mobile Banking from local indonesian bank
+              Payment can be made via an ATM, Internet or Mobile Banking, or at a local Indonesian bank branch
             </p>
             <p class="notice instructions">
               The payment will only be valid for 25 hours or the order will be canceled
@@ -218,6 +222,7 @@
       <div class="status success">
         <h1>Thanks for your order!</h1>
         <p>Woot! You successfully made a payment with Stripe.</p>
+        <p id="confirmation-custom"></p>
         <p class="note">We just sent your receipt to your email address, and your items will be on their way shortly.</p>
       </div>
       <div class="status receiver">
