@@ -18,7 +18,8 @@
     "setup-cli": "stripe login --project-name=stripe-payments-demo",
     "webhook": "stripe listen --project-name=stripe-payments-demo --forward-to http://localhost:8000/webhook",
     "start": "node server/node/server.js",
-    "react": "concurrently --kill-others \"PORT=3001 npm start\" \"cd client/react-cra && npm start\""
+    "react-client": "cd client/react-cra && npm start",
+    "react": "concurrently --kill-others \"PORT=3001 npm start\" \"npm:react-client\""
   },
   "dependencies": {
     "body-parser": "^1.17.1",

@@ -10,7 +10,7 @@ If you’re running a compatible browser, this demo also showcases the [Payment 
 
 ## Overview
 
-<img src="public/images/screenshots/demo-chrome.png" alt="Demo on Google Chrome" width="610"><img src="public/images/screenshots/demo-iphone.png" alt="Demo on Safari iPhone X" width="272">
+<img src="client/vanilla/images/screenshots/demo-chrome.png" alt="Demo on Google Chrome" width="610"><img src="client/vanilla/images/screenshots/demo-iphone.png" alt="Demo on Safari iPhone X" width="272">
 
 This demo provides an all-in-one example for integrating with Stripe on the web:
 
@@ -18,6 +18,7 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 |     | Features
 :---: | :---
 ✨ | **Beautiful UI components for card payments**. This demo uses pre-built Stripe components customized to fit the app design, including the [Card Element](https://stripe.com/docs/elements) which provides real-time validation, formatting, and autofill.
+⚛️ | **Create React App client**. In addition to a vanilla JavaScript client the demo provides a React client that uses the [React Stripe JS library](https://github.com/stripe/react-stripe-js) which rovides React components for Stripe.js and Stripe Elements.
 💳 | **Card payments with Payment Request, Apple Pay, Google Pay, and Microsoft Pay.** The app offers frictionless card payment experiences with a single integration using the [Payment Request Button Element](https://stripe.com/docs/elements/payment-request-button).
 🌍 | **Payment methods for Europe and Asia.** A dozen redirect-based payment methods are supported through the [Sources API](https://stripe.com/docs/sources), from [iDEAL](https://stripe.com/docs/sources/ideal) to [WeChat Pay](https://stripe.com/docs/sources/wechat-pay).
 🎩 | **Automatic payment methods suggestion.** Picking a country will automatically show relevant payment methods. For example, selecting  “Germany” will suggest SOFORT, Giropay, and SEPA Debit.
@@ -30,12 +31,16 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 
 ## Payments Integration
 
-The frontend code for the demo is in the `public/` directory.
+The frontend implementations ([vanilla](client/vanilla), [React](client/react-cra)) for the demo are in the `client/` directory. They create the payment experience on the frontend using [Stripe Elements]().
 
-The core logic of the Stripe integration is mostly contained within two files:
+The server implementations in the [`server`](/server) directory all define the same endpoints to handle requests from the frontend and interact with the [Stripe libraries](https://stripe.com/docs/libraries) to create payments and handle webhook events.
 
-1.  [`public/javascripts/payments.js`](public/javascripts/payments.js) creates the payment experience on the frontend using Stripe Elements.
-2.  [`server/node/routes.js`](server/node/routes.js) defines the routes on the backend that create Stripe charges and receive webhook events.
+- Go, Echo: [`server/go`](/server/go)
+- Java, Spark: [`server/java`](/server/java)
+- Node, Express: [`server/node`](/server/node)
+- PHP, Slim: [`server/php`](/server/php)
+- Python, Flask: [`server/python`](/server/python)
+- Ruby, Sinatra: [`server/ruby`](/server/ruby)
 
 ### Card Payments with Stripe Elements
 
@@ -45,7 +50,7 @@ Stripe Elements are rich, pre-built UI components that create optimized checkout
 
 This demo uses both the [Card Element](https://stripe.com/docs/elements) and the [Payment Request Button](https://stripe.com/docs/elements/payment-request-button), which provides a single integration for Apple Pay, Google Pay, and the Payment Request API—a new browser standard that allows your customers to quickly provide payment and address information they’ve stored with their browser.
 
-![Payment Request on Chrome](public/images/screenshots/demo-payment-request.png)
+![Payment Request on Chrome](client/vanilla/images/screenshots/demo-payment-request.png)
 
 ### Beyond Cards: Payment Methods for Europe and Asia
 
@@ -53,20 +58,11 @@ This demo also shows how to reach customers in Europe and Asia by supporting the
 
 The app also supports both [Multibanco](https://stripe.com/docs/sources/multibanco) and [EPS](https://stripe.com/docs/sources/eps) which are currently in Public Beta on Stripe.
 
-![WeChat Pay with the Sources API](public/images/screenshots/demo-wechat.png)
+![WeChat Pay with the Sources API](client/vanilla/images/screenshots/demo-wechat.png)
 
 ## Getting Started with Node
 
-Instructions for running the Node.js server in [`server/node`](/server/node) are below. You can find alternative server implementations in the [`server`](/server) directory:
-
-- Go, Echo: [`server/go`](/server/go)
-- Java, Spark: [`server/java`](/server/java)
-- Node, Express: [`server/node`](/server/node)
-- PHP, Slim: [`server/php`](/server/php)
-- Python, Flask: [`server/python`](/server/python)
-- Ruby, Sinatra: [`server/ruby`](/server/ruby)
-
-All servers have the same endpoints to handle requests from the frontend and interact with the [Stripe libraries](https://stripe.com/docs/libraries).
+Instructions for running the Node.js server in [`server/node`](/server/node) are below. You can find alternative server implementations in the [`server`](/server) directory.
 
 ### Requirements
 

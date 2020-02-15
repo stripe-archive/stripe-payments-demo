@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Header from './components/Header';
+import Aside from './components/Aside';
 
 function App() {
   const [products, setProducts] = useState();
@@ -12,23 +12,12 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>{products?.length ?? 'loading...'}</p>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <main id="main" className="checkout">
+        <Header />
+      </main>
+      <Aside></Aside>
+    </>
   );
 }
 
