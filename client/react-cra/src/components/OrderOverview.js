@@ -21,6 +21,7 @@ const DemoNotice = () => (
             <a
               href="https://stripe.com/guides/strong-customer-authentication"
               target="_blank"
+              rel="noopener noreferrer"
             >
               Authentication
             </a>{' '}
@@ -34,7 +35,11 @@ const DemoNotice = () => (
     </table>
     <p className="note">
       See the{' '}
-      <a href="https://stripe.com/docs/testing#cards" target="_blank">
+      <a
+        href="https://stripe.com/docs/testing#cards"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         docs
       </a>{' '}
       for a full list of test cards. Non-card payments will redirect to test

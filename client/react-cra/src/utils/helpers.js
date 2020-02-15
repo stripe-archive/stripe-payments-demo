@@ -5,6 +5,7 @@ export function randomQuantity(min, max) {
 }
 
 export function isZeroDecimalCurrency(amount, currency) {
+  if (!amount) return;
   let numberFormat = new Intl.NumberFormat(['en-US'], {
     style: 'currency',
     currency: currency,
@@ -21,6 +22,7 @@ export function isZeroDecimalCurrency(amount, currency) {
 }
 
 export function formatAmountForDisplay(amount, currency) {
+  if (!amount) return;
   let numberFormat = new Intl.NumberFormat(['en-US'], {
     style: 'currency',
     currency: currency,

@@ -1,46 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import Header from './components/Header';
 import Aside from './components/Aside';
+import Checkout from './components/Checkout';
 import {randomQuantity} from './utils/helpers';
 
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+
 function App() {
-  // TODO fetch config
-  const [config, setCOnfig] = useState({
-    stripePublishableKey: 'pk_test_PInFiPUnGR6pzLYZ2IE6oyPf',
-    stripeCountry: 'FR',
-    country: 'US',
-    currency: 'eur',
-    paymentMethods: [
-      'alipay',
-      'bancontact',
-      'card',
-      'eps',
-      'ideal',
-      'giropay',
-      'multibanco',
-      'sepa_debit',
-      'sofort',
-      'wechat',
-    ],
-    shippingOptions: [
-      {
-        id: 'free',
-        label: 'Free Shipping',
-        detail: 'Delivery within 5 days',
-        amount: 0,
-      },
-      {
-        id: 'express',
-        label: 'Express Shipping',
-        detail: 'Next day delivery',
-        amount: 500,
-      },
-    ],
-  });
+  const [config, setCOnfig] = useState();
   const [cart, setCart] = useState();
   useEffect(_ => {
-    // Fetch the products from the API.
     (async _ => {
+      // Fetch config object
+      const config = await fetch('/config').then(res => res.json());
+      config.stripePromise = loadStripe(config.stripePublishableKey);
+      setCOnfig(config);
+      // Fetch the products from the API.
       const res = await fetch('/products').then(res => res.json());
       const products = res.data;
       const items = products.map(product => ({
@@ -52,21 +28,31 @@ function App() {
         parent: product.skus.data[0].id,
         attributes: product.skus.data[0].attributes,
       }));
+      const {paymentIntent} = await fetch('/payment_intents', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          currency: config.currency,
+          items,
+        }),
+      }).then(res => res.json());
       setCart({
         currency: config.currency,
         items,
         total: items.reduce((sum, item) => sum + item.quantity * item.price, 0),
+        paymentIntent,
       });
     })();
   }, []);
 
   return (
-    <>
+    <Elements stripe={config?.stripePromise ?? null}>
       <main id="main" className={cart ? 'checkout' : 'loading'}>
         <Header />
+        <Checkout config={config} cart={cart} />
       </main>
-      <Aside cart={cart}></Aside>
-    </>
+      <Aside cart={cart} />
+    </Elements>
   );
 }
 

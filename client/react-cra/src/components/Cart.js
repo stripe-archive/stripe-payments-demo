@@ -4,7 +4,7 @@ import {formatAmountForDisplay} from '../utils/helpers';
 const Cart = ({cart}) => (
   <div id="order-items">
     {cart?.items?.map(item => (
-      <div className="line-item">
+      <div className="line-item" key={item.id}>
         <img
           className="image"
           src={`/images/products/${item.id}.png`}
