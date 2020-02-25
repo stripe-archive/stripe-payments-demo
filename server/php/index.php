@@ -126,8 +126,6 @@ $app->get('/payment_intents/{id}/status', function (Request $request, Response $
 $app->post('/webhook', function (Request $request, Response $response, array $args) {
   $logger = $this->get('logger');
 
-  $event = $request->getParsedBody();
-
   // Parse the message body (and check the signature if possible)
   $webhookSecret = $this->get('settings')['stripe']['webhookSecret'];
   if ($webhookSecret) {
