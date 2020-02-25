@@ -3,7 +3,7 @@ setup.py
 Stripe Payments Demo. Created by Adrienne Dreyfus (@adrind).
 
 This is a one-time setup script for your server. It creates a set of fixtures,
-namely products and SKUs, that can then used to caluclate payment amounts when completing the
+namely products and SKUs, that can then used to calculate payment amounts when completing the
 checkout flow in the web interface.
 """
 
