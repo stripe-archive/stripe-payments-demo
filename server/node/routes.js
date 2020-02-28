@@ -225,6 +225,7 @@ router.get('/config', (req, res) => {
     stripeCountry: config.stripe.country,
     country: config.country,
     currency: config.currency,
+    locale: config.locale,
     paymentMethods: config.paymentMethods,
     shippingOptions: config.shippingOptions,
   });

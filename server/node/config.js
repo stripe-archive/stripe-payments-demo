@@ -10,11 +10,10 @@
 require('dotenv').config();
 
 module.exports = {
-  // Default country for the checkout form.
-  country: 'ID',
-
-  // Store currency.
-  currency: 'idr',  // For indonesia CT 
+  
+  country: 'SG',  // Default country for the checkout form.
+  currency: 'sgd', // Store currency.
+  locale: 'en_SG', // Locale for UI
 
   // Supported payment methods for the store.
   // Some payment methods support only a subset of currencies.
@@ -32,6 +31,7 @@ module.exports = {
     'sofort', // eur (SOFORT must always use Euros)
     'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
     'id_credit_transfer', // idr 
+    'grabpay', // sgd
   ],
 
   paymentMethodsAvailability: {
@@ -138,7 +138,15 @@ module.exports = {
       currencies: [
         'idr',
       ],
-    }
+    },
+    grabpay: {
+      name: 'GrabPay',
+      flow: 'redirect',
+      countries: ['SG'],
+      currencies: [
+        'sgd',
+      ],
+    },
   },
 
   // Configuration for Stripe.

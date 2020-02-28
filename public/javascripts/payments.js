@@ -29,7 +29,10 @@
    */
 
   // Create a Stripe client.
-  const stripe = Stripe(config.stripePublishableKey);
+  const stripe = Stripe(config.stripePublishableKey, 
+    {
+      betas: ['grabpay_pm_beta_1'], // Enable GrabPay Beta
+    });
 
   // Create an instance of Elements.
   const elements = stripe.elements();
@@ -300,6 +303,21 @@
               email,
             },
           },
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'grabpay') {
+      const response = await stripe.confirmGrabPayPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            grabpay: {},
+            billing_details: {
+              name,
+              email,
+            },
+          },
+          return_url: window.location.href,
         }
       );
       handlePayment(response);
@@ -685,6 +703,7 @@
 
   const displayTimeout = (timeout, start) => {
     const countDownEl = document.getElementById('count-down');
+    if (!countDownEl) return;
     let timeLeft = timeout - (Date.now() - start);
 
     if (timeLeft <= 0 ) {
@@ -876,7 +895,15 @@
       currencies: [
         'idr',
       ],
-    }
+    },
+    grabpay: {
+      name: 'GrabPay',
+      flow: 'redirect',
+      countries: ['SG'],
+      currencies: [
+        'sgd',
+      ],
+    },
   };
 
   // Update the main button to reflect the payment method being selected.
@@ -950,14 +977,18 @@
         );
 
       input.parentElement.classList.toggle('visible', pmAvailable);
-
+      
+      let pmInfoSession = form.querySelector('.payment-info.' + input.value);
+      if (!pmInfoSession && pmAvailable && paymentMethods[input.value].flow === 'redirect') {
+        pmInfoSession = form.querySelector('.payment-info.redirect');
+      }
       
       if (pmAvailable) {
         input.checked = 'checked';
-        form.querySelector('.payment-info.' + input.value).classList.add('visible');
+        pmInfoSession.classList.add('visible');
         updateButtonLabel(input.value);
       } else if (form.querySelector('.payment-info.' + input.value)) {
-        form.querySelector('.payment-info.' + input.value).classList.remove('visible');
+        pmInfoSession.classList.remove('visible');
       }
     }
 
@@ -969,7 +1000,7 @@
     );
 
     // Check the first payment option again.
-    /*
+    
     paymentInputs[0].checked = 'checked';
     form.querySelector('.payment-info.card').classList.add('visible');
     form.querySelector('.payment-info.ideal').classList.remove('visible');
@@ -978,7 +1009,7 @@
     form.querySelector('.payment-info.redirect').classList.remove('visible');
     form.querySelector('.payment-info.id_credit_transfer').classList.remove('visible');
     updateButtonLabel(paymentInputs[0].value);
-    */
+    
   };
 
   // Listen to changes to the payment method selector.

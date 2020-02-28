@@ -21,7 +21,7 @@ class Store {
   getPaymentTotal() {
     return Object.values(this.lineItems).reduce(
       (total, {product, sku, quantity}) =>
-        total + quantity * this.products[product].skus.data[0].price * 1000,
+        total + quantity * this.products[product].skus.data[0].price,
       0
     );
   }
@@ -163,7 +163,7 @@ class Store {
   // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
   formatPrice(amount, currency) {
     let price = (amount / 100).toFixed(2);
-    let numberLocale = 'in-ID' || 'en-US';
+    let numberLocale = 'en-SG'; //'in-ID' || 'en-US';
     let numberFormat = new Intl.NumberFormat([numberLocale], {
       style: 'currency',
       currency: currency,
@@ -180,7 +180,7 @@ class Store {
     await this.loadProducts();
     const orderItems = document.getElementById('order-items');
     const orderTotal = document.getElementById('order-total');
-    let currency = `idr`;
+    let currency = `sgd`;
     // Build and append the line items to the payment summary.
     for (let [id, product] of Object.entries(this.products)) {
       const randomQuantity = (min, max) => {
@@ -190,8 +190,8 @@ class Store {
       };
       const quantity = randomQuantity(1, 2);
       let sku = product.skus.data[0];
-      let skuPrice = this.formatPrice(sku.price * 1000, currency || sku.currency);
-      let lineItemPrice = this.formatPrice(sku.price * quantity * 1000, currency || sku.currency);
+      let skuPrice = this.formatPrice(sku.price, currency || sku.currency);
+      let lineItemPrice = this.formatPrice(sku.price * quantity, currency || sku.currency);
       let lineItem = document.createElement('div');
       lineItem.classList.add('line-item');
       lineItem.innerHTML = `

@@ -3,7 +3,8 @@
  */
 const faker = window.faker;
 const generateInputTrigger = document.getElementById('generate');
-faker.locale = 'id_ID';
+// faker.locale = 'id_ID';
+faker.locale = 'en';
 const {name, address, internet, phone} = faker;
 
 const safeGetElement = (elementName) => 
