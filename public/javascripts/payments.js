@@ -321,6 +321,13 @@
         }
       );
       handlePayment(response);
+    } else if (payment === 'alipay') {
+        let {pm, pi, error} = await store.createPmAndConfirmPIwIt({
+            piid: paymentIntent.id,
+            type: payment,
+            return_url: window.location.href,
+        });
+        handlePayment({paymentIntent: pi, error});
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -408,6 +415,8 @@
       confirmationElement.querySelector('.error-message').innerText =
         error.message;
       mainElement.classList.add('error');
+    } else if (paymentIntent.status == 'requires_action') {
+      window.location.replace(paymentIntent.next_action.redirect_to_url.url);
     } else if (paymentIntent.status === 'succeeded') {
       // Success! Payment is confirmed. Update the interface to display the confirmation screen.
       mainElement.classList.remove('processing');

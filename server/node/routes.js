@@ -16,7 +16,7 @@ const {getSupportedPaymentMethods} = require('./utils');
 const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(config.stripe.secretKey);
-stripe.setApiVersion(config.stripe.apiVersion);
+stripe.setApiVersion(`${config.stripe.apiVersion}; alipay_beta=v1`); // passing the beta version
 
 // Render the main app HTML.
 router.get('/', (req, res) => {
@@ -67,6 +67,26 @@ router.post('/payment_intents', async (req, res, next) => {
     return res.status(500).json({error: err.message});
   }
 });
+
+router.post('/payment_methods', async (req, res) => {
+  const {piid, type, return_url} = req.body;
+  
+  try {
+    // create payment method
+    let pm = await stripe.paymentMethods.create({
+      type,
+      [type]: {},
+    });
+    // confirm payment intent
+    let pi = await stripe.paymentIntents.confirm(piid, {
+      payment_method: pm.id,
+      return_url,
+    });
+    res.json({pm, pi});
+  } catch (err) {
+    res.json({error: `${err}`});
+  }
+})
 
 // Create source in server side, for IND CT 
 router.post('/sources', async (req,res) => {

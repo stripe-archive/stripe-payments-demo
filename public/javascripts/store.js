@@ -109,6 +109,26 @@ class Store {
     }
   }
 
+  async createPmAndConfirmPIwIt(options) {
+    try {
+      const response = await fetch('/payment_methods', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          ...options
+        }),
+      });
+      const data = await response.json();
+      if (data.error) {
+        return {error: data.error};
+      } else {
+        return data;
+      }
+    } catch (err) {
+      return {error: err.message};
+    }
+  }
+
   // Create the PaymentIntent with the cart details.
   async createPaymentIntent(currency, items) {
     try {
