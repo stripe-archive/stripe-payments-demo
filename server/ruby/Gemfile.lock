@@ -15,7 +15,7 @@ GEM
     rack (2.0.8)
     rack-protection (2.0.5)
       rack
-    rake (12.3.2)
+    rake (13.0.1)
     ruby-debug-ide (0.6.1)
       rake (>= 0.8.1)
     sinatra (2.0.5)

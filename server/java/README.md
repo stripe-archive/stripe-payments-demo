@@ -70,11 +70,12 @@ We can use the Stripe CLI to forward webhook events to our local development ser
 
 - [Install](https://github.com/stripe/stripe-cli#installation) the Stripe CLI.
 - Follow the [login steps](https://github.com/stripe/stripe-cli#login) to connect the CLI with your Stripe account.
-- Run the [`listen`](https://github.com/stripe/stripe-cli#listen) command to forward the webhooks to loalhost:
+- Run the [`listen`](https://github.com/stripe/stripe-cli#listen) command to forward the webhooks to localhost:
 
 ```
 stripe listen --forward-to http://localhost:4567/webhook
 ```
+
 > **Note:** You do not need to configure any webhook endpoints in your Dashboard to receive webhooks with the CLI.
 
 The Stripe CLI will let you know that webhook forwarding is ready and output your webhook signing secret:

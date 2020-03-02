@@ -65,7 +65,6 @@ const createStoreProducts = async () => {
     );
   } catch (error) {
     console.log(`⚠️  Error: ${error.message}`);
-    return;
   }
 };
 
