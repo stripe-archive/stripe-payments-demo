@@ -9,6 +9,35 @@ const CheckoutForm = ({config, cart}) => {
   const stripe = useStripe();
   const elements = useElements();
 
+  // Handle new PaymentIntent result
+  const handlePayment = paymentResponse => {
+    const {paymentIntent, error} = paymentResponse;
+
+    if (error) {
+      cart.setStatus({
+        class: 'error',
+        message: error.message,
+      });
+    } else if (paymentIntent.status === 'succeeded') {
+      cart.setStatus({
+        class: 'success',
+        message:
+          'We just sent your receipt to your email address, and your items will be on their way shortly.',
+      });
+    } else if (paymentIntent.status === 'processing') {
+      cart.setStatus({
+        class: 'success',
+        message:
+          'We’ll send your receipt and ship your items as soon as your payment is confirmed.',
+      });
+    } else {
+      // Payment has failed.
+      cart.setStatus({
+        class: 'error',
+      });
+    }
+  };
+
   const handleFormSubmit = async event => {
     // TODO REACTIFY
     // Block native form submission.
@@ -61,7 +90,7 @@ const CheckoutForm = ({config, cart}) => {
         }
       );
       console.log({response});
-      // handlePayment(response);
+      handlePayment(response);
     }
   };
 

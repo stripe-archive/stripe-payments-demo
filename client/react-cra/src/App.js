@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Header from './components/Header';
 import Aside from './components/Aside';
 import Checkout from './components/Checkout';
+import PaymentResult from './components/PaymentResult';
 import {randomQuantity} from './utils/helpers';
 
 import {Elements} from '@stripe/react-stripe-js';
@@ -10,6 +11,7 @@ import {loadStripe} from '@stripe/stripe-js';
 function App() {
   const [config, setCOnfig] = useState();
   const [cart, setCart] = useState();
+  const [status, setStatus] = useState();
   useEffect(_ => {
     (async _ => {
       // Fetch config object
@@ -41,15 +43,22 @@ function App() {
         items,
         total: items.reduce((sum, item) => sum + item.quantity * item.price, 0),
         paymentIntent,
+        setStatus,
       });
     })();
   }, []);
 
   return (
     <Elements stripe={config?.stripePromise ?? null}>
-      <main id="main" className={cart ? 'checkout' : 'loading'}>
+      <main
+        id="main"
+        className={
+          cart ? (status ? `checkout ${status.class}` : 'checkout') : 'loading'
+        }
+      >
         <Header />
         <Checkout config={config} cart={cart} />
+        <PaymentResult message={status?.message} />
       </main>
       <Aside cart={cart} />
     </Elements>
