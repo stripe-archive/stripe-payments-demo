@@ -1,3 +1,5 @@
+import paymentMethods from './payment-methods';
+
 export function randomQuantity(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -30,4 +32,22 @@ export function formatAmountForDisplay(amount, currency) {
   });
   amount = isZeroDecimalCurrency(amount, currency) ? amount : amount / 100;
   return numberFormat.format(amount);
+}
+
+export function getLocalPaymentMethods() {
+  const localPaymentMethods = {};
+
+  Object.keys(paymentMethods).forEach(paymentMethod => {
+    if (paymentMethod !== 'card') {
+      paymentMethods[paymentMethod].countries.forEach(country => {
+        if (localPaymentMethods[country]) {
+          localPaymentMethods[country].push(paymentMethod);
+        } else {
+          localPaymentMethods[country] = [paymentMethod];
+        }
+      });
+    }
+  });
+
+  return localPaymentMethods;
 }

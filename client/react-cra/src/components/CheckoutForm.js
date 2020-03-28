@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import BillingInformation from '../components/BillingInformation';
 import PaymentInformation from '../components/PaymentInformation';
 import {formatAmountForDisplay} from '../utils/helpers';
@@ -8,6 +8,8 @@ import {CardElement, useStripe, useElements} from '@stripe/react-stripe-js';
 const CheckoutForm = ({config, cart}) => {
   const stripe = useStripe();
   const elements = useElements();
+
+  const [selectedCountry, setSelectedCountry] = useState('US'); // TODO maybe set default based on config
 
   // Handle new PaymentIntent result
   const handlePayment = paymentResponse => {
@@ -96,8 +98,11 @@ const CheckoutForm = ({config, cart}) => {
 
   return (
     <form id="payment-form" onSubmit={handleFormSubmit}>
-      <BillingInformation config={config} />
-      <PaymentInformation />
+      <BillingInformation
+        selectedCountry={selectedCountry}
+        onCountrySelected={setSelectedCountry}
+      />
+      <PaymentInformation selectedCountry={selectedCountry} />
       <button className="payment-button" type="submit">
         Pay {formatAmountForDisplay(cart?.total, cart?.currency)}
       </button>

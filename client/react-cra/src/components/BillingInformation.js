@@ -1,24 +1,12 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import paymentMethods from '../utils/payment-methods';
 
 const selectCountry = ({config, country}) => {
   // TODO refactor with React
   const form = document.getElementById('payment-form');
-  if (!country) {
-    country = form.querySelector('select[name=country] option:checked').value;
-  }
-  const selector = document.getElementById('country');
-  selector.querySelector(`option[value=${country}]`).selected = 'selected';
-  selector.className = `field ${country}`;
 
-  // Trigger the methods to show relevant fields and payment methods on page load.
-  // showRelevantFormFields();
-  const zipLabel = form.querySelector('label.zip');
-  // Only show the state input for the United States.
-  zipLabel.parentElement.classList.toggle('with-state', country === 'US');
-  // Update the ZIP label to make it more relevant for each country.
-  form.querySelector('label.zip span').innerText =
-    country === 'US' ? 'ZIP' : country === 'GB' ? 'Postcode' : 'Postal Code';
   // showRelevantPaymentMethods();
   const paymentInputs = form.querySelectorAll('input[name=payment]');
   for (let i = 0; i < paymentInputs.length; i++) {
@@ -49,16 +37,22 @@ const selectCountry = ({config, country}) => {
   // updateButtonLabel(paymentInputs[0].value);
 };
 
-const BillingInformation = ({config}) => {
+const BillingInformation = ({selectedCountry, onCountrySelected}) => {
   const handleCountrySelect = event => {
     event.preventDefault();
-    selectCountry({country: event.target.value, config});
+    onCountrySelected(event.target.value);
   };
+
+  const zipLabel =
+    {
+      US: 'ZIP',
+      GB: 'Postcode',
+    }[selectedCountry] || 'Postal Code';
 
   return (
     <section>
       <h2>Shipping & Billing Information</h2>
-      <fieldset className="with-state">
+      <fieldset className={selectedCountry === 'US' ? 'with-state' : ''}>
         <label>
           <span>Name</span>
           <input
@@ -95,15 +89,15 @@ const BillingInformation = ({config}) => {
           <input name="state" className="field" placeholder="CA" />
         </label>
         <label className="zip">
-          <span>ZIP</span>
+          <span>{zipLabel}</span>
           <input name="postal_code" className="field" placeholder="94107" />
         </label>
         <label className="select">
           <span>Country</span>
-          <div id="country" className="field US">
+          <div id="country" className={`field ${selectedCountry}`}>
             <select
               name="country"
-              defaultValue="US"
+              value={selectedCountry}
               onChange={handleCountrySelect}
             >
               <option value="AU">Australia</option>
@@ -142,6 +136,11 @@ const BillingInformation = ({config}) => {
       </p>
     </section>
   );
+};
+
+BillingInformation.propTypes = {
+  selectedCountry: PropTypes.string.isRequired,
+  onCountrySelected: PropTypes.func.isRequired,
 };
 
 export default BillingInformation;

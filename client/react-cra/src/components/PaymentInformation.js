@@ -1,5 +1,9 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import paymentMethods from '../utils/payment-methods';
+import {getLocalPaymentMethods} from '../utils/helpers';
+
 import {CardElement} from '@stripe/react-stripe-js';
 
 const CARD_ELEMENT_STYLES = {
@@ -20,7 +24,7 @@ const CARD_ELEMENT_STYLES = {
   },
 };
 
-const PaymentInformation = () => {
+const PaymentInformation = ({selectedCountry}) => {
   const handlePaymentMethodSelection = event => {
     event.preventDefault();
     const payment = event.target.value;
@@ -51,13 +55,26 @@ const PaymentInformation = () => {
       .classList.remove('visible', payment !== 'card');
   };
 
+  const localPaymentMethods = getLocalPaymentMethods();
+
   return (
     <section>
       <h2>Payment Information</h2>
-      <nav id="payment-methods">
+      <nav
+        id="payment-methods"
+        className={localPaymentMethods[selectedCountry] ? 'visible' : ''}
+      >
         <ul>
           {Object.keys(paymentMethods).map(method => (
-            <li key={method}>
+            <li
+              key={method}
+              className={
+                localPaymentMethods[selectedCountry] &&
+                localPaymentMethods[selectedCountry].includes(method)
+                  ? 'visible'
+                  : ''
+              }
+            >
               <input
                 type="radio"
                 name="payment"
@@ -123,6 +140,10 @@ const PaymentInformation = () => {
       </div>
     </section>
   );
+};
+
+PaymentInformation.propTypes = {
+  selectedCountry: PropTypes.string.isRequired,
 };
 
 export default PaymentInformation;
