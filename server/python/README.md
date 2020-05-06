@@ -53,6 +53,7 @@ pip install -r requirements.txt
 Export our Flask app and run!
 
 ```
+export FLASK_APP=./app.py
 flask run
 ```
 
