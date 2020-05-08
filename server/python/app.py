@@ -46,6 +46,11 @@ def serve_image(path):
     return send_from_directory(f'{static_dir}/images', path)
 
 
+@app.route('/.well-known/<path:path>', methods=["GET"])
+def serve_well_known(path):
+    return send_from_directory(f'{static_dir}/.well-known', path)
+
+
 # Serve config set up in .env
 @app.route('/config')
 def get_config():
