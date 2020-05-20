@@ -277,7 +277,6 @@
     };
     // Disable the Pay button to prevent multiple click events.
     submitButton.disabled = true;
-    const oldSubmitButtonText = submitButton.textContent;
     submitButton.textContent = 'Processing…';
 
     if (payment === 'card') {
