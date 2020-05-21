@@ -21,6 +21,13 @@
   const form = document.getElementById('payment-form');
   const submitButton = form.querySelector('button[type=submit]');
 
+  // Global variable to store the submit button text.
+  let submitButtonPayText = 'Pay';
+
+  const updateSubmitButtonPayText = (newText) => {
+    submitButton.textContent = newText;
+    submitButtonPayText = newText;
+  };
   // Global variable to store the PaymentIntent object.
   let paymentIntent;
 
@@ -150,7 +157,7 @@
   });
 
   // Callback when a payment method is created.
-  paymentRequest.on('paymentmethod', async event => {
+  paymentRequest.on('paymentmethod', async (event) => {
     // Confirm the PaymentIntent with the payment method returned from the payment request.
     const {error} = await stripe.confirmCardPayment(
       paymentIntent.client_secret,
@@ -187,12 +194,12 @@
   });
 
   // Callback when the shipping address is updated.
-  paymentRequest.on('shippingaddresschange', event => {
+  paymentRequest.on('shippingaddresschange', (event) => {
     event.updateWith({status: 'success'});
   });
 
   // Callback when the shipping option is changed.
-  paymentRequest.on('shippingoptionchange', async event => {
+  paymentRequest.on('shippingoptionchange', async (event) => {
     // Update the PaymentIntent to reflect the shipping cost.
     const response = await store.updatePaymentIntentWithShippingCost(
       paymentIntent.id,
@@ -210,7 +217,7 @@
       response.paymentIntent.amount,
       config.currency
     );
-    submitButton.innerText = `Pay ${amount}`;
+    updateSubmitButtonPayText(`Pay ${amount}`);
   });
 
   // Create the Payment Request Button.
@@ -243,13 +250,13 @@
   // Listen to changes to the user-selected country.
   form
     .querySelector('select[name=country]')
-    .addEventListener('change', event => {
+    .addEventListener('change', (event) => {
       event.preventDefault();
       selectCountry(event.target.value);
     });
 
   // Submit handler for our payment form.
-  form.addEventListener('submit', async event => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
     // Retrieve the user information from the form.
@@ -354,13 +361,18 @@
   });
 
   // Handle new PaymentIntent result
-  const handlePayment = paymentResponse => {
+  const handlePayment = (paymentResponse) => {
     const {paymentIntent, error} = paymentResponse;
 
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
 
-    if (error) {
+    if (error && error.type === 'validation_error') {
+      mainElement.classList.remove('processing');
+      mainElement.classList.remove('receiver');
+      submitButton.disabled = false;
+      submitButton.textContent = submitButtonPayText;
+    } else if (error) {
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
       confirmationElement.querySelector('.error-message').innerText =
@@ -391,7 +403,7 @@
   };
 
   // Handle activation of payment sources not yet supported by PaymentIntents
-  const handleSourceActiviation = source => {
+  const handleSourceActiviation = (source) => {
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
     switch (source.flow) {
@@ -414,7 +426,9 @@
             store.getPaymentTotal(),
             config.currency
           );
-          submitButton.textContent = `Scan this QR code on WeChat to pay ${amount}`;
+          updateSubmitButtonPayText(
+            `Scan this QR code on WeChat to pay ${amount}`
+          );
           // Start polling the PaymentIntent status.
           pollPaymentIntentStatus(paymentIntent.id, 300000);
         } else {
@@ -680,10 +694,10 @@
     if (paymentMethod === 'sepa_debit' && bankName) {
       label = `Debit ${amount} from ${bankName}`;
     }
-    submitButton.innerText = label;
+    updateSubmitButtonPayText(label);
   };
 
-  const selectCountry = country => {
+  const selectCountry = (country) => {
     const selector = document.getElementById('country');
     selector.querySelector(`option[value=${country}]`).selected = 'selected';
     selector.className = `field ${country}`;
@@ -694,7 +708,7 @@
   };
 
   // Show only form fields that are relevant to the selected country.
-  const showRelevantFormFields = country => {
+  const showRelevantFormFields = (country) => {
     if (!country) {
       country = form.querySelector('select[name=country] option:checked').value;
     }
@@ -707,7 +721,7 @@
   };
 
   // Show only the payment methods that are relevant to the selected country.
-  const showRelevantPaymentMethods = country => {
+  const showRelevantPaymentMethods = (country) => {
     if (!country) {
       country = form.querySelector('select[name=country] option:checked').value;
     }
@@ -742,7 +756,7 @@
 
   // Listen to changes to the payment method selector.
   for (let input of document.querySelectorAll('input[name=payment]')) {
-    input.addEventListener('change', event => {
+    input.addEventListener('change', (event) => {
       event.preventDefault();
       const payment = form.querySelector('input[name=payment]:checked').value;
       const flow = paymentMethods[payment].flow;
