@@ -67,7 +67,7 @@
    */
 
   // Create a Card Element and pass some custom styles to it.
-  const card = elements.create('card', {style});
+  const card = elements.create('card', {style, hidePostalCode: true});
 
   // Mount the Card Element on the page.
   card.mount('#card-element');
@@ -265,6 +265,10 @@
     const country = form.querySelector('select[name=country] option:checked')
       .value;
     const email = form.querySelector('input[name=email]').value;
+    const billingAddress = {
+      line1: form.querySelector('input[name=address]').value,
+      postal_code: form.querySelector('input[name=postal_code]').value,
+    };
     const shipping = {
       name,
       address: {
@@ -288,6 +292,7 @@
             card,
             billing_details: {
               name,
+              address: billingAddress,
             },
           },
           shipping,
@@ -700,7 +705,7 @@
   const selectCountry = (country) => {
     const selector = document.getElementById('country');
     selector.querySelector(`option[value=${country}]`).selected = 'selected';
-    selector.className = `field ${country}`;
+    selector.className = `field ${country.toLowerCase()}`;
 
     // Trigger the methods to show relevant fields and payment methods on page load.
     showRelevantFormFields();
