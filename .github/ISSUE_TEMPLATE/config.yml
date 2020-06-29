@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: Need help with your integration?
     url: https://support.stripe.com
-    about: Ask questions via our email support or the technical IRC chat.
+    about: Ask questions via our email support or the technical chat on IRC.
