@@ -56,7 +56,7 @@ router.post('/payment_intents', async (req, res, next) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: config.paymentMethods,
+      payment_method_types: config.paymentMethodsPerCurrency[currency],
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {
@@ -79,6 +79,28 @@ router.post('/payment_intents/:id/shipping_change', async (req, res, next) => {
     return res.status(500).json({error: err.message});
   }
 });
+
+// Update PaymentIntent with currency and amount.
+router.post('/payment_intents/:id/currency_change', async (req, res, next) => {
+  const {items, currency, shippingOption} = req.body;
+  let fx = config.currencyFX[currency];
+  let amount = await calculatePaymentAmount(items);
+  if(shippingOption){
+    amount += products.getShippingCost(shippingOption.id);
+  }
+  amount = Math.round(amount * fx);
+  
+  try {
+    const paymentIntent = await stripe.paymentIntents.update(req.params.id, {
+      amount, 
+      currency,
+      payment_method_types: config.paymentMethodsPerCurrency[currency],
+    });
+    return res.status(200).json({paymentIntent});
+  } catch (err) {
+    return res.status(500).json({error: err.message});
+  }
+}); 
 
 // Webhook handler to process payments for sources asynchronously.
 router.post('/webhook', async (req, res) => {
@@ -179,6 +201,8 @@ router.get('/config', (req, res) => {
     currency: config.currency,
     paymentMethods: config.paymentMethods,
     shippingOptions: config.shippingOptions,
+    currencyFX: config.currencyFX,
+    paymentMethodsPerCurrency: config.paymentMethodsPerCurrency
   });
 });
 

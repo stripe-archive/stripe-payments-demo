@@ -16,8 +16,7 @@ module.exports = {
   // Store currency.
   currency: 'eur',
 
-  // Supported payment methods for the store.
-  // Some payment methods support only a subset of currencies.
+  // Supported payment methods for each currency.
   // Make sure to check the docs: https://stripe.com/docs/sources
   paymentMethods: [
     // 'ach_credit_transfer', // usd (ACH Credit Transfer payments must be in U.S. Dollars)
@@ -32,6 +31,7 @@ module.exports = {
     'p24', // eur, pln
     'sofort', // eur (SOFORT must always use Euros)
     'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
+    'au_becs_debit',
   ],
 
   // Configuration for Stripe.
@@ -80,5 +80,18 @@ module.exports = {
     port: process.env.PORT || 8000,
     subdomain: process.env.NGROK_SUBDOMAIN,
     authtoken: process.env.NGROK_AUTHTOKEN,
+  },
+
+   // list mock currency FX used in this demo, all relative to EUR
+    currencyFX: {
+    'aud': 1.63,
+    'cad': 1.54,
+    'eur': 1,
+    'gbp': 0.92,
+    'hkd': 8.84,
+    'jpy': 122,
+    'nzd': 1.74,
+    'sgd': 1.59,
+    'usd': 1.14,
   },
 };
