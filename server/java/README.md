@@ -31,7 +31,7 @@ export STRIPE_PUBLISHABLE_KEY=
 export STRIPE_SECRET_KEY=
 export STRIPE_WEBHOOK_SECRET=
 export STRIPE_ACCOUNT_COUNTRY=
-export PAYMENT_METHODS="alipay, bancontact, card, eps, ideal, giropay, multibanco, sofort, wechat"
+export PAYMENT_METHODS="alipay, bancontact, card, eps, ideal, giropay, multibanco, p24, sofort, wechat"
 export NGROK_SUBDOMAIN=
 export NGROK_AUTHTOKEN=
 ```

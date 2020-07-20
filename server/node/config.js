@@ -29,6 +29,7 @@ module.exports = {
     'giropay', // eur (Giropay must always use Euros)
     'multibanco', // eur (Multibanco must always use Euros)
     // 'sepa_debit', // Restricted. See docs for activation details: https://stripe.com/docs/sources/sepa-debit
+    'p24', // eur, pln
     'sofort', // eur (SOFORT must always use Euros)
     'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
   ],

@@ -314,6 +314,21 @@
         }
       );
       handlePayment(response);
+    } else if (payment === 'p24') {
+      // Confirm the PaymentIntent with confirmP24Payment
+      const response = await stripe.confirmP24Payment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+              email
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -642,6 +657,12 @@
       flow: 'receiver',
       countries: ['PT'],
       currencies: ['eur'],
+    },
+    p24: {
+      name: 'Przelewy24',
+      flow: 'redirect',
+      countries: ['PL'],
+      currencies: ['eur', 'pln'],
     },
     sepa_debit: {
       name: 'SEPA Direct Debit',
