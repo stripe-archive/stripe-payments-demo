@@ -414,9 +414,9 @@
         'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
       mainElement.classList.add('success');
     } else if (paymentIntent.status === 'requires_payment_method') {
-      // Failure. Requires new PaymentMethod.
+      // Failure. Requires new PaymentMethod, show last payment error message.
       mainElement.classList.remove('processing');
-      confirmationElement.querySelector('.error-message').innerText = 'Payment failed.';
+      confirmationElement.querySelector('.error-message').innerText = paymentIntent.last_payment_error || 'Payment failed';
       mainElement.classList.add('error');
     } else {
       // Payment has failed.
