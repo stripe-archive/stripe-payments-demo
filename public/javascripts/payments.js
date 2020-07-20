@@ -413,6 +413,11 @@
       confirmationElement.querySelector('.note').innerText =
         'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
       mainElement.classList.add('success');
+    } else if (paymentIntent.status === 'requires_payment_method') {
+      // Failure. Requires new PaymentMethod.
+      mainElement.classList.remove('processing');
+      confirmationElement.querySelector('.error-message').innerText = 'Payment failed.';
+      mainElement.classList.add('error');
     } else {
       // Payment has failed.
       mainElement.classList.remove('success');
@@ -540,7 +545,7 @@
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = ['succeeded', 'processing', 'canceled'];
+    const endStates = ['succeeded', 'processing', 'canceled', 'requires_payment_method'];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
