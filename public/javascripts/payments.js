@@ -287,7 +287,7 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    let update_error = false;
+    let updateError = false;
 
     // Retrieve the user information from the form.
     const payment = form.querySelector('input[name=payment]:checked').value;
@@ -324,10 +324,10 @@
         
         if(response.error){
           handleError(response);
-          update_error = true
+          updateError = true
         }
     }
-    if(!update_error){    
+    if(!updateError){    
       if (payment === 'card') {
         // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
         const response = await stripe.confirmCardPayment(
@@ -547,7 +547,7 @@
   const handleError = (updateResponse) => {
     // handle any error
     const {paymentIntent, error} = updateResponse;
-
+    
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
 
