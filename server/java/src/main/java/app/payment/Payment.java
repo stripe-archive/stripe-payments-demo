@@ -16,7 +16,10 @@ public class Payment {
         Map<String, Object> paymentintentParams = new HashMap<String, Object>();
         paymentintentParams.put("amount", Inventory.calculatePaymentAmount(basket.items));
         paymentintentParams.put("currency", basket.currency);
+
+        //build initial payment methods which should exclude currency specific ones
         List<String> payment_method_types = new ArrayList<String>();
+        payment_method_types.remove("au_becs_debit");
         payment_method_types = Arrays.asList(Optional.ofNullable(System.getenv("PAYMENT_METHODS")).orElse("card").split("\\s*,\\s*"));
         paymentintentParams.put(
                 "payment_method_types",
@@ -40,6 +43,18 @@ public class Payment {
 
         Map<String, Object> paymentintentParams = new HashMap<String, Object>();
         paymentintentParams.put("amount", amount);
+
+        return paymentIntent.update(paymentintentParams);
+
+    }
+
+    public static PaymentIntent updateCurrencyPaymentMethods(String paymentIntentId, String currency, String[] paymentMethods) throws StripeException {
+
+      PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+
+        Map<String, Object> paymentintentParams = new HashMap<String, Object>();
+        paymentintentParams.put("currency", currency);
+        paymentintentParams.put("payment_method_types", paymentMethods);
 
         return paymentIntent.update(paymentintentParams);
 

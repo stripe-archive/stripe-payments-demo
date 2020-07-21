@@ -938,12 +938,6 @@ button:active {
   text-align: left;
 }
 
-.currency.fx-info{
-  font-size: 12px;
-  color: #8898aa;
-  text-align: left;
-}
-
 #wechat-qrcode img {
   margin: 0 auto;
 }
@@ -1315,6 +1309,4 @@ button:active {
   #confirmation h1 {
     text-align: center;
   }
-
-
 }

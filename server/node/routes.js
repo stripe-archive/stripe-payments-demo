@@ -53,10 +53,22 @@ router.post('/payment_intents', async (req, res, next) => {
   const amount = await calculatePaymentAmount(items);
 
   try {
+    //build initial payment methods which should exclude currency specific ones
+    let initPaymentMethods = config.paymentMethods.filter(function(value, index, arr){
+      let includePaymentMethod = true;
+      switch(value)
+      {
+        case 'au_becs_debit':
+          includePaymentMethod = false;
+          break;
+      }
+      return includePaymentMethod;
+    });
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: config.paymentMethodsPerCurrency[currency],
+      payment_method_types: initPaymentMethods,
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {
@@ -80,21 +92,13 @@ router.post('/payment_intents/:id/shipping_change', async (req, res, next) => {
   }
 });
 
-// Update PaymentIntent with currency and amount.
-router.post('/payment_intents/:id/currency_change', async (req, res, next) => {
-  const {items, currency, shippingOption} = req.body;
-  let fx = config.currencyFX[currency];
-  let amount = await calculatePaymentAmount(items);
-  if(shippingOption){
-    amount += products.getShippingCost(shippingOption.id);
-  }
-  amount = Math.round(amount * fx);
-  
+// Update PaymentIntent with currency and paymentMethod.
+router.post('/payment_intents/:id/currency_payment_method_change', async (req, res, next) => {
+  const {currency, payment_methods} = req.body; 
   try {
     const paymentIntent = await stripe.paymentIntents.update(req.params.id, {
-      amount, 
       currency,
-      payment_method_types: config.paymentMethodsPerCurrency[currency],
+      payment_method_types: payment_methods,
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {
@@ -201,8 +205,6 @@ router.get('/config', (req, res) => {
     currency: config.currency,
     paymentMethods: config.paymentMethods,
     shippingOptions: config.shippingOptions,
-    currencyFX: config.currencyFX,
-    paymentMethodsPerCurrency: config.paymentMethodsPerCurrency
   });
 });
 
