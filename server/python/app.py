@@ -198,7 +198,16 @@ def webhook_received():
 @app.route('/payment_intents/<string:id>/status', methods=['GET'])
 def retrieve_payment_intent_status(id):
     payment_intent = stripe.PaymentIntent.retrieve(id)
-    return jsonify({'paymentIntent': {'status': payment_intent["status"]}})
+    data = {
+        'paymentIntent': {
+            'status': payment_intent["status"]
+        }
+    }
+
+    if payment_intent['last_payment_error']:
+        data['paymentIntent']['last_payment_error'] = payment_intent['last_payment_error']['message']
+
+    return jsonify(data)
 
 
 if __name__ == '__main__':
