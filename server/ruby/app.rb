@@ -224,10 +224,16 @@ get '/payment_intents/:id/status' do
     params['id']
   )
 
-  content_type 'application/json'
-  {
+  data = {
     paymentIntent: {
       status: payment_intent['status']
     }
-  }.to_json
+  }
+
+  data[:paymentIntent] = data[:paymentIntent].merge(
+    last_payment_error: payment_intent.last_payment_error.message
+  ) if payment_intent.last_payment_error
+
+  content_type 'application/json'
+  data.to_json
 end
