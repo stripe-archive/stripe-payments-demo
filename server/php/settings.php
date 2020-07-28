@@ -39,6 +39,7 @@ return [
             'ideal', // eur (iDEAL must always use Euros)
             'giropay', // eur (Giropay must always use Euros)
             'multibanco', // eur (Multibanco must always use Euros)
+            'p24', // eur, pln
             // 'sepa_debit', // Restricted. See docs for activation details: https://stripe.com/docs/sources/sepa-debit
             'sofort', // eur (SOFORT must always use Euros)
             'wechat' // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.

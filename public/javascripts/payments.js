@@ -314,6 +314,21 @@
         }
       );
       handlePayment(response);
+    } else if (payment === 'p24') {
+      // Confirm the PaymentIntent with confirmP24Payment
+      const response = await stripe.confirmP24Payment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+              email
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
@@ -398,6 +413,11 @@
       confirmationElement.querySelector('.note').innerText =
         'We’ll send your receipt and ship your items as soon as your payment is confirmed.';
       mainElement.classList.add('success');
+    } else if (paymentIntent.status === 'requires_payment_method') {
+      // Failure. Requires new PaymentMethod, show last payment error message.
+      mainElement.classList.remove('processing');
+      confirmationElement.querySelector('.error-message').innerText = paymentIntent.last_payment_error || 'Payment failed';
+      mainElement.classList.add('error');
     } else {
       // Payment has failed.
       mainElement.classList.remove('success');
@@ -525,7 +545,7 @@
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = ['succeeded', 'processing', 'canceled'];
+    const endStates = ['succeeded', 'processing', 'canceled', 'requires_payment_method'];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
@@ -642,6 +662,12 @@
       flow: 'receiver',
       countries: ['PT'],
       currencies: ['eur'],
+    },
+    p24: {
+      name: 'Przelewy24',
+      flow: 'redirect',
+      countries: ['PL'],
+      currencies: ['eur', 'pln'],
     },
     sepa_debit: {
       name: 'SEPA Direct Debit',
