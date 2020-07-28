@@ -158,7 +158,7 @@
     // Re-enable the Pay button.
     submitButton.disabled = false;
   });
-  
+
   /**
    * Implement a Stripe Payment Request Button Element.
    *
@@ -243,7 +243,7 @@
     });
     const amount = store.formatPrice(
       response.paymentIntent.amount,
-      activeCurrency,
+      activeCurrency
     );
     updateSubmitButtonPayText(`Pay ${amount}`);
   });
@@ -314,20 +314,19 @@
     submitButton.textContent = 'Processing…';
 
     // Update Payment Intent if currency is different to default
-    if(config.currency !== activeCurrency)
-    {
-      const response = await store.updatePaymentIntentWithCurrencyPaymentMethod( 
+    if (config.currency !== activeCurrency) {
+      const response = await store.updatePaymentIntentWithCurrencyPaymentMethod(
         paymentIntent.id,
         activeCurrency,
-        [payment,],
-        );
-        
-        if(response.error){
-          handleError(response);
-          updateError = true
-        }
+        [payment]
+      );
+
+      if (response.error) {
+        handleError(response);
+        updateError = true;
+      }
     }
-    if(!updateError){    
+    if (!updateError) {
       if (payment === 'card') {
         // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
         const response = await stripe.confirmCardPayment(
@@ -360,6 +359,7 @@
         );
         handlePayment(response);
       } else if (payment === 'p24') {
+        // Confirm the PaymentIntent with confirmP24Payment
         const response = await stripe.confirmP24Payment(
           paymentIntent.client_secret,
           {
@@ -547,7 +547,7 @@
   const handleError = (updateResponse) => {
     // handle any error
     const {paymentIntent, error} = updateResponse;
-    
+
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
 
@@ -697,6 +697,12 @@
     start = null
   ) => {
     start = start ? start : Date.now();
+    const endStates = [
+      'succeeded',
+      'processing',
+      'canceled',
+      'requires_payment_method',
+    ];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
@@ -890,7 +896,7 @@
     selector.className = `field ${country.toLowerCase()}`;
 
     //update currency if there's a currency for that country
-    switch(country){
+    switch (country) {
       case 'AU':
         activeCurrency = 'aud';
         break;
@@ -1014,8 +1020,8 @@
         .querySelector('.payment-info.wechat')
         .classList.toggle('visible', payment === 'wechat');
       form
-      .querySelector('.payment-info.au_becs_debit')
-      .classList.toggle('visible', payment === 'au_becs_debit');
+        .querySelector('.payment-info.au_becs_debit')
+        .classList.toggle('visible', payment === 'au_becs_debit');
       form
         .querySelector('.payment-info.redirect')
         .classList.toggle('visible', flow === 'redirect');
