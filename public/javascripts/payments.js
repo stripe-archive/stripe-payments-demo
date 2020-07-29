@@ -359,7 +359,6 @@
         );
         handlePayment(response);
       } else if (payment === 'p24') {
-        // Confirm the PaymentIntent with confirmP24Payment
         const response = await stripe.confirmP24Payment(
           paymentIntent.client_secret,
           {
