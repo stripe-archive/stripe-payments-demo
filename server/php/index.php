@@ -118,8 +118,14 @@ $app->post('/payment_intents/{id}/shipping_change', function (Request $request, 
 // Fetch the payment intent status
 // Used for redirect sources when coming back to the return URL
 $app->get('/payment_intents/{id}/status', function (Request $request, Response $response, array $args) {
-    $paymentIntent = \Stripe\PaymentIntent::retrieve($args['id']);
-    return $response->withJson([ 'paymentIntent' => [ 'status' => $paymentIntent->status ] ]);
+  $paymentIntent = \Stripe\PaymentIntent::retrieve($args['id']);
+  $data = [ 'paymentIntent' => [ 'status' => $paymentIntent->status ] ];
+
+  if ($paymentIntent->last_payment_error) {
+    $data['paymentIntent']['last_payment_error'] = $paymentIntent->last_payment_error->message;
+  }
+
+  return $response->withJson($data);
 });
 
 // Events receiver for payment intents and sources
