@@ -138,17 +138,31 @@ func buildEcho(publicDirectory string) *echo.Echo {
 		})
 	})
 
+	type PaymentIntentsStatusData struct {
+		Status           string `json:"status"`
+		LastPaymentError string `json:"last_payment_error,omitempty"`
+	}
+
+	type PaymentIntentsStatus struct {
+		PaymentIntent PaymentIntentsStatusData `json:"paymentIntent"`
+	}
+
 	e.GET("/payment_intents/:id/status", func(c echo.Context) error {
 		pi, err := payments.RetrieveIntent(c.Param("id"))
 		if err != nil {
 			return err
 		}
 
-		return c.JSON(http.StatusOK, map[string]map[string]string{
-			"paymentIntent": {
-				"status": string(pi.Status),
+		p := PaymentIntentsStatus{
+			PaymentIntent: PaymentIntentsStatusData{
+				Status: string(pi.Status),
 			},
-		})
+		}
+		if pi.LastPaymentError != nil {
+			p.PaymentIntent.LastPaymentError = pi.LastPaymentError.Message
+		}
+
+		return c.JSON(http.StatusOK, p)
 	})
 
 	e.POST("/webhook", func(c echo.Context) error {
