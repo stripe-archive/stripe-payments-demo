@@ -50,7 +50,7 @@ func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 }
 
 // helper function to remove a value from a slice
-func removeVal(slice []string, value string)([]string) {
+func removeVal(slice []string, value string) ([]string) {
     for i, other := range slice {
         if other == value {
             return append(slice[:i], slice[i+1:]...)
