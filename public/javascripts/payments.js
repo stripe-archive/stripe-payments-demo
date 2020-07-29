@@ -315,7 +315,6 @@
       );
       handlePayment(response);
     } else if (payment === 'p24') {
-      // Confirm the PaymentIntent with confirmP24Payment
       const response = await stripe.confirmP24Payment(
         paymentIntent.client_secret,
         {
@@ -323,6 +322,61 @@
             billing_details: {
               name,
               email
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'ideal') {
+      // Confirm the PaymentIntent with the iDEAL Element.
+      const response = await stripe.confirmIdealPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            ideal: idealBank,
+            billing_details: {
+              name,
+              email
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'bancontact') {
+      const response = await stripe.confirmBancontactPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'eps') {
+      const response = await stripe.confirmEpsPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'giropay') {
+      const response = await stripe.confirmGiropayPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
             }
           },
           return_url: window.location.href,
@@ -350,17 +404,6 @@
 
       // Add extra source information which are specific to a payment method.
       switch (payment) {
-        case 'ideal':
-          // Confirm the PaymentIntent with the iDEAL bank Element.
-          // This will redirect to the banking site.
-          stripe.confirmIdealPayment(paymentIntent.client_secret, {
-            payment_method: {
-              ideal: idealBank,
-            },
-            return_url: window.location.href,
-          });
-          return;
-          break;
         case 'sofort':
           // SOFORT: The country is required before redirecting to the bank.
           sourceData.sofort = {
