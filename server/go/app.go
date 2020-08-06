@@ -162,6 +162,7 @@ func buildEcho(publicDirectory string) *echo.Echo {
 			"paymentIntent": pi,
 		})
 	})
+
 	type PaymentIntentsStatusData struct {
 		Status           string `json:"status"`
 		LastPaymentError string `json:"last_payment_error,omitempty"`
