@@ -23,7 +23,6 @@ type IntentShippingChangeRequest struct {
 type IntentCurrencyPaymentMethodsChangeRequest struct {
 	Currency string           `json:"currency"`
 	PaymentMethods []string   `json:"payment_methods"`
-
 }
 
 func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {

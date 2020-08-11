@@ -140,8 +140,8 @@ class Store {
     }
   }
 
-   // Update the PaymentIntent with the the currency and payment value.
-   async updatePaymentIntentWithCurrencyPaymentMethod(
+  // Update the PaymentIntent with the the currency and payment value.
+  async updatePaymentIntentWithCurrencyPaymentMethod(
     paymentIntent,
     currency,
     payment_methods,

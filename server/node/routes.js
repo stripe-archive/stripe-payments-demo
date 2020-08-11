@@ -54,15 +54,8 @@ router.post('/payment_intents', async (req, res, next) => {
 
   try {
     //build initial payment methods which should exclude currency specific ones
-    let initPaymentMethods = config.paymentMethods.filter(function(value, index, arr){
-      let includePaymentMethod = true;
-      switch(value)
-      {
-        case 'au_becs_debit':
-          includePaymentMethod = false;
-          break;
-      }
-      return includePaymentMethod;
+    const initPaymentMethods = config.paymentMethods.filter((value, index, arr) => {
+      return !['au_becs_debit'].includes(value);
     });
 
     const paymentIntent = await stripe.paymentIntents.create({
