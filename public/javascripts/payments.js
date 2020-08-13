@@ -577,7 +577,7 @@
    * Check if the PaymentIntent is in a "terminal" status
    * and therefore if we should show an error in the UI
    */
-  const paymentIntentTerminal = ({status, last_payment_error}) => {
+  const paymentIntentTerminalState = ({status, last_payment_error}) => {
     const endStates = ['succeeded', 'processing', 'canceled'];
     const hasError = typeof last_payment_error !== "undefined";
 
@@ -602,7 +602,7 @@
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
-    const isTerminal = paymentIntentTerminal(response.paymentIntent);
+    const isTerminal = paymentIntentTerminalState(response.paymentIntent);
 
     if (
       !isTerminal &&
