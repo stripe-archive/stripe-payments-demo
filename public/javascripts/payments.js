@@ -394,7 +394,7 @@
           email,
         },
         redirect: {
-          return_url: window.location.href,
+          return_url: `${window.location.href}?payment_intent=${paymentIntent.id}`,
         },
         statement_descriptor: 'Stripe Payments Demo',
         metadata: {
@@ -616,18 +616,11 @@
 
   const url = new URL(window.location.href);
   const mainElement = document.getElementById('main');
-  if (url.searchParams.get('source') && url.searchParams.get('client_secret')) {
-    // Update the interface to display the processing screen.
-    mainElement.classList.add('checkout', 'success', 'processing');
 
-    const {source} = await stripe.retrieveSource({
-      id: url.searchParams.get('source'),
-      client_secret: url.searchParams.get('client_secret'),
-    });
-
-    // Poll the PaymentIntent status.
-    pollPaymentIntentStatus(source.metadata.paymentIntent);
-  } else if (url.searchParams.get('payment_intent')) {
+  if (url.searchParams.get('payment_intent')) {
+    if (url.searchParams.get('source') && url.searchParams.get('client_secret')) {
+      mainElement.classList.add('checkout', 'success', 'processing');
+    }
     // Poll the PaymentIntent status.
     pollPaymentIntentStatus(url.searchParams.get('payment_intent'));
   } else {
