@@ -578,8 +578,8 @@
    * and therefore if we should show an error in the UI
    */
   const paymentIntentTerminal = ({status, last_payment_error}) => {
-    const endStates = ['succeeded', 'processing', 'canceled'],
-          hasError = typeof last_payment_error !== "undefined";
+    const endStates = ['succeeded', 'processing', 'canceled'];
+    const hasError = typeof last_payment_error !== "undefined";
 
     return endStates.includes(status) || (status === 'requires_payment_method' && hasError);
   };
