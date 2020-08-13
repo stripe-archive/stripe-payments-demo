@@ -574,6 +574,17 @@
   };
 
   /**
+   * Check if the PaymentIntent is in a "terminal" status
+   * and therefore if we should show an error in the UI
+   */
+  const paymentIntentTerminalState = ({status, last_payment_error}) => {
+    const endStates = ['succeeded', 'processing', 'canceled'];
+    const hasError = typeof last_payment_error !== "undefined";
+
+    return endStates.includes(status) || (status === 'requires_payment_method' && hasError);
+  };
+
+  /**
    * Monitor the status of a source after a redirect flow.
    *
    * This means there is a `source` parameter in the URL, and an active PaymentIntent.
@@ -588,12 +599,13 @@
     start = null
   ) => {
     start = start ? start : Date.now();
-    const endStates = ['succeeded', 'processing', 'canceled', 'requires_payment_method'];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
+    const isTerminalState = paymentIntentTerminalState(response.paymentIntent);
+
     if (
-      !endStates.includes(response.paymentIntent.status) &&
+      !isTerminalState &&
       Date.now() < start + timeout
     ) {
       // Not done yet. Let's wait and check again.
@@ -607,7 +619,7 @@
       );
     } else {
       handlePayment(response);
-      if (!endStates.includes(response.paymentIntent.status)) {
+      if (!isTerminalState) {
         // Status has not changed yet. Let's time out.
         console.warn(new Error('Polling timed out.'));
       }
