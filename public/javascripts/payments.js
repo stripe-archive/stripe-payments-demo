@@ -581,7 +581,7 @@
     const endStates = ['succeeded', 'processing', 'canceled'],
           hasError = typeof last_payment_error !== "undefined";
 
-    return endStates.includes(status) || status === 'requires_payment_method' && hasError;
+    return endStates.includes(status) || (status === 'requires_payment_method' && hasError);
   };
 
   /**
