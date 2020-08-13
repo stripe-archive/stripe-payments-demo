@@ -602,10 +602,10 @@
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
-    const isTerminal = paymentIntentTerminalState(response.paymentIntent);
+    const isTerminalState = paymentIntentTerminalState(response.paymentIntent);
 
     if (
-      !isTerminal &&
+      !isTerminalState &&
       Date.now() < start + timeout
     ) {
       // Not done yet. Let's wait and check again.
@@ -619,7 +619,7 @@
       );
     } else {
       handlePayment(response);
-      if (!isTerminal) {
+      if (!isTerminalState) {
         // Status has not changed yet. Let's time out.
         console.warn(new Error('Polling timed out.'));
       }
