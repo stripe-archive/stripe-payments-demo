@@ -383,6 +383,19 @@
         }
       );
       handlePayment(response);
+    } else if (payment === 'alipay') {
+      const response = await stripe.confirmAlipayPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            }
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
     } else {
       // Prepare all the Stripe source common data.
       const sourceData = {
