@@ -318,14 +318,13 @@
       const response = await store.updatePaymentIntentWithCurrencyPaymentMethod(
         paymentIntent.id,
         activeCurrency,
-        [payment],
+        [payment]
       );
 
       if (response.error) {
         handleError(response);
         updateError = true;
       }
-
     }
     if (!updateError) {
       if (payment === 'card') {
@@ -880,14 +879,7 @@
     if (paymentMethod === 'wechat') {
       label = `Generate QR code to pay ${amount} with ${name}`;
     }
-<<<<<<< HEAD
-    if (paymentMethod === 'sepa_debit' && bankName) {
-      label = `Debit ${amount} from ${bankName}`;
-    }
-    if (paymentMethod == 'au_becs_debit' && bankName) {
-=======
     if (['sepa_debit', 'au_becs_debit'].includes(paymentMethod) && bankName) {
->>>>>>> 3098db4... Cleaned up code as per the changes recommended by willock's review
       label = `Debit ${amount} from ${bankName}`;
     }
 
@@ -900,15 +892,10 @@
     selector.className = `field ${country.toLowerCase()}`;
 
     //update currency if there's a currency for that country
-<<<<<<< HEAD
-    switch (country) {
-      case 'AU':
-=======
-    if(country === 'AU'){
->>>>>>> 3098db4... Cleaned up code as per the changes recommended by willock's review
-        activeCurrency = 'aud';
+    if (country === 'AU') {
+      activeCurrency = 'aud';
     } else {
-        activeCurrency = config.currency;
+      activeCurrency = config.currency;
     }
 
     // Trigger the methods to show relevant fields and payment methods on page load.
