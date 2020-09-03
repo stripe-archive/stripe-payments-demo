@@ -432,7 +432,7 @@
 
       // Create a Stripe source with the common data and extra information.
       const {source} = await stripe.createSource(sourceData);
-      handleSourceActiviation(source);
+      handleSourceActivation(source);
     }
   });
 
@@ -484,7 +484,7 @@
   };
 
   // Handle activation of payment sources not yet supported by PaymentIntents
-  const handleSourceActiviation = (source) => {
+  const handleSourceActivation = (source) => {
     const mainElement = document.getElementById('main');
     const confirmationElement = document.getElementById('confirmation');
     switch (source.flow) {
