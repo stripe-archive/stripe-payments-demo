@@ -287,8 +287,6 @@
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    let updateError = false;
-
     // Retrieve the user information from the form.
     const payment = form.querySelector('input[name=payment]:checked').value;
     const name = form.querySelector('input[name=name]').value;
@@ -315,7 +313,7 @@
 
     // Update Payment Intent if currency is different to default
     if (config.currency !== activeCurrency) {
-      const response = await store.updatePaymentIntentWithCurrencyPaymentMethod(
+      const response = await store.updatePaymentIntentCurrency(
         paymentIntent.id,
         activeCurrency,
         [payment]
@@ -323,176 +321,176 @@
 
       if (response.error) {
         handleError(response);
-        updateError = true;
+        return;
       }
     }
-    if (!updateError) {
-      if (payment === 'card') {
-        // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
-        const response = await stripe.confirmCardPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              card,
-              billing_details: {
-                name,
-                address: billingAddress,
-              },
-            },
-            shipping,
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'sepa_debit') {
-        // Confirm the PaymentIntent with the IBAN Element.
-        const response = await stripe.confirmSepaDebitPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              sepa_debit: iban,
-              billing_details: {
-                name,
-                email,
-              },
-            },
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'p24') {
-        const response = await stripe.confirmP24Payment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              billing_details: {
-                name,
-                email,
-              },
-            },
-            return_url: window.location.href,
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'ideal') {
-        // Confirm the PaymentIntent with the iDEAL Element.
-        const response = await stripe.confirmIdealPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              ideal: idealBank,
-              billing_details: {
-                name,
-                email,
-              },
-            },
-            return_url: window.location.href,
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'bancontact') {
-        const response = await stripe.confirmBancontactPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              billing_details: {
-                name,
-              },
-            },
-            return_url: window.location.href,
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'eps') {
-        const response = await stripe.confirmEpsPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              billing_details: {
-                name,
-              },
-            },
-            return_url: window.location.href,
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'giropay') {
-        const response = await stripe.confirmGiropayPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              billing_details: {
-                name,
-              },
-            },
-            return_url: window.location.href,
-          }
-        );
-        handlePayment(response);
-      } else if (payment === 'alipay') {
-        const response = await stripe.confirmAlipayPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              billing_details: {
-                name,
-              },
-            },
-            return_url: window.location.href,
-          }
-        );
-        handlePayment(response);
-      } else if (payment == 'au_becs_debit') {
-        const response = await stripe.confirmAuBecsDebitPayment(
-          paymentIntent.client_secret,
-          {
-            payment_method: {
-              au_becs_debit: becsBank,
-              billing_details: {
-                name,
-                email,
-              },
-            },
-          }
-        );
-        handlePayment(response);
-      } else {
-        // Prepare all the Stripe source common data.
-        const sourceData = {
-          type: payment,
-          amount: paymentIntent.amount,
-          currency: paymentIntent.currency,
-          owner: {
-            name,
-            email,
-          },
-          redirect: {
-            return_url: `${window.location.href}?payment_intent=${paymentIntent.id}`,
-          },
-          statement_descriptor: 'Stripe Payments Demo',
-          metadata: {
-            paymentIntent: paymentIntent.id,
-          },
-        };
 
-        // Add extra source information which are specific to a payment method.
-        switch (payment) {
-          case 'sofort':
-            // SOFORT: The country is required before redirecting to the bank.
-            sourceData.sofort = {
-              country,
-            };
-            break;
-          case 'ach_credit_transfer':
-            // ACH Bank Transfer: Only supports USD payments, edit the default config to try it.
-            // In test mode, we can set the funds to be received via the owner email.
-            sourceData.owner.email = `amount_${paymentIntent.amount}@example.com`;
-            break;
+    if (payment === 'card') {
+      // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
+      const response = await stripe.confirmCardPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            card,
+            billing_details: {
+              name,
+              address: billingAddress,
+            },
+          },
+          shipping,
         }
+      );
+      handlePayment(response);
+    } else if (payment === 'sepa_debit') {
+      // Confirm the PaymentIntent with the IBAN Element.
+      const response = await stripe.confirmSepaDebitPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            sepa_debit: iban,
+            billing_details: {
+              name,
+              email,
+            },
+          },
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'p24') {
+      const response = await stripe.confirmP24Payment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+              email,
+            },
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'ideal') {
+      // Confirm the PaymentIntent with the iDEAL Element.
+      const response = await stripe.confirmIdealPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            ideal: idealBank,
+            billing_details: {
+              name,
+              email,
+            },
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'bancontact') {
+      const response = await stripe.confirmBancontactPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            },
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'eps') {
+      const response = await stripe.confirmEpsPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            },
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'giropay') {
+      const response = await stripe.confirmGiropayPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            },
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment === 'alipay') {
+      const response = await stripe.confirmAlipayPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            billing_details: {
+              name,
+            },
+          },
+          return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment == 'au_becs_debit') {
+      const response = await stripe.confirmAuBecsDebitPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            au_becs_debit: becsBank,
+            billing_details: {
+              name,
+              email,
+            },
+          },
+        }
+      );
+      handlePayment(response);
+    } else {
+      // Prepare all the Stripe source common data.
+      const sourceData = {
+        type: payment,
+        amount: paymentIntent.amount,
+        currency: paymentIntent.currency,
+        owner: {
+          name,
+          email,
+        },
+        redirect: {
+          return_url: `${window.location.href}?payment_intent=${paymentIntent.id}`,
+        },
+        statement_descriptor: 'Stripe Payments Demo',
+        metadata: {
+          paymentIntent: paymentIntent.id,
+        },
+      };
 
-        // Create a Stripe source with the common data and extra information.
-        const {source} = await stripe.createSource(sourceData);
-        handleSourceActiviation(source);
+      // Add extra source information which are specific to a payment method.
+      switch (payment) {
+        case 'sofort':
+          // SOFORT: The country is required before redirecting to the bank.
+          sourceData.sofort = {
+            country,
+          };
+          break;
+        case 'ach_credit_transfer':
+          // ACH Bank Transfer: Only supports USD payments, edit the default config to try it.
+          // In test mode, we can set the funds to be received via the owner email.
+          sourceData.owner.email = `amount_${paymentIntent.amount}@example.com`;
+          break;
       }
+
+      // Create a Stripe source with the common data and extra information.
+      const {source} = await stripe.createSource(sourceData);
+      handleSourceActiviation(source);
     }
+  
   });
 
   // Handle new PaymentIntent result

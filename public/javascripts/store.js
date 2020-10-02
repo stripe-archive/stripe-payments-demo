@@ -141,14 +141,14 @@ class Store {
   }
 
   // Update the PaymentIntent with the the currency and payment value.
-  async updatePaymentIntentWithCurrencyPaymentMethod(
+  async updatePaymentIntentCurrency(
     paymentIntent,
     currency,
     payment_methods,
   ) {
     try {
       const response = await fetch(
-        `/payment_intents/${paymentIntent}/currency_payment_method_change`,
+        `/payment_intents/${paymentIntent}/update_currency`,
         {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},

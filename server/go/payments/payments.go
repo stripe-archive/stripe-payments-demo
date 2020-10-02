@@ -31,7 +31,7 @@ func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 		return nil, fmt.Errorf("payments: error computing payment amount: %v", err)
 	}
 
-    //build initial payment methods which should exclude currency specific ones
+    // build initial payment methods which should exclude currency specific ones
 	initPaymentMethods := config.PaymentMethods();
 	removeVal(initPaymentMethods, "au_becs_debit")
 

@@ -45,7 +45,7 @@ public class PaymentController {
 
     };
 
-    public static Route updatePaymentIntentCurrencyPaymentMethods = (Request request, Response response) -> {
+    public static Route updatePaymentIntentCurrency= (Request request, Response response) -> {
 
         String paymentIntentId = request.params(":id");
         String currency = request.queryParams("currency");

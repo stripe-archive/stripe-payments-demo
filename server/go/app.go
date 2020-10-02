@@ -146,7 +146,7 @@ func buildEcho(publicDirectory string) *echo.Echo {
 	type PaymentIntentsStatus struct {
 		PaymentIntent PaymentIntentsStatusData `json:"paymentIntent"`
 	}
-	e.POST("/payment_intents/:id/currency_payment_method_change", func(c echo.Context) error {
+	e.POST("/payment_intents/:id/update_currency", func(c echo.Context) error {
 		r := new(payments.IntentCurrencyPaymentMethodsChangeRequest)
 		err := c.Bind(r)
 		if err != nil {

@@ -54,9 +54,8 @@ router.post('/payment_intents', async (req, res, next) => {
 
   try {
     //build initial payment methods which should exclude currency specific ones
-    const initPaymentMethods = config.paymentMethods.filter((value, index, arr) => {
-      return !['au_becs_debit'].includes(value);
-    });
+    const initPaymentMethods = config.paymentMethods.filter(paymentMethod => paymentMethod !== 'au_becs_debit');
+    
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
@@ -86,7 +85,7 @@ router.post('/payment_intents/:id/shipping_change', async (req, res, next) => {
 });
 
 // Update PaymentIntent with currency and paymentMethod.
-router.post('/payment_intents/:id/currency_payment_method_change', async (req, res, next) => {
+router.post('/payment_intents/:id/update_currency', async (req, res, next) => {
   const {currency, payment_methods} = req.body; 
   try {
     const paymentIntent = await stripe.paymentIntents.update(req.params.id, {

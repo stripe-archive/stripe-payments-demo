@@ -119,7 +119,7 @@ $app->post('/payment_intents/{id}/shipping_change', function (Request $request, 
 });
 
 // Update PaymentIntent with currency and paymentMethod.
-$app->post('/payment_intents/{id}/currency_payment_method_change', function (Request $request, Response $response, array $args) {
+$app->post('/payment_intents/{id}/update_currency', function (Request $request, Response $response, array $args) {
   $data = $request->getParsedBody();
   $currency = $data['currency'];
   $paymentMethods = $data['payment_methods'];

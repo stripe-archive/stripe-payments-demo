@@ -132,7 +132,7 @@ def update_payment_intent(id):
     except Exception as e:
         return jsonify(e), 403
 
-@app.route('/payment_intents/<string:id>/currency_payment_method_change', methods=['POST'])
+@app.route('/payment_intents/<string:id>/update_currency', methods=['POST'])
 def update_payment_intent(id):
     data = json.loads(request.data)
     currency = data['currency']

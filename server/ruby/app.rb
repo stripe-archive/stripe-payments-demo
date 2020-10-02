@@ -131,7 +131,7 @@ post '/payment_intents/:id/shipping_change' do
   }.to_json
 end
 
-post '/payment_intents/:id/currency_payment_method_change' do
+post '/payment_intents/:id/update_currency' do
   content_type 'application/json'
   data = JSON.parse request.body.read
 
