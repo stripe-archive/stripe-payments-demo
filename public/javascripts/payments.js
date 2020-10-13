@@ -16,6 +16,7 @@
 
   // Retrieve the configuration for the store.
   const config = await store.getConfig();
+  let activeCurrency = config.currency;
 
   // Create references to the main form and its submit button.
   const form = document.getElementById('payment-form');
@@ -132,6 +133,33 @@
   idealBank.mount('#ideal-bank-element');
 
   /**
+   * Add a BECS element that matches the look-and-feel of the app.
+   *
+   * This allows you to collect australian bank account details
+   */
+
+  const becsBank = elements.create('auBankAccount', {style});
+
+  // Mount the BECS element on the page.
+  becsBank.mount('#becs-bank-element');
+
+  // Monitor change events on the BECS Element to display any errors.
+  becsBank.on('change', ({error, bankName}) => {
+    const becsBankErrors = document.getElementById('becs-errors');
+    if (error) {
+      becsBankErrors.textContent = error.message;
+      becsBankErrors.classList.add('visible');
+    } else {
+      becsBankErrors.classList.remove('visible');
+      if (bankName) {
+        updateButtonLabel('au_becs_debit', bankName);
+      }
+    }
+    // Re-enable the Pay button.
+    submitButton.disabled = false;
+  });
+
+  /**
    * Implement a Stripe Payment Request Button Element.
    *
    * This automatically supports the Payment Request API (already live on Chrome),
@@ -215,7 +243,7 @@
     });
     const amount = store.formatPrice(
       response.paymentIntent.amount,
-      config.currency
+      activeCurrency
     );
     updateSubmitButtonPayText(`Pay ${amount}`);
   });
@@ -283,6 +311,20 @@
     submitButton.disabled = true;
     submitButton.textContent = 'Processing…';
 
+    // Update Payment Intent if currency is different to default
+    if (config.currency !== activeCurrency) {
+      const response = await store.updatePaymentIntentCurrency(
+        paymentIntent.id,
+        activeCurrency,
+        [payment]
+      );
+
+      if (response.error) {
+        handleError(response);
+        return;
+      }
+    }
+
     if (payment === 'card') {
       // Let Stripe.js handle the confirmation of the PaymentIntent with the card Element.
       const response = await stripe.confirmCardPayment(
@@ -321,8 +363,8 @@
           payment_method: {
             billing_details: {
               name,
-              email
-            }
+              email,
+            },
           },
           return_url: window.location.href,
         }
@@ -337,8 +379,8 @@
             ideal: idealBank,
             billing_details: {
               name,
-              email
-            }
+              email,
+            },
           },
           return_url: window.location.href,
         }
@@ -351,7 +393,7 @@
           payment_method: {
             billing_details: {
               name,
-            }
+            },
           },
           return_url: window.location.href,
         }
@@ -364,7 +406,7 @@
           payment_method: {
             billing_details: {
               name,
-            }
+            },
           },
           return_url: window.location.href,
         }
@@ -377,7 +419,7 @@
           payment_method: {
             billing_details: {
               name,
-            }
+            },
           },
           return_url: window.location.href,
         }
@@ -390,9 +432,23 @@
           payment_method: {
             billing_details: {
               name,
-            }
+            },
           },
           return_url: window.location.href,
+        }
+      );
+      handlePayment(response);
+    } else if (payment == 'au_becs_debit') {
+      const response = await stripe.confirmAuBecsDebitPayment(
+        paymentIntent.client_secret,
+        {
+          payment_method: {
+            au_becs_debit: becsBank,
+            billing_details: {
+              name,
+              email,
+            },
+          },
         }
       );
       handlePayment(response);
@@ -434,6 +490,7 @@
       const {source} = await stripe.createSource(sourceData);
       handleSourceActivation(source);
     }
+  
   });
 
   // Handle new PaymentIntent result
@@ -472,13 +529,35 @@
     } else if (paymentIntent.status === 'requires_payment_method') {
       // Failure. Requires new PaymentMethod, show last payment error message.
       mainElement.classList.remove('processing');
-      confirmationElement.querySelector('.error-message').innerText = paymentIntent.last_payment_error || 'Payment failed';
+      confirmationElement.querySelector('.error-message').innerText =
+        paymentIntent.last_payment_error || 'Payment failed';
       mainElement.classList.add('error');
     } else {
       // Payment has failed.
       mainElement.classList.remove('success');
       mainElement.classList.remove('processing');
       mainElement.classList.remove('receiver');
+      mainElement.classList.add('error');
+    }
+  };
+
+  const handleError = (updateResponse) => {
+    // handle any error
+    const {paymentIntent, error} = updateResponse;
+
+    const mainElement = document.getElementById('main');
+    const confirmationElement = document.getElementById('confirmation');
+
+    if (error && error.type === 'validation_error') {
+      mainElement.classList.remove('processing');
+      mainElement.classList.remove('receiver');
+      submitButton.disabled = false;
+      submitButton.textContent = submitButtonPayText;
+    } else if (error) {
+      mainElement.classList.remove('processing');
+      mainElement.classList.remove('receiver');
+      confirmationElement.querySelector('.error-message').innerText =
+        error.message;
       mainElement.classList.add('error');
     }
   };
@@ -505,7 +584,7 @@
           form.querySelector('.payment-info.wechat p').style.display = 'none';
           let amount = store.formatPrice(
             store.getPaymentTotal(),
-            config.currency
+            activeCurrency
           );
           updateSubmitButtonPayText(
             `Scan this QR code on WeChat to pay ${amount}`
@@ -530,7 +609,7 @@
         const receiverInfo = confirmationElement.querySelector(
           '.receiver .info'
         );
-        let amount = store.formatPrice(source.amount, config.currency);
+        let amount = store.formatPrice(source.amount, activeCurrency);
         switch (source.type) {
           case 'ach_credit_transfer':
             // Display the ACH Bank Transfer information to the user.
@@ -592,9 +671,12 @@
    */
   const paymentIntentTerminalState = ({status, last_payment_error}) => {
     const endStates = ['succeeded', 'processing', 'canceled'];
-    const hasError = typeof last_payment_error !== "undefined";
+    const hasError = typeof last_payment_error !== 'undefined';
 
-    return endStates.includes(status) || (status === 'requires_payment_method' && hasError);
+    return (
+      endStates.includes(status) ||
+      (status === 'requires_payment_method' && hasError)
+    );
   };
 
   /**
@@ -612,15 +694,18 @@
     start = null
   ) => {
     start = start ? start : Date.now();
+    const endStates = [
+      'succeeded',
+      'processing',
+      'canceled',
+      'requires_payment_method',
+    ];
     // Retrieve the PaymentIntent status from our server.
     const rawResponse = await fetch(`payment_intents/${paymentIntent}/status`);
     const response = await rawResponse.json();
     const isTerminalState = paymentIntentTerminalState(response.paymentIntent);
 
-    if (
-      !isTerminalState &&
-      Date.now() < start + timeout
-    ) {
+    if (!isTerminalState && Date.now() < start + timeout) {
       // Not done yet. Let's wait and check again.
       setTimeout(
         pollPaymentIntentStatus,
@@ -643,7 +728,10 @@
   const mainElement = document.getElementById('main');
 
   if (url.searchParams.get('payment_intent')) {
-    if (url.searchParams.get('source') && url.searchParams.get('client_secret')) {
+    if (
+      url.searchParams.get('source') &&
+      url.searchParams.get('client_secret')
+    ) {
       mainElement.classList.add('checkout', 'success', 'processing');
     }
     // Poll the PaymentIntent status.
@@ -770,11 +858,17 @@
         'usd',
       ],
     },
+    au_becs_debit: {
+      name: 'BECS Direct Debit',
+      flow: 'none',
+      countries: ['AU'],
+      currencies: ['aud'],
+    },
   };
 
   // Update the main button to reflect the payment method being selected.
   const updateButtonLabel = (paymentMethod, bankName) => {
-    let amount = store.formatPrice(store.getPaymentTotal(), config.currency);
+    let amount = store.formatPrice(store.getPaymentTotal(), activeCurrency);
     let name = paymentMethods[paymentMethod].name;
     let label = `Pay ${amount}`;
     if (paymentMethod !== 'card') {
@@ -783,9 +877,10 @@
     if (paymentMethod === 'wechat') {
       label = `Generate QR code to pay ${amount} with ${name}`;
     }
-    if (paymentMethod === 'sepa_debit' && bankName) {
+    if (['sepa_debit', 'au_becs_debit'].includes(paymentMethod) && bankName) {
       label = `Debit ${amount} from ${bankName}`;
     }
+
     updateSubmitButtonPayText(label);
   };
 
@@ -793,6 +888,13 @@
     const selector = document.getElementById('country');
     selector.querySelector(`option[value=${country}]`).selected = 'selected';
     selector.className = `field ${country.toLowerCase()}`;
+
+    //update currency if there's a currency for that country
+    if (country === 'AU') {
+      activeCurrency = 'aud';
+    } else {
+      activeCurrency = config.currency;
+    }
 
     // Trigger the methods to show relevant fields and payment methods on page load.
     showRelevantFormFields();
@@ -852,6 +954,7 @@
     if (!country) {
       country = form.querySelector('select[name=country] option:checked').value;
     }
+
     const paymentInputs = form.querySelectorAll('input[name=payment]');
     for (let i = 0; i < paymentInputs.length; i++) {
       let input = paymentInputs[i];
@@ -860,7 +963,7 @@
         input.value === 'card' ||
           (config.paymentMethods.includes(input.value) &&
             paymentMethods[input.value].countries.includes(country) &&
-            paymentMethods[input.value].currencies.includes(config.currency))
+            paymentMethods[input.value].currencies.includes(activeCurrency))
       );
     }
 
@@ -878,6 +981,9 @@
     form.querySelector('.payment-info.sepa_debit').classList.remove('visible');
     form.querySelector('.payment-info.wechat').classList.remove('visible');
     form.querySelector('.payment-info.redirect').classList.remove('visible');
+    form
+      .querySelector('.payment-info.au_becs_debit')
+      .classList.remove('visible');
     updateButtonLabel(paymentInputs[0].value);
   };
 
@@ -904,6 +1010,9 @@
       form
         .querySelector('.payment-info.wechat')
         .classList.toggle('visible', payment === 'wechat');
+      form
+        .querySelector('.payment-info.au_becs_debit')
+        .classList.toggle('visible', payment === 'au_becs_debit');
       form
         .querySelector('.payment-info.redirect')
         .classList.toggle('visible', flow === 'redirect');

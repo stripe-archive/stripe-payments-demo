@@ -53,10 +53,14 @@ router.post('/payment_intents', async (req, res, next) => {
   const amount = await calculatePaymentAmount(items);
 
   try {
+    //build initial payment methods which should exclude currency specific ones
+    const initPaymentMethods = config.paymentMethods.filter(paymentMethod => paymentMethod !== 'au_becs_debit');
+    
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
-      payment_method_types: config.paymentMethods,
+      payment_method_types: initPaymentMethods,
     });
     return res.status(200).json({paymentIntent});
   } catch (err) {
@@ -79,6 +83,20 @@ router.post('/payment_intents/:id/shipping_change', async (req, res, next) => {
     return res.status(500).json({error: err.message});
   }
 });
+
+// Update PaymentIntent with currency and paymentMethod.
+router.post('/payment_intents/:id/update_currency', async (req, res, next) => {
+  const {currency, payment_methods} = req.body; 
+  try {
+    const paymentIntent = await stripe.paymentIntents.update(req.params.id, {
+      currency,
+      payment_method_types: payment_methods,
+    });
+    return res.status(200).json({paymentIntent});
+  } catch (err) {
+    return res.status(500).json({error: err.message});
+  }
+}); 
 
 // Webhook handler to process payments for sources asynchronously.
 router.post('/webhook', async (req, res) => {

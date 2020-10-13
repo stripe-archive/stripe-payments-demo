@@ -140,6 +140,35 @@ class Store {
     }
   }
 
+  // Update the PaymentIntent with the the currency and payment value.
+  async updatePaymentIntentCurrency(
+    paymentIntent,
+    currency,
+    payment_methods,
+  ) {
+    try {
+      const response = await fetch(
+        `/payment_intents/${paymentIntent}/update_currency`,
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            currency,
+            payment_methods,
+          }),
+        }
+      );
+      const data = await response.json();
+      if (data.error) {
+        return {error: data.error};
+      } else {
+        return data;
+      }
+    } catch (err) {
+      return {error: err.message};
+    }
+  }
+
   // Format a price (assuming a two-decimal currency like EUR or USD for simplicity).
   formatPrice(amount, currency) {
     let price = (amount / 100).toFixed(2);

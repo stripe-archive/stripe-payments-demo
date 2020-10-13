@@ -21,6 +21,7 @@ public class Application {
         get("/payment_intents/:id/status", PaymentController.getPaymentIntent);
         post("/payment_intents", PaymentController.createPaymentIntent);
         post("/payment_intents/:id/shipping_change", PaymentController.updatePaymentIntent);
+        post("/payment_intents/:id/update_currency", PaymentController.updatePaymentIntentCurrency);
         post("/webhook", FulfillmentController.webhookReceived);
     }
 }

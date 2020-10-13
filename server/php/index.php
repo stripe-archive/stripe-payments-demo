@@ -90,10 +90,13 @@ $app->get('/products/{id}', function (Request $request, Response $response, arra
 $app->post('/payment_intents', function (Request $request, Response $response, array $args) {
   $data = $request->getParsedBody();
   try {
+    //build initial payment methods which should exclude currency specific ones
+    $initPaymentMethods = array_diff($this->get('settings')['stripe']['paymentMethods'],['au_becs_debit']);
+
     $paymentIntent = \Stripe\PaymentIntent::create([
       'amount' => Inventory::calculatePaymentAmount($data['items']),
       'currency' => $data['currency'],
-      'payment_method_types' => $this->get('settings')['stripe']['paymentMethods']
+      'payment_method_types' => $initPaymentMethods
     ]);
 
     return $response->withJson([ 'paymentIntent' => $paymentIntent ]);
@@ -109,6 +112,20 @@ $app->post('/payment_intents/{id}/shipping_change', function (Request $request, 
   $amount += Shipping::getShippingCost($data['shippingOption']['id']);
   try {
     $paymentIntent = \Stripe\PaymentIntent::update($args['id'], [ 'amount' => $amount ]);
+    return $response->withJson([ 'paymentIntent' => $paymentIntent ]);
+  } catch (\Exception $e) {
+    return $response->withJson([ 'error' => $e->getMessage() ])->withStatus(403);
+  }
+});
+
+// Update PaymentIntent with currency and paymentMethod.
+$app->post('/payment_intents/{id}/update_currency', function (Request $request, Response $response, array $args) {
+  $data = $request->getParsedBody();
+  $currency = $data['currency'];
+  $paymentMethods = $data['payment_methods'];
+
+  try {
+    $paymentIntent = \Stripe\PaymentIntent::update($args['id'], [ 'currency' => $currency, 'payment_method_types:' => $paymentMethods ]);
     return $response->withJson([ 'paymentIntent' => $paymentIntent ]);
   } catch (\Exception $e) {
     return $response->withJson([ 'error' => $e->getMessage() ])->withStatus(403);

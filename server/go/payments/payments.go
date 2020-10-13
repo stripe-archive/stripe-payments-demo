@@ -20,16 +20,25 @@ type IntentShippingChangeRequest struct {
 	ShippingOption inventory.ShippingOption `json:"shippingOption"`
 }
 
+type IntentCurrencyPaymentMethodsChangeRequest struct {
+	Currency string           `json:"currency"`
+	PaymentMethods []string   `json:"payment_methods"`
+}
+
 func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 	amount, err := inventory.CalculatePaymentAmount(r.Items)
 	if err != nil {
 		return nil, fmt.Errorf("payments: error computing payment amount: %v", err)
 	}
 
+    // build initial payment methods which should exclude currency specific ones
+	initPaymentMethods := config.PaymentMethods();
+	removeVal(initPaymentMethods, "au_becs_debit")
+
 	params := &stripe.PaymentIntentParams{
 		Amount:             stripe.Int64(amount),
 		Currency:           stripe.String(r.Currency),
-		PaymentMethodTypes: stripe.StringSlice(config.PaymentMethods()),
+		PaymentMethodTypes: stripe.StringSlice(initPaymentMethods),
 	}
 	pi, err := paymentintent.New(params)
 	if err != nil {
@@ -38,6 +47,18 @@ func CreateIntent(r *IntentCreationRequest) (*stripe.PaymentIntent, error) {
 
 	return pi, nil
 }
+
+// helper function to remove a value from a slice
+func removeVal(slice []string, value string) ([]string) {
+    for i, other := range slice {
+        if other == value {
+            return append(slice[:i], slice[i+1:]...)
+        }
+	}
+
+	return slice
+}
+
 
 func RetrieveIntent(paymentIntent string) (*stripe.PaymentIntent, error) {
 	pi, err := paymentintent.Get(paymentIntent, nil)
@@ -92,6 +113,22 @@ func UpdateShipping(paymentIntent string, r *IntentShippingChangeRequest) (*stri
 
 	params := &stripe.PaymentIntentParams{
 		Amount: stripe.Int64(amount),
+	}
+	pi, err := paymentintent.Update(paymentIntent, params)
+	if err != nil {
+		return nil, fmt.Errorf("payments: error updating payment intent: %v", err)
+	}
+
+	return pi, nil
+}
+
+func UpdateCurrencyPaymentMethod(paymentIntent string, r *IntentCurrencyPaymentMethodsChangeRequest) (*stripe.PaymentIntent, error) {
+	currency := r.Currency
+	paymentMethods := r.PaymentMethods
+	
+	params := &stripe.PaymentIntentParams{
+		Currency: stripe.String(currency),
+		PaymentMethodTypes: stripe.StringSlice(paymentMethods),
 	}
 	pi, err := paymentintent.Update(paymentIntent, params)
 	if err != nil {

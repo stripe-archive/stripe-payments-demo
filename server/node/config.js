@@ -32,6 +32,7 @@ module.exports = {
     'p24', // eur, pln
     'sofort', // eur (SOFORT must always use Euros)
     'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
+    'au_becs_debit', //aud
   ],
 
   // Configuration for Stripe.

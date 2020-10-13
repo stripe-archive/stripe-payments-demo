@@ -146,6 +146,31 @@ func buildEcho(publicDirectory string) *echo.Echo {
 	type PaymentIntentsStatus struct {
 		PaymentIntent PaymentIntentsStatusData `json:"paymentIntent"`
 	}
+	e.POST("/payment_intents/:id/update_currency", func(c echo.Context) error {
+		r := new(payments.IntentCurrencyPaymentMethodsChangeRequest)
+		err := c.Bind(r)
+		if err != nil {
+			return err
+		}
+
+		pi, err := payments.UpdateCurrencyPaymentMethod(c.Param("id"), r)
+		if err != nil {
+			return err
+		}
+
+		return c.JSON(http.StatusOK, map[string]*stripe.PaymentIntent{
+			"paymentIntent": pi,
+		})
+	})
+
+	type PaymentIntentsStatusData struct {
+		Status           string `json:"status"`
+		LastPaymentError string `json:"last_payment_error,omitempty"`
+	}
+
+	type PaymentIntentsStatus struct {
+		PaymentIntent PaymentIntentsStatusData `json:"paymentIntent"`
+	}
 
 	e.GET("/payment_intents/:id/status", func(c echo.Context) error {
 		pi, err := payments.RetrieveIntent(c.Param("id"))

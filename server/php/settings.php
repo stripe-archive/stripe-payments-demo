@@ -42,7 +42,8 @@ return [
             'p24', // eur, pln
             // 'sepa_debit', // Restricted. See docs for activation details: https://stripe.com/docs/sources/sepa-debit
             'sofort', // eur (SOFORT must always use Euros)
-            'wechat' // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.
+            'wechat', // aud, cad, eur, gbp, hkd, jpy, sgd, or usd.,
+            'au_becs_debit' //aud
           ],
 
           // See settings.ini

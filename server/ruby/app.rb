@@ -97,10 +97,14 @@ post '/payment_intents' do
   content_type 'application/json'
   data = JSON.parse request.body.read
 
+  # build initial payment methods which should exclude currency specific ones
+  init_payment_methods = ENV['PAYMENT_METHODS'] ? ENV['PAYMENT_METHODS'].split(', ') : ['card']
+  init_payment_methods.delete('au_becs_debit')
+
   payment_intent = Stripe::PaymentIntent.create(
     amount: Inventory.calculate_payment_amount(data['items']),
     currency: data['currency'],
-    payment_method_types: ENV['PAYMENT_METHODS'] ? ENV['PAYMENT_METHODS'].split(', ') : ['card']
+    payment_method_types: init_payment_methods
   )
 
   {
@@ -119,6 +123,26 @@ post '/payment_intents/:id/shipping_change' do
     params['id'],
     {
       amount: amount
+    }
+  )
+  
+  {
+    paymentIntent: payment_intent
+  }.to_json
+end
+
+post '/payment_intents/:id/update_currency' do
+  content_type 'application/json'
+  data = JSON.parse request.body.read
+
+  currency = data['currency']
+  payment_methods = data['payment_methods']
+
+  payment_intent = Stripe::PaymentIntent.update(
+    params['id'],
+    {
+      currency: currency,
+      payment_method_types: payment_methods
     }
   )
   

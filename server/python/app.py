@@ -99,12 +99,17 @@ def make_payment_intent():
     # Creates a new PaymentIntent with items from the cart.
     data = json.loads(request.data)
     try:
+        
+        # build initial payment methods which should exclude currency specific ones
+        initPaymentMethods=os.getenv(
+                'PAYMENT_METHODS').split(', ') if os.getenv(
+                'PAYMENT_METHODS') else ['card']
+        initPaymentMethods.remove('au_becs_debit')
+        
         payment_intent = stripe.PaymentIntent.create(
             amount=Inventory.calculate_payment_amount(items=data['items']),
             currency=data['currency'],
-            payment_method_types=os.getenv(
-                'PAYMENT_METHODS').split(', ') if os.getenv(
-                'PAYMENT_METHODS') else ['card']
+            payment_method_types=initPaymentMethods
         )
 
         return jsonify({'paymentIntent': payment_intent})
@@ -121,6 +126,22 @@ def update_payment_intent(id):
         payment_intent = stripe.PaymentIntent.modify(
             id,
             amount=amount
+        )
+
+        return jsonify({'paymentIntent': payment_intent})
+    except Exception as e:
+        return jsonify(e), 403
+
+@app.route('/payment_intents/<string:id>/update_currency', methods=['POST'])
+def update_payment_intent(id):
+    data = json.loads(request.data)
+    currency = data['currency']
+    paymentMethods = data['payment_methods']
+    try:
+        payment_intent = stripe.PaymentIntent.modify(
+            id,
+            currency=currency,
+            payment_method_types=paymentMethods
         )
 
         return jsonify({'paymentIntent': payment_intent})

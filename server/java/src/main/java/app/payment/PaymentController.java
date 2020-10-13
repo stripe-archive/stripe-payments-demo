@@ -45,6 +45,26 @@ public class PaymentController {
 
     };
 
+    public static Route updatePaymentIntentCurrency= (Request request, Response response) -> {
+
+        String paymentIntentId = request.params(":id");
+        String currency = request.queryParams("currency");
+        String paymentMethods = request.queryParams("payment_methods");
+
+
+        PaymentIntent paymentIntent = Payment.updateCurrencyPaymentMethods(paymentIntentId, currency, paymentMethods);
+
+        response.status(200);
+        response.type("application/json");
+
+        Map<String, Object> wrapper = new HashMap<String, Object>();
+        wrapper.put("paymentIntent", paymentIntent);
+
+        return ApiResource.GSON.toJson(wrapper);
+
+    };
+    
+
     public static Route getPaymentIntent = (Request request, Response response) -> {
 
         String paymentIntentId = request.params(":id");
