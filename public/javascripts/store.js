@@ -15,6 +15,7 @@ class Store {
     this.products = {};
     this.productsFetchPromise = null;
     this.displayPaymentSummary();
+    this.shippingAmount = null;
   }
 
   // Compute the total for the payment based on the line items (SKUs and quantity).
@@ -24,6 +25,11 @@ class Store {
         total + quantity * this.products[product].skus.data[0].price,
       0
     );
+  }
+
+  async getDefaultShippingAmount() {
+    const config = await this.getConfig();
+    return config.shippingOptions[0].amount;
   }
 
   // Expose the line items for the payment using products and skus stored in Stripe.
@@ -117,6 +123,8 @@ class Store {
     items,
     shippingOption
   ) {
+    this.shippingAmount = shippingOption.amount;
+
     try {
       const response = await fetch(
         `/payment_intents/${paymentIntent}/shipping_change`,
@@ -187,7 +195,6 @@ class Store {
     // Fetch the products from the store to get all the details (name, price, etc.).
     await this.loadProducts();
     const orderItems = document.getElementById('order-items');
-    const orderTotal = document.getElementById('order-total');
     let currency;
     // Build and append the line items to the payment summary.
     for (let [id, product] of Object.entries(this.products)) {
@@ -218,10 +225,28 @@ class Store {
         quantity,
       });
     }
+
+    await this.updateAmountSummary(currency);
+  }
+
+  async updateAmountSummary(currency) {
+    const orderTotal = document.getElementById('order-total');
+
+    // Fetch shipping amount and subtotal to calculate total
+    const shippingAmount = this.shippingAmount || await this.getDefaultShippingAmount();
+    const subTotal = this.getPaymentTotal();
+    const total = shippingAmount + subTotal;
+
     // Add the subtotal and total to the payment summary.
-    const total = this.formatPrice(this.getPaymentTotal(), currency);
-    orderTotal.querySelector('[data-subtotal]').innerText = total;
-    orderTotal.querySelector('[data-total]').innerText = total;
+    orderTotal.querySelector('[data-subtotal]').innerText = this.formatPrice(subTotal, currency);
+
+    if (shippingAmount === 0) {
+      orderTotal.querySelector('[data-shipping]').innerText = "Free";
+    } else {
+      orderTotal.querySelector('[data-shipping]').innerText = this.formatPrice(shippingAmount, currency);
+    }
+
+    orderTotal.querySelector('[data-total]').innerText = this.formatPrice(total, currency);
   }
 }
 
