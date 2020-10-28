@@ -50,20 +50,7 @@ get '/config' do
     'country': 'US',
     'currency': 'eur',
     'paymentMethods': ENV['PAYMENT_METHODS'] ? ENV['PAYMENT_METHODS'].split(', ') : ['card'],
-    'shippingOptions': [
-      {
-        'id': 'free',
-        'label': 'Free Shipping',
-      'detail': 'Delivery within 5 days',
-        'amount': 0,
-      },
-      {
-        'id': 'express',
-          'label': 'Express Shipping',
-          'detail': 'Next day delivery',
-          'amount': 500,
-      }
-    ]
+    'shippingOptions': Inventory.shipping_options,
   }.to_json
 end
 
@@ -100,6 +87,12 @@ post '/payment_intents' do
   # build initial payment methods which should exclude currency specific ones
   init_payment_methods = ENV['PAYMENT_METHODS'] ? ENV['PAYMENT_METHODS'].split(', ') : ['card']
   init_payment_methods.delete('au_becs_debit')
+
+  # calculate amount
+  amount = Inventory.calculate_payment_amount(data['items'])
+  amount += Inventory.get_shipping_cost(
+    Inventory.shipping_options.first[:id]
+  )
 
   payment_intent = Stripe::PaymentIntent.create(
     amount: Inventory.calculate_payment_amount(data['items']),

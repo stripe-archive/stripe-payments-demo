@@ -8,6 +8,23 @@ Stripe.api_version = '2019-03-14'
 
 class Inventory
 
+  def self.shipping_options
+    [
+      {
+        id: 'free',
+        label: 'Free Shipping',
+        detail: 'Delivery within 5 days',
+        amount: 0,
+      },
+      {
+        id: 'express',
+        label: 'Express Shipping',
+        detail: 'Next day delivery',
+        amount: 500,
+      }
+    ]
+  end
+
   def self.calculate_payment_amount(items)
     total = 0
     items.each do |item|
@@ -18,11 +35,8 @@ class Inventory
   end
 
   def self.get_shipping_cost(id)
-    shipping_cost = {
-      free: 0,
-      express: 500,
-    }
-    shipping_cost[id.to_sym]
+    option = shipping_options.find { |option| option[:id] == id.to_sym }
+    option[:amount]
   end
 
   def self.list_products
@@ -33,7 +47,7 @@ class Inventory
     Stripe::SKU.list(
       limit: 1,
       product: product_id
-      )
+    )
   end
 
   def self.retrieve_product(product_id)
