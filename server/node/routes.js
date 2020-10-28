@@ -50,8 +50,8 @@ const calculatePaymentAmount = async items => {
 // Create the PaymentIntent on the backend.
 router.post('/payment_intents', async (req, res, next) => {
   let {currency, items} = req.body;
-  let amount = await calculatePaymentAmount(items);
-  amount += products.getShippingCost(config.shippingOptions[0].id);
+  const shippingCost = products.getShippingCost(config.shippingOptions[0].id);
+  const amount = await calculatePaymentAmount(items) + shippingCost;
 
   try {
     //build initial payment methods which should exclude currency specific ones

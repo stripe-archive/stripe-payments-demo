@@ -239,13 +239,7 @@ class Store {
 
     // Add the subtotal and total to the payment summary.
     orderTotal.querySelector('[data-subtotal]').innerText = this.formatPrice(subTotal, currency);
-
-    if (shippingAmount === 0) {
-      orderTotal.querySelector('[data-shipping]').innerText = "Free";
-    } else {
-      orderTotal.querySelector('[data-shipping]').innerText = this.formatPrice(shippingAmount, currency);
-    }
-
+    orderTotal.querySelector('[data-shipping]').innerText = shippingAmount === 0 ? "Free" : this.formatPrice(shippingAmount, currency);
     orderTotal.querySelector('[data-total]').innerText = this.formatPrice(total, currency);
   }
 }
