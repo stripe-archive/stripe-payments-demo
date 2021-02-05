@@ -1,6 +1,6 @@
 # Stripe Payments Demo
 
-This demo features a sample e-commerce store that uses [Stripe Elements](https://stripe.com/docs/elements), [PaymentIntents](https://stripe.com/docs/payments/payment-intents) for [dynamic authentication](https://stripe.com/docs/payments/3d-secure), and the [Sources API](https://stripe.com/docs/sources) to illustrate how to accept both card payments and additional payment methods on the web.
+This demo features a sample e-commerce store that uses [Stripe Elements](https://stripe.com/payments/elements), [PaymentIntents](https://stripe.com/docs/payments/payment-intents) for [dynamic authentication](https://stripe.com/docs/payments/3d-secure), and the [Sources API](https://stripe.com/docs/sources) to illustrate how to accept both card payments and additional payment methods on the web.
 
 If you’re running a compatible browser, this demo also showcases the [Payment Request API](https://stripe.com/docs/payment-request-api), [Apple Pay](https://stripe.com/docs/apple-pay), [Google Pay](https://stripe.com/docs/google-pay), and [Microsoft Pay](https://stripe.com/docs/microsoft-pay) for a seamless payment experience.
 
@@ -17,8 +17,8 @@ This demo provides an all-in-one example for integrating with Stripe on the web:
 <!-- prettier-ignore -->
 |     | Features
 :---: | :---
-✨ | **Beautiful UI components for card payments**. This demo uses pre-built Stripe components customized to fit the app design, including the [Card Element](https://stripe.com/docs/elements) which provides real-time validation, formatting, and autofill.
-💳 | **Card payments with Payment Request, Apple Pay, Google Pay, and Microsoft Pay.** The app offers frictionless card payment experiences with a single integration using the [Payment Request Button Element](https://stripe.com/docs/elements/payment-request-button).
+✨ | **Beautiful UI components for card payments**. This demo uses pre-built Stripe components customized to fit the app design, including the [Card Element](https://stripe.com/docs/stripe-js#card-element) which provides real-time validation, formatting, and autofill.
+💳 | **Card payments with Payment Request, Apple Pay, Google Pay, and Microsoft Pay.** The app offers frictionless card payment experiences with a single integration using the [Payment Request Button Element](https://stripe.com/docs/stripe-js/elements/payment-request-button).
 🌍 | **Payment methods for Europe and Asia.** A dozen redirect-based payment methods are supported through the [Sources API](https://stripe.com/docs/sources), from [iDEAL](https://stripe.com/docs/sources/ideal) to [WeChat Pay](https://stripe.com/docs/sources/wechat-pay).
 🎩 | **Automatic payment methods suggestion.** Picking a country will automatically show relevant payment methods. For example, selecting  “Germany” will suggest SOFORT, Giropay, and SEPA Debit.
 🔐 | **Dynamic 3D Secure for Visa and Mastercard.** The app automatically handles the correct flow to complete card payments with [3D Secure](https://stripe.com/docs/payments/dynamic-3ds), whether it’s required by the card or encoded in one of your [3D Secure Radar rules](https://dashboard.stripe.com/radar/rules).
@@ -39,11 +39,11 @@ The core logic of the Stripe integration is mostly contained within two files:
 
 ### Card Payments with Stripe Elements
 
-[Stripe Elements](https://stripe.com/docs/elements) let you quickly support cards, Apple Pay, Google Pay, and the new Payment Request API.
+[Stripe Elements](https://stripe.com/payments/elements) let you quickly support cards, Apple Pay, Google Pay, and the new Payment Request API.
 
 Stripe Elements are rich, pre-built UI components that create optimized checkout flows across desktop and mobile. Elements can accept any CSS property to perfectly match the look-and-feel of your app. They simplify the time-consuming parts when building payment forms, e.g. input validation, formatting, localization, and cross-browser support.
 
-This demo uses both the [Card Element](https://stripe.com/docs/elements) and the [Payment Request Button](https://stripe.com/docs/elements/payment-request-button), which provides a single integration for Apple Pay, Google Pay, and the Payment Request API—a new browser standard that allows your customers to quickly provide payment and address information they’ve stored with their browser.
+This demo uses both the [Card Element](https://stripe.com/docs/stripe-js#card-element) and the [Payment Request Button](https://stripe.com/docs/stripe-js/elements/payment-request-button), which provides a single integration for Apple Pay, Google Pay, and the Payment Request API—a new browser standard that allows your customers to quickly provide payment and address information they’ve stored with their browser.
 
 ![Payment Request on Chrome](public/images/screenshots/demo-payment-request.png)
 
