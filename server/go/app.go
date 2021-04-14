@@ -163,15 +163,6 @@ func buildEcho(publicDirectory string) *echo.Echo {
 		})
 	})
 
-	type PaymentIntentsStatusData struct {
-		Status           string `json:"status"`
-		LastPaymentError string `json:"last_payment_error,omitempty"`
-	}
-
-	type PaymentIntentsStatus struct {
-		PaymentIntent PaymentIntentsStatusData `json:"paymentIntent"`
-	}
-
 	e.GET("/payment_intents/:id/status", func(c echo.Context) error {
 		pi, err := payments.RetrieveIntent(c.Param("id"))
 		if err != nil {
