@@ -8,7 +8,7 @@ gunicorn==19.7.1
 idna==2.6
 idna-ssl==1.1.0
 itsdangerous==0.24
-Jinja2==2.10.1
+Jinja2==2.11.3
 livereload==2.5.1
 MarkupSafe==1.0
 more-itertools==4.1.0
