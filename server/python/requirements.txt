@@ -14,7 +14,7 @@ MarkupSafe==1.0
 more-itertools==4.1.0
 multidict==4.1.0
 pluggy==0.6.0
-py==1.5.3
+py==1.10.0
 pytest==3.5.0
 python-dotenv==0.8.2
 requests==2.20
