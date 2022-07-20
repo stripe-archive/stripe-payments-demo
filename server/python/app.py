@@ -133,7 +133,7 @@ def update_payment_intent(id):
         return jsonify(e), 403
 
 @app.route('/payment_intents/<string:id>/update_currency', methods=['POST'])
-def update_payment_intent(id):
+def update_payment_intent2(id):
     data = json.loads(request.data)
     currency = data['currency']
     paymentMethods = data['payment_methods']

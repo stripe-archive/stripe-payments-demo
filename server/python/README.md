@@ -50,10 +50,10 @@ Run `pip install` to fetch the Python packages we use:
 pip install -r requirements.txt
 ```
 
-Export our Flask app and run!
+Export our Flask app and run from the root!
 
 ```
-export FLASK_APP=./app.py
+export FLASK_APP=server/python/app.py
 flask run
 ```
 
