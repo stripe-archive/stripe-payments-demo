@@ -246,6 +246,7 @@
       activeCurrency
     );
     updateSubmitButtonPayText(`Pay ${amount}`);
+    store.updateAmountSummary(activeCurrency);
   });
 
   // Create the Payment Request Button.
